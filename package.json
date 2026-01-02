@@ -1,0 +1,26 @@
+{
+  "name": "mukherji-architects-milano",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "generate": "node scripts/generate-projects.cjs",
+    "generate:watch": "node scripts/generate-projects.cjs --watch",
+    "dev": "concurrently \"npm run generate:watch\" \"vite\"",
+    "prebuild": "npm run generate",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lucide-react": "^0.560.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "concurrently": "^9.2.1",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}
