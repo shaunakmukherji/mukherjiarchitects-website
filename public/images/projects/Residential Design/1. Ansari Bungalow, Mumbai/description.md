@@ -1,20 +1,12 @@
 # Ansari Bungalow, Mumbai
 
 ## Overview
-[Add a brief overview of the project here]
-
-## Key Features
-- [Feature 1]
-- [Feature 2]
-- [Feature 3]
-
-## Design Approach
-[Describe the design philosophy and approach]
+A highly efficient residential building conceived as a simple volumetric form, with the façade treated as a performative skin to create a distinctive and iconic urban presence.
 
 ## Technical Details
-- **Year:** [Year]
-- **Location:** [Location]
-- **Status:** [Status - e.g., Completed, In Progress, Concept]
+- **Location:** Mumbai, India
+- **Year of Commission:** 2026
+- **Category:** Residential Design
 
 ## Notes
 [Any additional notes or context]

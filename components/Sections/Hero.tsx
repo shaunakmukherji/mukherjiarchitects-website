@@ -39,7 +39,7 @@ const Hero: React.FC = () => {
   return (
     <section 
       ref={heroRef}
-      className="relative min-h-screen pt-32 pb-20 flex flex-col justify-end border-b border-zinc-900 overflow-hidden"
+      className="relative min-h-screen pt-24 md:pt-32 pb-12 md:pb-20 flex flex-col justify-end border-b border-zinc-900 overflow-hidden"
     >
       
       {/* Background Image Elements - Cover Page Image */}
@@ -63,32 +63,30 @@ const Hero: React.FC = () => {
          </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 w-full relative z-10 grid grid-cols-1 md:grid-cols-12 gap-12 items-end">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 w-full relative z-10 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-end">
         
         {/* Main Content */}
         <div 
-          className="md:col-span-8 space-y-8 transition-all duration-300 ease-out"
+          className="md:col-span-8 space-y-6 md:space-y-8 transition-all duration-300 ease-out"
           style={{ 
             opacity: textOpacity,
             transform: `translateY(${textTranslateY}px)`
           }}
         >
-          <div className="flex items-center gap-4 text-xs font-mono text-zinc-500 uppercase tracking-widest">
+          <div className="flex items-center gap-3 md:gap-4 text-[10px] md:text-xs font-mono text-zinc-500 uppercase tracking-widest">
              <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
              Based in Milano — Est. 2023
           </div>
           
-          <h1 className="font-display font-bold text-5xl md:text-7xl lg:text-8xl leading-[0.9] tracking-tighter text-white">
-            INTELLIGENT DESIGN MEETS<br />
-            <span className="text-zinc-500">INTELLIGENT TECHNOLOGY</span>
+          <h1 className="font-display font-bold text-3xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl leading-[0.9] tracking-tighter text-white">
+            <span className="whitespace-nowrap">HIGH-PERFORMANCE</span> <span className="text-zinc-500">ARCHITECTURE</span>
           </h1>
           
-          <p className="max-w-2xl text-zinc-400 text-lg md:text-xl font-light leading-relaxed">
-            We design high-performance buildings shaped by rigorous thinking, real constraints, and systems that evolve every week. 
-            Our work is driven by one objective: create smarter outcomes for developers and operators — more clarity, more speed, fewer surprises.
+          <p className="max-w-2xl text-zinc-400 text-base md:text-lg lg:text-xl font-light leading-relaxed">
+            We design buildings as problem-solving systems. Artificial intelligence is a structural shift in how architecture is practiced—used correctly, it increases speed, clarity, and efficiency. We build systems that evolve as tools evolve, because adaptability is no longer optional. It is the condition for survival.
           </p>
 
-          <div className="pt-8 flex flex-wrap gap-4">
+          <div className="pt-4 md:pt-8 flex flex-wrap gap-4">
              <a href="#portfolio">
                 <Button variant="primary" icon>
                 EXPLORE OUR WORK

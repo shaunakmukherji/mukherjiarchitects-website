@@ -1,20 +1,12 @@
 # Krishna Garden — Housing, Mumbai
 
 ## Overview
-[Add a brief overview of the project here]
-
-## Key Features
-- [Feature 1]
-- [Feature 2]
-- [Feature 3]
-
-## Design Approach
-[Describe the design philosophy and approach]
+A slum redevelopment and mid-income housing project employing a stepped massing strategy to introduce density, light, and a new architectural identity to Mumbai's residential skyline.
 
 ## Technical Details
-- **Year:** [Year]
-- **Location:** [Location]
-- **Status:** [Status - e.g., Completed, In Progress, Concept]
+- **Location:** Mumbai, India
+- **Year of Commission:** 2026
+- **Category:** Residential Design
 
 ## Notes
 [Any additional notes or context]

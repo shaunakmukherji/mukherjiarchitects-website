@@ -1,20 +1,12 @@
 # Kelavali Villas Development
 
 ## Overview
-[Add a brief overview of the project here]
-
-## Key Features
-- [Feature 1]
-- [Feature 2]
-- [Feature 3]
-
-## Design Approach
-[Describe the design philosophy and approach]
+A modular residential system offering adaptable housing configurations that respond to plot size, budget, and lifestyle preferences through interchangeable spatial and architectural typologies.
 
 ## Technical Details
-- **Year:** [Year]
-- **Location:** [Location]
-- **Status:** [Status - e.g., Completed, In Progress, Concept]
+- **Location:** Kelavali, India
+- **Year of Commission:** 2026
+- **Category:** Residential Design
 
 ## Notes
 [Any additional notes or context]

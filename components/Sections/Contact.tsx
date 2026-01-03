@@ -20,8 +20,8 @@ const Contact: React.FC = () => {
             <div className="space-y-4 font-mono text-sm text-zinc-500">
                 <p>MUKHERJI ARCHITECTS MILANO</p>
                 <p>Via Privata Giovanni Ventura, 20134 Milano MI</p>
-                <a href="tel:+393348752743" className="text-white hover:text-zinc-400 transition-colors block">
-                    +39 334 875 2743
+                <a href="tel:+393343059860" className="text-white hover:text-zinc-400 transition-colors block">
+                    +39 3343059860
                 </a>
                 <a href="mailto:admin@mukherjiarchitects.com" className="text-white hover:text-zinc-400 transition-colors block">
                     admin@mukherjiarchitects.com

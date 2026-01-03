@@ -34,7 +34,7 @@ export interface AboutContent {
   philosophy: string;
 }
 
-export type ViewState = 'HOME' | 'PROJECT_DETAIL' | 'CATEGORY_LISTING';
+export type ViewState = 'HOME' | 'PROJECT_DETAIL' | 'CATEGORY_LISTING' | 'CREATIVE_DIRECTOR';
 
 export interface NavigationContextType {
   currentView: ViewState;
@@ -42,4 +42,6 @@ export interface NavigationContextType {
   navigateToHome: () => void;
   navigateToProject: (id: string) => void;
   navigateToCategory: (categoryId: string) => void;
+  navigateToCreativeDirector: () => void;
+  navigateToContact: () => void;
 }

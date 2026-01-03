@@ -187,11 +187,45 @@ function readDescriptionFile(folderPath) {
     }
 
     // Extract year and location from Technical Details
-    const yearMatch = content.match(/\*\*Year:\*\*\s*\[?(\d{4})\]?/);
-    const locationMatch = content.match(/\*\*Location:\*\*\s*\[?([^\]]+)\]?/);
-
-    if (yearMatch) year = yearMatch[1];
-    if (locationMatch) location = locationMatch[1].trim();
+    // Parse line by line for more reliable extraction
+    for (const line of lines) {
+      const trimmedLine = line.trim();
+      
+      // Extract location - must be on a line starting with "- **Location:**"
+      if (trimmedLine.startsWith('- **Location:**')) {
+        // SIMPLE: Just extract everything after "**Location:**" until end of THIS line only
+        // Remove the prefix and take the rest
+        location = trimmedLine.replace(/^-\s*\*\*Location:\*\*\s*/, '').trim();
+        
+        // CRITICAL: If location contains any markdown or next field indicators, stop immediately
+        // Check for contamination markers
+        if (location.includes('**') || 
+            location.includes('Year') || 
+            location.includes('Category') || 
+            location.includes('##') ||
+            location.includes('[') ||
+            location.includes('Notes') ||
+            location.includes('\n') ||
+            location.length > 100) {
+          // Extract only alphanumeric, spaces, commas, periods, hyphens - nothing else
+          const cleanMatch = trimmedLine.match(/\*\*Location:\*\*\s*([A-Za-z0-9\s,.-]+)/);
+          if (cleanMatch) {
+            location = cleanMatch[1].trim();
+          } else {
+            location = null;
+          }
+        }
+      }
+      
+      // Extract year (supports both "Year:" and "Year of Commission:")
+      // Must be on a line starting with "- **Year"
+      if (trimmedLine.startsWith('- **Year') && !year) {
+        const yearMatch = trimmedLine.match(/\*\*Year(?:\s+of\s+Commission)?:\*\*\s*\[?(\d{4})\]?/);
+        if (yearMatch) {
+          year = yearMatch[1];
+        }
+      }
+    }
 
     return {
       description: description.trim() || '',

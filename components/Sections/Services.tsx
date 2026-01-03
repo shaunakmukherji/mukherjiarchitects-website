@@ -48,7 +48,8 @@ const Services: React.FC = () => {
             {SERVICES.map((service, index) => (
                 <div 
                     key={service.id} 
-                    className="group relative p-6 md:p-8 transition-all duration-300 hover:bg-zinc-900/30 border border-zinc-900 md:border-none"
+                    onClick={() => navigateToCategory(service.categoryFilter)}
+                    className="group relative p-6 md:p-8 transition-all duration-300 hover:bg-zinc-900/30 border border-zinc-900 md:border-none cursor-pointer"
                 >
                     {/* Hover Top Border Beam - RED ACCENT */}
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
@@ -71,21 +72,35 @@ const Services: React.FC = () => {
 
                     {/* Content */}
                     <h3 className="font-display text-2xl font-bold text-white mb-4 group-hover:text-zinc-200">
-                        {service.title.split(' ').map((word, i) => (
-                            <span key={i} className="block">{word}</span>
-                        ))}
+                        {(() => {
+                            const words = service.title.split(' ');
+                            const lines: string[] = [];
+                            
+                            for (let i = 0; i < words.length; i++) {
+                                // If current word is "&", combine it with the next word
+                                if (words[i] === '&' && i < words.length - 1) {
+                                    lines.push(`& ${words[i + 1]}`);
+                                    i++; // Skip the next word since we've combined it
+                                } else {
+                                    lines.push(words[i]);
+                                }
+                            }
+                            
+                            return lines.map((line, i) => (
+                                <span key={i} className="block">{line}</span>
+                            ));
+                        })()}
                     </h3>
                     
                     <p className="text-zinc-500 text-sm leading-relaxed mb-6 group-hover:text-zinc-400 transition-colors">
                         {service.description}
                     </p>
 
-                    <button 
-                        onClick={() => navigateToCategory(service.categoryFilter)}
-                        className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 group-hover:text-accent"
+                    <div 
+                        className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 group-hover:text-accent pointer-events-none"
                     >
                         View Projects <ArrowRight className="w-3 h-3" />
-                    </button>
+                    </div>
                 </div>
             ))}
         </div>

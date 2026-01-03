@@ -5,7 +5,7 @@ import Button from '../ui/Button';
 import { ArrowLeft } from 'lucide-react';
 
 const ProjectDetail: React.FC = () => {
-  const { selectedId, navigateToHome } = useNavigation();
+  const { selectedId, navigateToHome, navigateToContact } = useNavigation();
   const project = PROJECTS.find(p => p.id === selectedId);
 
   // Helper function to encode image URLs with spaces
@@ -85,7 +85,7 @@ const ProjectDetail: React.FC = () => {
                     <span className="text-xl text-white">{project.location}</span>
                 </div>
                 <div className="border-t border-zinc-800 pt-6">
-                    <span className="block text-xs uppercase tracking-widest text-zinc-500 mb-1">Year</span>
+                    <span className="block text-xs uppercase tracking-widest text-zinc-500 mb-1">Year of Commission</span>
                     <span className="text-xl text-white">{project.year}</span>
                 </div>
                 <div className="border-t border-zinc-800 pt-6">
@@ -99,7 +99,7 @@ const ProjectDetail: React.FC = () => {
                 </div>
                 
                 <div className="pt-8">
-                    <Button variant="outline" className="w-full">
+                    <Button variant="outline" className="w-full" onClick={navigateToContact}>
                         Inquire About This Project
                     </Button>
                 </div>

@@ -10,6 +10,7 @@ import SpotlightBackground from './components/ui/SpotlightBackground';
 import { NavigationProvider, useNavigation } from './contexts/NavigationContext';
 import ProjectDetail from './components/Views/ProjectDetail';
 import CategoryListing from './components/Views/CategoryListing';
+import CreativeDirector from './components/Views/CreativeDirector';
 
 // Separating the Main Content to handle view logic cleanly
 const MainContent = () => {
@@ -21,6 +22,10 @@ const MainContent = () => {
 
   if (currentView === 'CATEGORY_LISTING') {
     return <CategoryListing />;
+  }
+
+  if (currentView === 'CREATIVE_DIRECTOR') {
+    return <CreativeDirector />;
   }
 
   return (
