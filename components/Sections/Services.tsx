@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SERVICES, PROJECTS } from '../../constants';
 import { ArrowRight } from 'lucide-react';
 import { useNavigation } from '../../contexts/NavigationContext';
+import OptimizedImage from '../ui/OptimizedImage';
 
 const Services: React.FC = () => {
   const { navigateToCategory } = useNavigation();
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const [cardInView, setCardInView] = useState<boolean[]>([]);
 
   // Find the main project for each service category
   const getMainProjectImage = (categoryFilter: string): string => {
@@ -27,8 +30,70 @@ const Services: React.FC = () => {
     return categoryProjects[0].imageUrl;
   };
 
+  // Scroll-based highlighting for services cards (auto zoom/saturate)
+  // Exactly one card is highlighted at a time based on scroll progress
+  // through the Services section, so cards are highlighted in order.
+  useEffect(() => {
+    const handleScroll = () => {
+      const section = sectionRef.current;
+      if (!section) return;
+
+      const rect = section.getBoundingClientRect();
+      const viewportHeight = window.innerHeight || 0;
+      const viewportCenter = viewportHeight / 2;
+
+      // If the whole section is out of view, clear highlights
+      if (rect.bottom <= 0 || rect.top >= viewportHeight) {
+        setCardInView([]);
+        return;
+      }
+
+      const sectionTop = rect.top;
+      const sectionHeight = rect.height || 1;
+
+      // Position of viewport center within the section (0 at top, 1 at bottom)
+      const relativeCenter = viewportCenter - sectionTop;
+      let progress = relativeCenter / sectionHeight;
+      progress = Math.max(0, Math.min(1, progress));
+
+      const count = SERVICES.length;
+      if (count === 0) {
+        setCardInView([]);
+        return;
+      }
+
+      // Avoid highlighting right at the very start/end of the section.
+      // Smaller margin = longer scroll range where cards can be highlighted,
+      // which makes the transitions feel slower and more gradual.
+      const edgeMargin = 0.02;
+      if (progress < edgeMargin || progress > 1 - edgeMargin) {
+        setCardInView([]);
+        return;
+      }
+
+      let index = Math.floor(progress * count);
+      if (index >= count) index = count - 1;
+
+      const next = SERVICES.map((_, i) => i === index);
+      setCardInView(next);
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, []);
+
   return (
-    <section id="services" className="py-24 border-b border-zinc-900 bg-black relative">
+    <section
+      id="services"
+      className="py-24 border-b border-zinc-900 bg-black relative"
+      ref={sectionRef as React.RefObject<HTMLElement>}
+    >
       <div className="max-w-7xl mx-auto px-6">
         
         {/* Header */}
@@ -62,10 +127,16 @@ const Services: React.FC = () => {
 
                     {/* Image Area */}
                     <div className="aspect-[4/3] w-full mb-8 overflow-hidden bg-zinc-900 relative border border-zinc-800">
-                         <img 
+                         <OptimizedImage 
                             src={getMainProjectImage(service.categoryFilter)} 
                             alt={service.title} 
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-70 group-hover:opacity-100 grayscale group-hover:grayscale-0" 
+                            className={
+                              `w-full h-full object-cover transition-transform duration-1000 ease-out ` +
+                              (cardInView[index]
+                                ? 'scale-105 opacity-100 grayscale-0 '
+                                : 'opacity-70 grayscale ') +
+                              'group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0'
+                            } 
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
                     </div>

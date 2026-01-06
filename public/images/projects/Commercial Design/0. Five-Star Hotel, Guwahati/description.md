@@ -5,7 +5,7 @@ A vertically stacked five-star resort designed to deliver a full luxury resort e
 
 ## Technical Details
 - **Location:** Guwahati, India
-- **Year of Commission:** 2026
+- **Year:** 2025
 - **Category:** Commercial Design
 
 ## Notes

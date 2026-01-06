@@ -5,7 +5,7 @@ A cultural center conceived as a repeat-visit destination, defined by adaptive s
 
 ## Technical Details
 - **Location:** AlUla, Saudi Arabia
-- **Year of Commission:** 2026
+- **Year:** 2025
 - **Category:** Institutional Design
 
 ## Notes

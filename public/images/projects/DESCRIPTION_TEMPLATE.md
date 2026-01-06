@@ -5,9 +5,16 @@
 
 ## Technical Details
 - **Location:** [City, Country]
-- **Year of Commission:** [YYYY]
+- **Year:** [YYYY]
 - **Category:** [Auto-filled from folder structure - do not edit]
 
 ## Notes
 [Any additional notes or context]
+
+
+
+
+
+
+
 

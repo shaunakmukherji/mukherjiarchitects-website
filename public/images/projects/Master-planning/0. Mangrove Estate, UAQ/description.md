@@ -5,7 +5,7 @@ A biophilic masterplan structured around a radial planning logic, using concentr
 
 ## Technical Details
 - **Location:** Umm Al Quwain, UAE
-- **Year of Commission:** 2026
+- **Year:** 2025
 - **Category:** Master Planning
 
 ## Notes

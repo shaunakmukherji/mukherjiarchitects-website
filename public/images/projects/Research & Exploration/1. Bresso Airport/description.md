@@ -5,7 +5,7 @@ A conceptual proposal combining a private jet terminal and vertiport, exploring 
 
 ## Technical Details
 - **Location:** Milan, Italy
-- **Year of Commission:** 2026
+- **Year:** 2025
 - **Category:** Research & Exploration
 
 ## Notes

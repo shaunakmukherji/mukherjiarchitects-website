@@ -5,7 +5,7 @@ A wellness and therapy retreat organized around a pentagonal courtyard, connecti
 
 ## Technical Details
 - **Location:** Musandam, Oman
-- **Year of Commission:** 2026
+- **Year:** 2025
 - **Category:** Commercial Design
 
 ## Notes

@@ -5,7 +5,7 @@ An open-air retail and dining complex structured around a landscaped central cou
 
 ## Technical Details
 - **Location:** New Cairo, Egypt
-- **Year of Commission:** 2026
+- **Year:** 2025
 - **Category:** Commercial Design
 
 ## Notes

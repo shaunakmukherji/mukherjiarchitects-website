@@ -5,7 +5,7 @@ A parametric heliport structure shaped by aviation regulations and site approach
 
 ## Technical Details
 - **Location:** India
-- **Year of Commission:** 2026
+- **Year:** 2025
 - **Category:** Mixed-use Design
 
 ## Notes

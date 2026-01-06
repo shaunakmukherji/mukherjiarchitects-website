@@ -5,7 +5,7 @@ A large-scale resort masterplan currently under development, defined by fluid, o
 
 ## Technical Details
 - **Location:** Maldives
-- **Year of Commission:** 2026
+- **Year:** 2025
 - **Category:** Commercial Design
 
 ## Notes

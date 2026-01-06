@@ -5,7 +5,7 @@ A sales pavilion defined by minimal contemporary wooden architecture, organized 
 
 ## Technical Details
 - **Location:** Kelavali, India
-- **Year of Commission:** 2026
+- **Year:** 2025
 - **Category:** Mixed-use Design
 
 ## Notes

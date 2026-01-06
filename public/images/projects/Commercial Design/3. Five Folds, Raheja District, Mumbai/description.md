@@ -5,7 +5,7 @@ A network of five self-sustaining, solar-powered pavilion units designed as ligh
 
 ## Technical Details
 - **Location:** Mumbai, India
-- **Year of Commission:** 2026
+- **Year:** 2025
 - **Category:** Commercial Design
 
 ## Notes

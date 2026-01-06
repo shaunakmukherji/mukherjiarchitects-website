@@ -7,6 +7,7 @@ import Services from './components/Sections/Services';
 import Portfolio from './components/Sections/Portfolio';
 import Contact from './components/Sections/Contact';
 import SpotlightBackground from './components/ui/SpotlightBackground';
+import ScrollWheelIndicator from './components/ui/ScrollWheelIndicator';
 import { NavigationProvider, useNavigation } from './contexts/NavigationContext';
 import ProjectDetail from './components/Views/ProjectDetail';
 import CategoryListing from './components/Views/CategoryListing';
@@ -57,6 +58,9 @@ function App() {
         
         {/* Navigation */}
         <Navbar />
+
+        {/* Scroll depth / section indicator */}
+        <ScrollWheelIndicator />
 
         <main className="relative z-10 flex flex-col">
           <MainContent />

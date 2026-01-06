@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { PROJECTS } from '../../constants';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
+import OptimizedImage from '../ui/OptimizedImage';
 
 const CategoryListing: React.FC = () => {
   const { selectedId, navigateToHome, navigateToProject } = useNavigation();
@@ -20,10 +21,102 @@ const CategoryListing: React.FC = () => {
       return a.title.localeCompare(b.title);
     });
 
+  // Track which projects are in the viewport center for scroll highlight effect
+  const imageContainersRef = useRef<(HTMLDivElement | null)[]>([]);
+  const [inViewStates, setInViewStates] = useState<boolean[]>(() => 
+    new Array(filteredProjects.length).fill(false)
+  );
+
   // Helper function to encode image URLs with spaces
   const encodeImageUrl = (url: string): string => {
     return url.split('/').map(segment => segment ? encodeURIComponent(segment) : '').join('/');
   };
+
+  // Update inViewStates when filteredProjects changes
+  useEffect(() => {
+    const newLength = filteredProjects.length;
+    setInViewStates(new Array(newLength).fill(false));
+    imageContainersRef.current = new Array(newLength).fill(null);
+  }, [filteredProjects.length, selectedId]);
+
+  // Observe project images and highlight whichever is approximately centered in the viewport
+  useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined' || filteredProjects.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        setInViewStates((prev) => {
+          const next = [...prev];
+          entries.forEach((entry) => {
+            const indexAttr = entry.target.getAttribute('data-project-index');
+            if (indexAttr == null) return;
+            const idx = parseInt(indexAttr, 10);
+            if (Number.isNaN(idx) || idx < 0 || idx >= filteredProjects.length) return;
+
+            const inCenter = entry.isIntersecting && entry.intersectionRatio > 0.5;
+            next[idx] = inCenter;
+          });
+          return next;
+        });
+      },
+      {
+        rootMargin: '-20% 0px -20% 0px',
+        threshold: [0.25, 0.5, 0.75],
+      }
+    );
+
+    // Observe elements by querying the DOM directly - more reliable than refs
+    const observeElements = () => {
+      const elements = document.querySelectorAll('[data-project-index]');
+      elements.forEach((el) => {
+        observer.observe(el as Element);
+      });
+      
+      // Initial check: highlight the first visible element near the top
+      const viewportCenter = window.innerHeight / 2;
+      let closestIdx = -1;
+      let closestDistance = Infinity;
+      
+      elements.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const elementCenter = rect.top + rect.height / 2;
+        const distance = Math.abs(elementCenter - viewportCenter);
+        
+        if (distance < closestDistance && rect.top < viewportCenter + 200) {
+          const indexAttr = el.getAttribute('data-project-index');
+          if (indexAttr) {
+            const idx = parseInt(indexAttr, 10);
+            if (!Number.isNaN(idx)) {
+              closestDistance = distance;
+              closestIdx = idx;
+            }
+          }
+        }
+      });
+      
+      if (closestIdx >= 0) {
+        setInViewStates((prev) => {
+          const next = [...prev];
+          next[closestIdx] = true;
+          return next;
+        });
+      }
+    };
+
+    // Use double RAF to ensure DOM is ready
+    let rafId1: number;
+    let rafId2: number;
+    
+    rafId1 = requestAnimationFrame(() => {
+      rafId2 = requestAnimationFrame(observeElements);
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId1);
+      cancelAnimationFrame(rafId2);
+      observer.disconnect();
+    };
+  }, [filteredProjects.length, selectedId]);
 
   return (
     <div className="pt-32 pb-24 min-h-screen bg-black">
@@ -49,11 +142,21 @@ const CategoryListing: React.FC = () => {
           <div 
             className="mb-16 group cursor-pointer relative overflow-hidden bg-zinc-900 border border-zinc-800 aspect-square"
             onClick={() => navigateToProject(filteredProjects[0].id)}
+            ref={(el) => {
+              imageContainersRef.current[0] = el;
+            }}
+            data-project-index={0}
           >
-            <img 
+            <OptimizedImage 
               src={encodeImageUrl(filteredProjects[0].imageUrl)} 
               alt={filteredProjects[0].title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-70 group-hover:opacity-100 grayscale group-hover:grayscale-0"
+              className={
+                `w-full h-full object-cover transition-[transform,opacity,filter] duration-700 ` +
+                (inViewStates[0]
+                  ? 'scale-105 opacity-100 grayscale-0 '
+                  : 'opacity-60 grayscale ') +
+                'group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0'
+              }
               onError={(e) => {
                 console.error('Failed to load cover image:', filteredProjects[0].imageUrl);
                 const target = e.target as HTMLImageElement;
@@ -76,17 +179,31 @@ const CategoryListing: React.FC = () => {
 
         {/* Other Projects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {filteredProjects.slice(1).map((project) => (
+            {filteredProjects.slice(1).map((project, index) => {
+              const projectIndex = index + 1; // +1 because index 0 is the featured project
+              return (
                 <div 
                     key={project.id} 
                     onClick={() => navigateToProject(project.id)}
                     className="group cursor-pointer relative"
                 >
-                    <div className="aspect-square w-full bg-zinc-900 mb-6 overflow-hidden border border-zinc-800 group-hover:border-accent transition-colors duration-300">
-                        <img 
+                    <div 
+                      className="aspect-square w-full bg-zinc-900 mb-6 overflow-hidden border border-zinc-800 group-hover:border-accent transition-colors duration-300"
+                      ref={(el) => {
+                        imageContainersRef.current[projectIndex] = el;
+                      }}
+                      data-project-index={projectIndex}
+                    >
+                        <OptimizedImage 
                             src={encodeImageUrl(project.imageUrl)} 
                             alt={project.title}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-70 group-hover:opacity-100 grayscale group-hover:grayscale-0"
+                            className={
+                              `w-full h-full object-cover transition-[transform,opacity,filter] duration-700 ` +
+                              (inViewStates[projectIndex]
+                                ? 'scale-105 opacity-100 grayscale-0 '
+                                : 'opacity-60 grayscale ') +
+                              'group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0'
+                            }
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               if (target.src !== project.imageUrl) {
@@ -113,7 +230,8 @@ const CategoryListing: React.FC = () => {
                         </div>
                     </div>
                 </div>
-            ))}
+              );
+            })}
             
             {filteredProjects.length === 0 && (
                 <div className="col-span-full py-20 text-center text-zinc-600 font-mono">

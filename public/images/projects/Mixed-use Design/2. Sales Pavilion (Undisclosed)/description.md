@@ -5,7 +5,7 @@ A proposed sales pavilion structured around an infinity-shaped plan, forming dua
 
 ## Technical Details
 - **Location:** Undisclosed
-- **Year of Commission:** 2026
+- **Year:** 2025
 - **Category:** Mixed-use Design
 
 ## Notes

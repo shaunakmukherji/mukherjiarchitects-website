@@ -217,7 +217,7 @@ function readDescriptionFile(folderPath) {
         }
       }
       
-      // Extract year (supports both "Year:" and "Year of Commission:")
+      // Extract year (supports both "Year:" and "Year of Commission:" for backwards compatibility)
       // Must be on a line starting with "- **Year"
       if (trimmedLine.startsWith('- **Year') && !year) {
         const yearMatch = trimmedLine.match(/\*\*Year(?:\s+of\s+Commission)?:\*\*\s*\[?(\d{4})\]?/);

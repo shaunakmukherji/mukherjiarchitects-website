@@ -5,7 +5,7 @@ A highly efficient residential building conceived as a simple volumetric form, w
 
 ## Technical Details
 - **Location:** Mumbai, India
-- **Year of Commission:** 2026
+- **Year:** 2025
 - **Category:** Residential Design
 
 ## Notes

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { ArrowLeft } from 'lucide-react';
+import OptimizedImage from '../ui/OptimizedImage';
 
 const CreativeDirector: React.FC = () => {
   const { navigateToHome } = useNavigation();
@@ -25,7 +26,7 @@ const CreativeDirector: React.FC = () => {
             
             {/* Portrait Image */}
             <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-900">
-              <img 
+              <OptimizedImage 
                 src="/images/about/creative-director.png" 
                 alt="Shaunak Mukherji" 
                 className="w-full h-full object-cover opacity-70 grayscale"

@@ -38,6 +38,7 @@ const Hero: React.FC = () => {
 
   return (
     <section 
+      id="hero"
       ref={heroRef}
       className="relative min-h-screen pt-24 md:pt-32 pb-12 md:pb-20 flex flex-col justify-end border-b border-zinc-900 overflow-hidden"
     >
@@ -82,8 +83,10 @@ const Hero: React.FC = () => {
             <span className="whitespace-nowrap">HIGH-PERFORMANCE</span> <span className="text-zinc-500">ARCHITECTURE</span>
           </h1>
           
-          <p className="max-w-2xl text-zinc-400 text-base md:text-lg lg:text-xl font-light leading-relaxed">
-            We design buildings as problem-solving systems. Artificial intelligence is a structural shift in how architecture is practiced—used correctly, it increases speed, clarity, and efficiency. We build systems that evolve as tools evolve, because adaptability is no longer optional. It is the condition for survival.
+          <p className="max-w-[703px] text-zinc-400 text-base md:text-lg lg:text-xl font-light leading-relaxed">
+            We design buildings as problem-solving systems.<br />
+            As the world moves faster, traditional architectural processes remain slow.<br />
+            We use artificial intelligence to work faster, reduce human error, and deliver more efficient buildings.
           </p>
 
           <div className="pt-4 md:pt-8 flex flex-wrap gap-4">

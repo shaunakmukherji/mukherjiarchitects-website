@@ -5,7 +5,7 @@ A compact five-star hotel articulated through a restrained neoclassical language
 
 ## Technical Details
 - **Location:** Vrindavan, India
-- **Year of Commission:** 2026
+- **Year:** 2025
 - **Category:** Commercial Design
 
 ## Notes

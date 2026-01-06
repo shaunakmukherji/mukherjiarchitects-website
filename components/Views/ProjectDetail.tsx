@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { PROJECTS } from '../../constants';
 import Button from '../ui/Button';
+import OptimizedImage from '../ui/OptimizedImage';
 import { ArrowLeft } from 'lucide-react';
 
 const ProjectDetail: React.FC = () => {
@@ -27,12 +28,21 @@ const ProjectDetail: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div className="lg:col-span-8">
-                <h1 className="font-display text-5xl md:text-7xl font-bold text-white mb-6 leading-[0.9]">
+                <h1 className="font-display text-5xl md:text-7xl font-bold text-white mb-8 leading-[0.9]">
                     {project.title}
                 </h1>
-                <div className="flex justify-start mb-8">
-                    <div className="group aspect-square w-full max-w-md bg-zinc-900 overflow-hidden border border-zinc-800">
-                        <img 
+                
+                {/* Description at the top */}
+                <div className="mb-12">
+                    <p className="text-zinc-400 leading-relaxed text-lg">
+                        {project.description}
+                    </p>
+                </div>
+
+                {/* Hero Image - Large */}
+                <div className="mb-8">
+                    <div className="group w-full bg-zinc-900 overflow-hidden border border-zinc-800 aspect-[4/3] md:aspect-video">
+                        <OptimizedImage 
                             src={encodeImageUrl(project.imageUrl)} 
                             alt={project.title} 
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-100 grayscale group-hover:grayscale-0"
@@ -55,14 +65,15 @@ const ProjectDetail: React.FC = () => {
                     </div>
                 </div>
                 
+                {/* Gallery Images - Smaller */}
                 {project.gallery && project.gallery.length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 max-w-2xl">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                         {project.gallery.map((img, idx) => (
                              <div 
                                key={idx}
                                className="group cursor-pointer relative overflow-hidden bg-zinc-900 border border-zinc-800 aspect-square"
                              >
-                                 <img 
+                                 <OptimizedImage 
                                    src={encodeImageUrl(img)} 
                                    alt={`Gallery ${idx + 2}`} 
                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-70 group-hover:opacity-100 grayscale group-hover:grayscale-0"
@@ -85,17 +96,12 @@ const ProjectDetail: React.FC = () => {
                     <span className="text-xl text-white">{project.location}</span>
                 </div>
                 <div className="border-t border-zinc-800 pt-6">
-                    <span className="block text-xs uppercase tracking-widest text-zinc-500 mb-1">Year of Commission</span>
+                    <span className="block text-xs uppercase tracking-widest text-zinc-500 mb-1">Year</span>
                     <span className="text-xl text-white">{project.year}</span>
                 </div>
                 <div className="border-t border-zinc-800 pt-6">
                     <span className="block text-xs uppercase tracking-widest text-zinc-500 mb-1">Category</span>
                     <span className="text-xl text-white">{project.category}</span>
-                </div>
-                <div className="border-t border-zinc-800 pt-6">
-                     <p className="text-zinc-400 leading-relaxed">
-                        {project.description}
-                     </p>
                 </div>
                 
                 <div className="pt-8">

@@ -5,7 +5,7 @@ A slum redevelopment and mid-income housing project employing a stepped massing 
 
 ## Technical Details
 - **Location:** Mumbai, India
-- **Year of Commission:** 2026
+- **Year:** 2025
 - **Category:** Residential Design
 
 ## Notes

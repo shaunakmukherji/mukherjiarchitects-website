@@ -5,7 +5,7 @@ A cultural and technology campus organized through a meandering central spine, w
 
 ## Technical Details
 - **Location:** West Cambridge, UK
-- **Year of Commission:** 2026
+- **Year:** 2025
 - **Category:** Research & Exploration
 
 ## Notes

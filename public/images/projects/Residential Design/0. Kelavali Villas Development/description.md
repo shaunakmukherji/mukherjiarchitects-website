@@ -5,7 +5,7 @@ A modular residential system offering adaptable housing configurations that resp
 
 ## Technical Details
 - **Location:** Kelavali, India
-- **Year of Commission:** 2026
+- **Year:** 2025
 - **Category:** Residential Design
 
 ## Notes

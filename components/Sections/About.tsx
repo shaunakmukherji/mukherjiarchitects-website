@@ -2,9 +2,12 @@ import React from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { ABOUT_CONTENT } from '../../constants';
 import { useNavigation } from '../../contexts/NavigationContext';
+import { useInViewportCenter } from '../../hooks/useInViewportCenter';
+import OptimizedImage from '../ui/OptimizedImage';
 
 const About: React.FC = () => {
   const { navigateToCreativeDirector } = useNavigation();
+  const { ref: imageRef, isInCenter } = useInViewportCenter();
   
   return (
     <section id="about" className="relative py-16 md:py-24 border-b border-zinc-900 bg-black">
@@ -28,12 +31,23 @@ const About: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 lg:gap-12 items-start">
             
             {/* Image */}
-            <div className="md:col-span-5 relative group overflow-hidden md:sticky md:top-32 order-2 md:order-1">
+            <div
+              className="md:col-span-5 relative group overflow-hidden md:sticky md:top-32 order-2 md:order-1"
+              ref={imageRef as React.RefObject<HTMLDivElement>}
+            >
                  <div className="aspect-[4/5] w-full overflow-hidden bg-zinc-900">
-                    <img 
+                    <OptimizedImage 
                         src={ABOUT_CONTENT.imageUrl} 
                         alt={ABOUT_CONTENT.imageAlt} 
-                        className="w-full h-full object-cover transition-[transform,opacity,filter] duration-700 group-hover:scale-105 opacity-70 group-hover:opacity-100 grayscale group-hover:grayscale-0"
+                        className={
+                          `w-full h-full object-cover transition-[transform,opacity,filter] duration-700 ` +
+                          // Scroll-based highlight
+                          (isInCenter
+                            ? 'scale-105 opacity-100 grayscale-0 '
+                            : 'opacity-70 grayscale ') +
+                          // Hover keeps extra emphasis and overlay behaviour
+                          'group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0'
+                        }
                     />
                  </div>
                  {/* Decorative Overlay */}
@@ -45,8 +59,8 @@ const About: React.FC = () => {
             {/* Text & Philosophy */}
             <div className="md:col-span-7 flex flex-col h-full md:pl-8 lg:pl-12 order-1 md:order-2">
                 <div className="space-y-10 md:space-y-14">
-                    <p className="text-lg md:text-xl text-zinc-200 leading-[1.7] md:leading-[1.75] font-normal tracking-tight">
-                        Mukherji Architects Milano is an international extension of{' '}
+                    <p className="text-base md:text-lg text-zinc-200 leading-[1.7] md:leading-[1.75] font-normal tracking-tight">
+                        Mukherji Architects Milano is the international extension of{' '}
                         <a 
                             href="https://bobbymukherji.com/" 
                             target="_blank" 
@@ -55,24 +69,24 @@ const About: React.FC = () => {
                         >
                             Bobby Mukherji Architects
                         </a>
-                        {' '}— a globally recognized architecture and design practice with{' '}
-                        <span className="text-white font-medium">30+ years of experience</span>
-                        ,{' '}
-                        <span className="text-white font-medium">1,000+ projects completed globally</span>
-                        , and more than{' '}
-                        <span className="text-white font-medium">USD 12B+ in built project value</span>
-                        , delivering complex hospitality, commercial, and mixed-use projects across global markets.
+                        , a globally recognized practice with over{' '}
+                        <span className="text-white font-medium">30</span>
+                        {' '}years of experience,{' '}
+                        <span className="text-white font-medium">1,000+</span>
+                        {' '}projects delivered worldwide, and more than{' '}
+                        <span className="text-white font-medium">USD 12B</span>
+                        {' '}in built project value across hospitality, commercial, and mixed-use sectors.
                     </p>
                     <div className="h-px w-full bg-zinc-900" />
-                    <p className="text-zinc-400 text-lg md:text-xl leading-[1.7] md:leading-[1.75] font-normal tracking-tight max-w-2xl">
-                        Founded and creatively directed by{' '}
+                    <p className="text-zinc-400 text-base md:text-lg leading-[1.7] md:leading-[1.75] font-normal tracking-tight max-w-2xl">
+                        Founded and led by{' '}
                         <button
                             onClick={navigateToCreativeDirector}
                             className="text-white underline underline-offset-4 decoration-zinc-500 hover:decoration-white transition-colors duration-300 cursor-pointer font-normal"
                         >
                             Shaunak Mukherji
                         </button>
-                        , son of Bobby Mukherji, the studio represents a generational evolution of practice. Building on a legacy of large-scale, award-winning architecture, the Milan office advances a contemporary approach rooted in computational design, artificial intelligence, and system-based thinking.
+                        , son of Bobby Mukherji, the Milan studio builds on this legacy while advancing a contemporary design approach driven by computational design, artificial intelligence, and system-based design thinking.
                     </p>
                 </div>
 
