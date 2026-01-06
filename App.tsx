@@ -12,10 +12,46 @@ import { NavigationProvider, useNavigation } from './contexts/NavigationContext'
 import ProjectDetail from './components/Views/ProjectDetail';
 import CategoryListing from './components/Views/CategoryListing';
 import CreativeDirector from './components/Views/CreativeDirector';
+import ArchitectureAI from './components/Views/ArchitectureAI';
 
 // Separating the Main Content to handle view logic cleanly
 const MainContent = () => {
   const { currentView } = useNavigation();
+
+  // Restore home page meta tags when on home view
+  useEffect(() => {
+    if (currentView === 'HOME') {
+      // Restore original home page title and meta description
+      document.title = 'Mukherji Architects Milano';
+      
+      const homeDescription = 'Mukherji Architects Milano - High-performance architecture studio in Milan, Italy. Specializing in residential, commercial, institutional, and mixed-use design. AI-driven architectural solutions for intelligent buildings.';
+      
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        metaDescription.setAttribute('content', homeDescription);
+      }
+      
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) {
+        ogTitle.setAttribute('content', 'Mukherji Architects Milano');
+      }
+      
+      const ogDescription = document.querySelector('meta[property="og:description"]');
+      if (ogDescription) {
+        ogDescription.setAttribute('content', 'Mukherji Architects Milano - High-performance architecture studio in Milan, Italy. Specializing in residential, commercial, institutional, and mixed-use design.');
+      }
+      
+      const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+      if (twitterTitle) {
+        twitterTitle.setAttribute('content', 'Mukherji Architects Milano');
+      }
+      
+      const twitterDescription = document.querySelector('meta[name="twitter:description"]');
+      if (twitterDescription) {
+        twitterDescription.setAttribute('content', 'Mukherji Architects Milano - High-performance architecture studio in Milan, Italy. Specializing in residential, commercial, institutional, and mixed-use design.');
+      }
+    }
+  }, [currentView]);
 
   if (currentView === 'PROJECT_DETAIL') {
     return <ProjectDetail />;
@@ -27,6 +63,10 @@ const MainContent = () => {
 
   if (currentView === 'CREATIVE_DIRECTOR') {
     return <CreativeDirector />;
+  }
+
+  if (currentView === 'ARCHITECTURE_AI') {
+    return <ArchitectureAI />;
   }
 
   return (

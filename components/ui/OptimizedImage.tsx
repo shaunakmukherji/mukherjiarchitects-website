@@ -1,10 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { getOptimizedImageUrl } from '../../lib/imageUtils';
+import { getOptimizedImageUrl, isMobileDevice } from '../../lib/imageUtils';
 
 interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
   alt: string;
   skipOptimization?: boolean; // For hero images
+  lazy?: boolean; // Enable lazy loading (default: true for below-fold images)
+  priority?: boolean; // High priority loading (for above-fold images)
 }
 
 /**
@@ -12,15 +14,28 @@ interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> 
  * - Serves WebP versions automatically (via Vite plugin)
  * - Prevents downloading of original high-res images
  * - Ensures only compressed WebP versions can be downloaded (cropped as displayed)
+ * - Supports lazy loading for better performance
+ * - Optimizes quality for mobile devices
  */
 const OptimizedImage: React.FC<OptimizedImageProps> = ({ 
   src, 
   alt, 
   skipOptimization = false,
+  lazy = true, // Default to lazy loading
+  priority = false,
   ...props 
 }) => {
   const imgRef = useRef<HTMLImageElement>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile on mount and resize
+  useEffect(() => {
+    setIsMobile(isMobileDevice());
+    const handleResize = () => setIsMobile(isMobileDevice());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const img = imgRef.current;
@@ -149,7 +164,10 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   };
 
   // Get optimized URL (WebP conversion handled by Vite plugin)
-  const optimizedSrc = skipOptimization ? src : getOptimizedImageUrl(src);
+  // Use mobile quality for mobile devices
+  const optimizedSrc = skipOptimization 
+    ? src 
+    : getOptimizedImageUrl(src, { mobile: isMobile });
 
   const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     setImageLoaded(true);
@@ -158,11 +176,18 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     }
   };
 
+  // Determine loading strategy
+  const loadingAttr = lazy && !priority ? 'lazy' : priority ? 'eager' : undefined;
+  const fetchPriority = priority ? 'high' : 'auto';
+
   return (
     <img
       ref={imgRef}
       src={optimizedSrc}
       alt={alt}
+      loading={loadingAttr}
+      fetchPriority={fetchPriority}
+      decoding="async"
       {...props}
       onLoad={handleLoad}
       style={{

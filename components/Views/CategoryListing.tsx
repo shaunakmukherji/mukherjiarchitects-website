@@ -21,6 +21,72 @@ const CategoryListing: React.FC = () => {
       return a.title.localeCompare(b.title);
     });
 
+  // Update page title and meta tags for SEO
+  useEffect(() => {
+    if (!selectedId) return;
+
+    const originalTitle = document.title;
+    const originalDescription = document.querySelector('meta[name="description"]')?.getAttribute('content');
+    const originalOGTitle = document.querySelector('meta[property="og:title"]')?.getAttribute('content');
+    const originalOGDescription = document.querySelector('meta[property="og:description"]')?.getAttribute('content');
+    const originalTwitterTitle = document.querySelector('meta[name="twitter:title"]')?.getAttribute('content');
+    const originalTwitterDescription = document.querySelector('meta[name="twitter:description"]')?.getAttribute('content');
+
+    // Create descriptive title
+    const pageTitle = `${selectedId} Architecture Projects | Mukherji Architects Milano`;
+    document.title = pageTitle;
+
+    // Create descriptive meta description
+    const projectCount = filteredProjects.length;
+    const metaDescriptionText = `Explore ${projectCount} ${selectedId.toLowerCase()} architecture projects by Mukherji Architects Milano. View our portfolio of ${selectedId.toLowerCase()} design work, including commercial, residential, and institutional projects.`;
+
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', metaDescriptionText);
+    }
+
+    // Update Open Graph tags
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) {
+      ogTitle.setAttribute('content', pageTitle);
+    }
+    const ogDescription = document.querySelector('meta[property="og:description"]');
+    if (ogDescription) {
+      ogDescription.setAttribute('content', metaDescriptionText);
+    }
+
+    // Update Twitter tags
+    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twitterTitle) {
+      twitterTitle.setAttribute('content', pageTitle);
+    }
+    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
+    if (twitterDescription) {
+      twitterDescription.setAttribute('content', metaDescriptionText);
+    }
+
+    // Cleanup: restore original values when component unmounts
+    return () => {
+      document.title = originalTitle;
+      if (metaDescription && originalDescription) {
+        metaDescription.setAttribute('content', originalDescription);
+      }
+      if (ogTitle && originalOGTitle) {
+        ogTitle.setAttribute('content', originalOGTitle);
+      }
+      if (ogDescription && originalOGDescription) {
+        ogDescription.setAttribute('content', originalOGDescription);
+      }
+      if (twitterTitle && originalTwitterTitle) {
+        twitterTitle.setAttribute('content', originalTwitterTitle);
+      }
+      if (twitterDescription && originalTwitterDescription) {
+        twitterDescription.setAttribute('content', originalTwitterDescription);
+      }
+    };
+  }, [selectedId, filteredProjects.length]);
+
   // Track which projects are in the viewport center for scroll highlight effect
   const imageContainersRef = useRef<(HTMLDivElement | null)[]>([]);
   const [inViewStates, setInViewStates] = useState<boolean[]>(() => 
@@ -150,6 +216,8 @@ const CategoryListing: React.FC = () => {
             <OptimizedImage 
               src={encodeImageUrl(filteredProjects[0].imageUrl)} 
               alt={filteredProjects[0].title}
+              priority={true}
+              lazy={false}
               className={
                 `w-full h-full object-cover transition-[transform,opacity,filter] duration-700 ` +
                 (inViewStates[0]
@@ -197,6 +265,7 @@ const CategoryListing: React.FC = () => {
                         <OptimizedImage 
                             src={encodeImageUrl(project.imageUrl)} 
                             alt={project.title}
+                            lazy={true}
                             className={
                               `w-full h-full object-cover transition-[transform,opacity,filter] duration-700 ` +
                               (inViewStates[projectIndex]

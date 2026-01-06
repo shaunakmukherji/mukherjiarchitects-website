@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { PROJECTS } from '../../constants';
 import Button from '../ui/Button';
@@ -13,6 +13,73 @@ const ProjectDetail: React.FC = () => {
   const encodeImageUrl = (url: string): string => {
     return url.split('/').map(segment => segment ? encodeURIComponent(segment) : '').join('/');
   };
+
+  // Update page title and meta tags for SEO
+  useEffect(() => {
+    if (!project) return;
+
+    const originalTitle = document.title;
+    const originalDescription = document.querySelector('meta[name="description"]')?.getAttribute('content');
+    const originalOGTitle = document.querySelector('meta[property="og:title"]')?.getAttribute('content');
+    const originalOGDescription = document.querySelector('meta[property="og:description"]')?.getAttribute('content');
+    const originalTwitterTitle = document.querySelector('meta[name="twitter:title"]')?.getAttribute('content');
+    const originalTwitterDescription = document.querySelector('meta[name="twitter:description"]')?.getAttribute('content');
+
+    // Create descriptive title
+    const pageTitle = `${project.title} - ${project.category} Project | Mukherji Architects Milano`;
+    document.title = pageTitle;
+
+    // Create descriptive meta description
+    const metaDescriptionText = project.description 
+      ? `${project.description.substring(0, 150)}${project.description.length > 150 ? '...' : ''}`
+      : `${project.title} - ${project.category} architecture project by Mukherji Architects Milano. Located in ${project.location}, completed in ${project.year}.`;
+
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', metaDescriptionText);
+    }
+
+    // Update Open Graph tags
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) {
+      ogTitle.setAttribute('content', pageTitle);
+    }
+    const ogDescription = document.querySelector('meta[property="og:description"]');
+    if (ogDescription) {
+      ogDescription.setAttribute('content', metaDescriptionText);
+    }
+
+    // Update Twitter tags
+    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twitterTitle) {
+      twitterTitle.setAttribute('content', pageTitle);
+    }
+    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
+    if (twitterDescription) {
+      twitterDescription.setAttribute('content', metaDescriptionText);
+    }
+
+    // Cleanup: restore original values when component unmounts
+    return () => {
+      document.title = originalTitle;
+      if (metaDescription && originalDescription) {
+        metaDescription.setAttribute('content', originalDescription);
+      }
+      if (ogTitle && originalOGTitle) {
+        ogTitle.setAttribute('content', originalOGTitle);
+      }
+      if (ogDescription && originalOGDescription) {
+        ogDescription.setAttribute('content', originalOGDescription);
+      }
+      if (twitterTitle && originalTwitterTitle) {
+        twitterTitle.setAttribute('content', originalTwitterTitle);
+      }
+      if (twitterDescription && originalTwitterDescription) {
+        twitterDescription.setAttribute('content', originalTwitterDescription);
+      }
+    };
+  }, [project]);
 
   if (!project) return <div>Project not found</div>;
 
@@ -41,10 +108,12 @@ const ProjectDetail: React.FC = () => {
 
                 {/* Hero Image - Large */}
                 <div className="mb-8">
-                    <div className="group w-full bg-zinc-900 overflow-hidden border border-zinc-800 aspect-[4/3] md:aspect-video">
+                    <div className="group w-full bg-zinc-900 overflow-hidden border border-zinc-800 aspect-square">
                         <OptimizedImage 
                             src={encodeImageUrl(project.imageUrl)} 
-                            alt={project.title} 
+                            alt={project.title}
+                            priority={true}
+                            lazy={false}
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-100 grayscale group-hover:grayscale-0"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
@@ -75,7 +144,8 @@ const ProjectDetail: React.FC = () => {
                              >
                                  <OptimizedImage 
                                    src={encodeImageUrl(img)} 
-                                   alt={`Gallery ${idx + 2}`} 
+                                   alt={`Gallery ${idx + 2}`}
+                                   lazy={true}
                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-70 group-hover:opacity-100 grayscale group-hover:grayscale-0"
                                    onError={(e) => {
                                      const target = e.target as HTMLImageElement;

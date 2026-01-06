@@ -187,6 +187,8 @@ const Portfolio: React.FC = () => {
         <OptimizedImage 
           src={encodeImageUrl(project.imageUrl)} 
           alt={project.title}
+          lazy={globalIndex > 2}
+          priority={globalIndex <= 2}
           className={
             `w-full h-full object-cover transition-transform duration-700 ` +
             (inViewStates[globalIndex]

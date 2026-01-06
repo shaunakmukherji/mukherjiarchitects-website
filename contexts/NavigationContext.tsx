@@ -11,7 +11,9 @@ const updateURL = (view: ViewState, id: string | null) => {
   } else if (view === 'CATEGORY_LISTING' && id) {
     url = `/category/${encodeURIComponent(id)}`;
   } else if (view === 'CREATIVE_DIRECTOR') {
-    url = '/creative-director';
+    url = '/shaunak-mukherji';
+  } else if (view === 'ARCHITECTURE_AI') {
+    url = '/architecture-artificial-intelligence';
   }
   
   window.history.pushState({ view, id }, '', url);
@@ -27,8 +29,14 @@ const parseURL = (): { view: ViewState; id: string | null } => {
   } else if (path.startsWith('/category/')) {
     const id = decodeURIComponent(path.split('/category/')[1]);
     return { view: 'CATEGORY_LISTING', id };
-  } else if (path === '/creative-director') {
+  } else if (path === '/shaunak-mukherji' || path === '/creative-director') {
+    // Redirect old URL to new URL
+    if (path === '/creative-director') {
+      window.history.replaceState({ view: 'CREATIVE_DIRECTOR', id: null }, '', '/shaunak-mukherji');
+    }
     return { view: 'CREATIVE_DIRECTOR', id: null };
+  } else if (path === '/architecture-artificial-intelligence') {
+    return { view: 'ARCHITECTURE_AI', id: null };
   }
   
   return { view: 'HOME', id: null };
@@ -64,7 +72,8 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
       window.history.replaceState({ view: initialState.view, id: initialState.id }, '', 
         initialState.view === 'PROJECT_DETAIL' && initialState.id ? `/project/${encodeURIComponent(initialState.id)}` :
         initialState.view === 'CATEGORY_LISTING' && initialState.id ? `/category/${encodeURIComponent(initialState.id)}` :
-        initialState.view === 'CREATIVE_DIRECTOR' ? '/creative-director' : '/'
+        initialState.view === 'CREATIVE_DIRECTOR' ? '/shaunak-mukherji' :
+        initialState.view === 'ARCHITECTURE_AI' ? '/architecture-artificial-intelligence' : '/'
       );
     }
 
@@ -129,8 +138,15 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
     });
   };
 
+  const navigateToArchitectureAI = () => {
+    setSelectedId(null);
+    setCurrentView('ARCHITECTURE_AI');
+    updateURL('ARCHITECTURE_AI', null);
+    window.scrollTo(0, 0);
+  };
+
   return (
-    <NavigationContext.Provider value={{ currentView, selectedId, navigateToHome, navigateToProject, navigateToCategory, navigateToCreativeDirector, navigateToContact }}>
+    <NavigationContext.Provider value={{ currentView, selectedId, navigateToHome, navigateToProject, navigateToCategory, navigateToCreativeDirector, navigateToContact, navigateToArchitectureAI }}>
       {children}
     </NavigationContext.Provider>
   );

@@ -1,10 +1,69 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { ArrowLeft } from 'lucide-react';
 import OptimizedImage from '../ui/OptimizedImage';
 
 const CreativeDirector: React.FC = () => {
   const { navigateToHome } = useNavigation();
+
+  // Update page title and meta tags for SEO
+  useEffect(() => {
+    const originalTitle = document.title;
+    const originalDescription = document.querySelector('meta[name="description"]')?.getAttribute('content');
+    const originalOGTitle = document.querySelector('meta[property="og:title"]')?.getAttribute('content');
+    const originalOGDescription = document.querySelector('meta[property="og:description"]')?.getAttribute('content');
+    const originalTwitterTitle = document.querySelector('meta[name="twitter:title"]')?.getAttribute('content');
+    const originalTwitterDescription = document.querySelector('meta[name="twitter:description"]')?.getAttribute('content');
+
+    // Update title
+    document.title = 'Shaunak Mukherji - Creative Director | Mukherji Architects Milano';
+
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Shaunak Mukherji is a Creative Director and architect focused on finding the best way to solve problems. Learn about his AI-first, system-driven approach to architecture at Mukherji Architects Milano.');
+    }
+
+    // Update Open Graph tags
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) {
+      ogTitle.setAttribute('content', 'Shaunak Mukherji - Creative Director | Mukherji Architects Milano');
+    }
+    const ogDescription = document.querySelector('meta[property="og:description"]');
+    if (ogDescription) {
+      ogDescription.setAttribute('content', 'Shaunak Mukherji is a Creative Director and architect focused on finding the best way to solve problems. Learn about his AI-first, system-driven approach to architecture.');
+    }
+
+    // Update Twitter tags
+    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twitterTitle) {
+      twitterTitle.setAttribute('content', 'Shaunak Mukherji - Creative Director | Mukherji Architects Milano');
+    }
+    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
+    if (twitterDescription) {
+      twitterDescription.setAttribute('content', 'Shaunak Mukherji is a Creative Director and architect focused on finding the best way to solve problems. Learn about his AI-first, system-driven approach to architecture.');
+    }
+
+    // Cleanup: restore original values when component unmounts
+    return () => {
+      document.title = originalTitle;
+      if (metaDescription && originalDescription) {
+        metaDescription.setAttribute('content', originalDescription);
+      }
+      if (ogTitle && originalOGTitle) {
+        ogTitle.setAttribute('content', originalOGTitle);
+      }
+      if (ogDescription && originalOGDescription) {
+        ogDescription.setAttribute('content', originalOGDescription);
+      }
+      if (twitterTitle && originalTwitterTitle) {
+        twitterTitle.setAttribute('content', originalTwitterTitle);
+      }
+      if (twitterDescription && originalTwitterDescription) {
+        twitterDescription.setAttribute('content', originalTwitterDescription);
+      }
+    };
+  }, []);
 
   return (
     <div className="pt-32 pb-24 min-h-screen bg-black">

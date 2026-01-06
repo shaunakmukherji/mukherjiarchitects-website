@@ -3,13 +3,13 @@ import { Instagram, Linkedin, Mail } from 'lucide-react';
 
 const Contact: React.FC = () => {
   return (
-    <section id="contact" className="py-24 bg-black relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16">
+    <section id="contact" className="py-16 sm:py-20 md:py-24 bg-black relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
         
         {/* Left Side: Copy */}
         <div className="flex flex-col justify-center space-y-8 lg:space-y-12">
             <div className="space-y-6">
-                <h2 className="font-display text-5xl md:text-6xl font-bold text-white leading-[1.1]">
+                <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight sm:leading-[1.1] break-words">
                     LET'S BUILD <br/> 
                     <span className="text-zinc-600">SOMETHING</span> <br/>
                     EXTRAORDINARY

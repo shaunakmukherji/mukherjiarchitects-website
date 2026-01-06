@@ -47,8 +47,14 @@ export function webpPlugin(): Plugin {
             return next();
           }
 
-          // Generate cache key
-          const cacheKey = url.replace(/[^a-zA-Z0-9]/g, '_') + '.webp';
+          // Check if mobile quality is requested (before generating cache key)
+          const isMobile = url.includes('mobile=true') || 
+                          (req.headers['user-agent'] && 
+                           /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(req.headers['user-agent'] as string));
+          
+          // Generate cache key (include mobile flag for separate caching)
+          const baseUrl = url.split('?')[0]; // Remove query params for cache key
+          const cacheKey = baseUrl.replace(/[^a-zA-Z0-9]/g, '_') + (isMobile ? '_mobile' : '_desktop') + '.webp';
           const cachePath = join(cacheDir, cacheKey);
 
           // Check cache first
@@ -60,11 +66,28 @@ export function webpPlugin(): Plugin {
             return res.end(cachedWebP);
           }
 
-          // Convert to WebP
+          // Read original image
           const originalBuffer = readFileSync(publicPath);
-          const webpBuffer = await sharp(originalBuffer)
+          
+          // Use lower quality for mobile devices (60% vs 85%)
+          const quality = isMobile ? 60 : 85;
+          
+          // For mobile, also resize if image is very large (max 1200px width)
+          let sharpInstance = sharp(originalBuffer);
+          if (isMobile) {
+            const metadata = await sharpInstance.metadata();
+            if (metadata.width && metadata.width > 1200) {
+              sharpInstance = sharpInstance.resize(1200, null, {
+                withoutEnlargement: true,
+                fit: 'inside'
+              });
+            }
+          }
+          
+          // Convert to WebP
+          const webpBuffer = await sharpInstance
             .webp({ 
-              quality: 85,
+              quality,
               effort: 4
             })
             .toBuffer();
@@ -112,7 +135,14 @@ export function webpPlugin(): Plugin {
             return next();
           }
 
-          const cacheKey = url.replace(/[^a-zA-Z0-9]/g, '_') + '.webp';
+          // Check if mobile quality is requested (before generating cache key)
+          const isMobile = url.includes('mobile=true') || 
+                          (req.headers['user-agent'] && 
+                           /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(req.headers['user-agent'] as string));
+          
+          // Generate cache key (include mobile flag for separate caching)
+          const baseUrl = url.split('?')[0]; // Remove query params for cache key
+          const cacheKey = baseUrl.replace(/[^a-zA-Z0-9]/g, '_') + (isMobile ? '_mobile' : '_desktop') + '.webp';
           const cachePath = join(cacheDir, cacheKey);
 
           if (existsSync(cachePath)) {
@@ -123,10 +153,30 @@ export function webpPlugin(): Plugin {
             return res.end(cachedWebP);
           }
 
-          const originalBuffer = readFileSync(publicPath);
-          const webpBuffer = await sharp(originalBuffer)
+          // Read original image
+          const originalBuffer = readFileSync(publicPath); 
+                          (req.headers['user-agent'] && 
+                           /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(req.headers['user-agent'] as string));
+          
+          // Use lower quality for mobile devices (60% vs 85%)
+          const quality = isMobile ? 60 : 85;
+          
+          // For mobile, also resize if image is very large (max 1200px width)
+          let sharpInstance = sharp(originalBuffer);
+          if (isMobile) {
+            const metadata = await sharpInstance.metadata();
+            if (metadata.width && metadata.width > 1200) {
+              sharpInstance = sharpInstance.resize(1200, null, {
+                withoutEnlargement: true,
+                fit: 'inside'
+              });
+            }
+          }
+          
+          // Convert to WebP
+          const webpBuffer = await sharpInstance
             .webp({ 
-              quality: 85,
+              quality,
               effort: 4
             })
             .toBuffer();

@@ -6,7 +6,7 @@ import { useInViewportCenter } from '../../hooks/useInViewportCenter';
 import OptimizedImage from '../ui/OptimizedImage';
 
 const About: React.FC = () => {
-  const { navigateToCreativeDirector } = useNavigation();
+  const { navigateToCreativeDirector, navigateToArchitectureAI } = useNavigation();
   const { ref: imageRef, isInCenter } = useInViewportCenter();
   
   return (
@@ -38,7 +38,8 @@ const About: React.FC = () => {
                  <div className="aspect-[4/5] w-full overflow-hidden bg-zinc-900">
                     <OptimizedImage 
                         src={ABOUT_CONTENT.imageUrl} 
-                        alt={ABOUT_CONTENT.imageAlt} 
+                        alt={ABOUT_CONTENT.imageAlt}
+                        lazy={true}
                         className={
                           `w-full h-full object-cover transition-[transform,opacity,filter] duration-700 ` +
                           // Scroll-based highlight
@@ -83,10 +84,23 @@ const About: React.FC = () => {
                         <button
                             onClick={navigateToCreativeDirector}
                             className="text-white underline underline-offset-4 decoration-zinc-500 hover:decoration-white transition-colors duration-300 cursor-pointer font-normal"
+                            aria-label="Learn more about Shaunak Mukherji, Creative Director"
                         >
                             Shaunak Mukherji
                         </button>
-                        , son of Bobby Mukherji, the Milan studio builds on this legacy while advancing a contemporary design approach driven by computational design, artificial intelligence, and system-based design thinking.
+                        , son of Bobby Mukherji, the Milan studio builds on this legacy while advancing a contemporary design approach driven by computational design,{' '}
+                        <a
+                            href="/architecture-artificial-intelligence"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                navigateToArchitectureAI();
+                            }}
+                            className="text-white underline underline-offset-4 decoration-zinc-500 hover:decoration-white transition-colors duration-300"
+                            aria-label="Learn about our AI-first approach to architecture"
+                        >
+                            artificial intelligence
+                        </a>
+                        , and system-based design thinking.
                     </p>
                 </div>
 
