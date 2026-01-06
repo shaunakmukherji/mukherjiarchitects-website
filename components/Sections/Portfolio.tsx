@@ -45,41 +45,101 @@ const Portfolio: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Observe the three visible project images and highlight whichever
-  // is approximately centered in the viewport (for desktop grid layout)
+  // Continuous scroll-based color transition for desktop (like Services section)
+  // This ensures colors update smoothly on scroll and work continuously
   useEffect(() => {
-    if (typeof IntersectionObserver === 'undefined' || isMobile) return;
+    if (isMobile) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        setInViewStates((prev) => {
-          const next = [...prev];
-          entries.forEach((entry) => {
-            const indexAttr = entry.target.getAttribute('data-portfolio-index');
-            if (indexAttr == null) return;
-            const idx = parseInt(indexAttr, 10);
-            if (Number.isNaN(idx)) return;
+    const portfolioSection = document.getElementById('portfolio');
+    if (!portfolioSection) return;
 
-            const inCenter = entry.isIntersecting && entry.intersectionRatio > 0.5;
-            next[idx] = inCenter;
-          });
-          return next;
-        });
-      },
-      {
-        rootMargin: '-20% 0px -20% 0px',
-        threshold: [0.25, 0.5, 0.75],
+    const handleScroll = () => {
+      const rect = portfolioSection.getBoundingClientRect();
+      const viewportHeight = window.innerHeight || 0;
+      const viewportCenter = viewportHeight / 2;
+
+      // If the portfolio section is out of view, don't change states
+      if (rect.bottom <= 0 || rect.top >= viewportHeight) {
+        return;
       }
-    );
 
-    imageContainersRef.current.forEach((el) => {
-      if (el) observer.observe(el);
-    });
+      // Find all project cards and determine which ones are closest to viewport center
+      const projectCards = portfolioSection.querySelectorAll('[data-portfolio-index]');
+      const visibleProjects: Array<{ index: number; distance: number }> = [];
+
+      projectCards.forEach((card) => {
+        const indexAttr = card.getAttribute('data-portfolio-index');
+        if (indexAttr == null) return;
+        const idx = parseInt(indexAttr, 10);
+        if (Number.isNaN(idx)) return;
+
+        const cardRect = card.getBoundingClientRect();
+        
+        // Check if card is visible in viewport
+        if (cardRect.bottom > 0 && cardRect.top < viewportHeight) {
+          const cardCenter = cardRect.top + cardRect.height / 2;
+          const distance = Math.abs(cardCenter - viewportCenter);
+          visibleProjects.push({ index: idx, distance });
+        }
+      });
+
+      // Update inViewStates: color projects within 400px of viewport center
+      setInViewStates((prev) => {
+        const next = [...prev]; // Preserve all existing states
+        
+        // Update colors for visible projects based on distance from center
+        visibleProjects.forEach(({ index, distance }) => {
+          if (index >= 0 && index < PROJECTS.length) {
+            // Color projects within 400px of viewport center
+            next[index] = distance < 400;
+          }
+        });
+        
+        return next;
+      });
+    };
+
+    handleScroll(); // Initial calculation
+    
+    // Also trigger when slide changes to update colors immediately
+    const timeoutId = setTimeout(() => {
+      handleScroll();
+    }, 100);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
 
     return () => {
-      observer.disconnect();
+      clearTimeout(timeoutId);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
     };
-  }, [currentSlide, isMobile]);
+  }, [isMobile, currentSlide]); // Add currentSlide as dependency to re-run when slide changes
+
+  // When slide changes on desktop, immediately color all 3 images in the current slide
+  // This works alongside the scroll handler to ensure button navigation works
+  useEffect(() => {
+    if (isMobile) return;
+
+    // Use requestAnimationFrame to ensure this runs after scroll handler if needed
+    const frameId = requestAnimationFrame(() => {
+      setInViewStates((prev) => {
+        const next = [...prev]; // Preserve existing states for other projects
+        
+        // Color all 3 projects in the current slide
+        currentProjects.forEach((project) => {
+          const globalIndex = PROJECTS.findIndex(p => p.id === project.id);
+          if (globalIndex >= 0) {
+            next[globalIndex] = true;
+          }
+        });
+        
+        return next;
+      });
+    });
+
+    return () => cancelAnimationFrame(frameId);
+  }, [currentSlide, isMobile, currentProjects]);
 
   // Track horizontal scroll progress (for mobile)
   useEffect(() => {
