@@ -49,13 +49,18 @@ const CreativeDirector: React.FC = () => {
       "@context": "https://schema.org",
       "@type": "Person",
       "name": "Shaunak Mukherji",
-      "jobTitle": "Creative Director",
-      "image": "https://mukherjiarchitects.com/images/about/creative-director.png",
-      "url": "https://mukherjiarchitects.com/shaunak-mukherji",
+      "jobTitle": "Founder and Creative Director",
+      "image": "https://www.mukherjiarchitects.com/images/about/creative-director.png",
+      "url": "https://www.mukherjiarchitects.com/shaunak-mukherji",
       "worksFor": {
         "@type": "Organization",
         "name": "Mukherji Architects Milano",
-        "url": "https://mukherjiarchitects.com"
+        "url": "https://www.mukherjiarchitects.com"
+      },
+      "affiliation": {
+        "@type": "Organization",
+        "name": "Bobby Mukherji Architects",
+        "url": "https://bobbymukherji.com/"
       },
       "description": "Shaunak Mukherji is an architect focused on finding the best way to solve problems. He believes architecture must continuously evolve to remain efficient, relevant, and precise. His approach is AI-first and system-driven, centered on building workflows that prioritize speed, clarity, and efficiency.",
       "alumniOf": {

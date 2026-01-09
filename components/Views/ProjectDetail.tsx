@@ -60,6 +60,45 @@ const ProjectDetail: React.FC = () => {
       twitterDescription.setAttribute('content', metaDescriptionText);
     }
 
+    // Add Project structured data (JSON-LD)
+    const projectSchema: any = {
+      "@context": "https://schema.org",
+      "@type": "CreativeWork",
+      "@id": `https://www.mukherjiarchitects.com/projects/${selectedId}`,
+      "name": project.title,
+      "description": project.description || `${project.title} - ${project.category} architecture project by Mukherji Architects Milano.`,
+      "creator": {
+        "@type": "Organization",
+        "name": "Mukherji Architects Milano",
+        "url": "https://www.mukherjiarchitects.com"
+      },
+      "about": {
+        "@type": "Thing",
+        "name": project.category
+      },
+      "keywords": `${project.category}, architecture, ${project.location || ''}`
+    };
+
+    // Add optional properties only if they exist
+    if (project.year) {
+      projectSchema.dateCreated = `${project.year}`;
+    }
+    if (project.location) {
+      projectSchema.locationCreated = {
+        "@type": "Place",
+        "name": project.location
+      };
+    }
+    if (project.imageUrl) {
+      projectSchema.image = `https://www.mukherjiarchitects.com${project.imageUrl}`;
+    }
+
+    const projectScript = document.createElement('script');
+    projectScript.type = 'application/ld+json';
+    projectScript.textContent = JSON.stringify(projectSchema);
+    projectScript.id = 'project-structured-data';
+    document.head.appendChild(projectScript);
+
     // Cleanup: restore original values when component unmounts
     return () => {
       document.title = originalTitle;
@@ -78,8 +117,13 @@ const ProjectDetail: React.FC = () => {
       if (twitterDescription && originalTwitterDescription) {
         twitterDescription.setAttribute('content', originalTwitterDescription);
       }
+      // Remove structured data script
+      const projectScript = document.getElementById('project-structured-data');
+      if (projectScript) {
+        projectScript.remove();
+      }
     };
-  }, [project]);
+  }, [project, selectedId]);
 
   if (!project) return <div>Project not found</div>;
 

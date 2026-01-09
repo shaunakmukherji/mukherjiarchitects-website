@@ -5,7 +5,17 @@ import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import OptimizedImage from '../ui/OptimizedImage';
 
 const CategoryListing: React.FC = () => {
-  const { selectedId, navigateToHome, navigateToProject } = useNavigation();
+  const { 
+    selectedId, 
+    navigateToHome, 
+    navigateToProject,
+    navigateToBestFitCommercial,
+    navigateToBestFitInstitutional,
+    navigateToBestFitMasterPlanning,
+    navigateToBestFitMixedUse,
+    navigateToBestFitResearch,
+    navigateToBestFitResidential
+  } = useNavigation();
   // selectedId here represents the categoryFilter string (e.g., 'Residential')
   const filteredProjects = PROJECTS
     .filter(p => p.category === selectedId)
@@ -199,9 +209,35 @@ const CategoryListing: React.FC = () => {
         <h1 className="font-display text-4xl md:text-6xl font-bold text-white mb-4 uppercase">
             {selectedId} Projects
         </h1>
-        <p className="text-zinc-500 mb-16 max-w-2xl">
-            Selected works demonstrating our approach to {selectedId?.toLowerCase()} architecture.
-        </p>
+        <div className="mb-16 max-w-2xl">
+            <p className="text-zinc-500 mb-4">
+                Selected works demonstrating our approach to {selectedId?.toLowerCase()} architecture.
+            </p>
+            {selectedId && (
+                <div className="text-zinc-500">
+                    <span className="mr-2">Best-Fit:</span>
+                    <button
+                        onClick={() => {
+                            const categoryMap: Record<string, () => void> = {
+                                'Commercial Design': navigateToBestFitCommercial,
+                                'Institutional Design': navigateToBestFitInstitutional,
+                                'Master Planning': navigateToBestFitMasterPlanning,
+                                'Mixed-use Design': navigateToBestFitMixedUse,
+                                'Research & Exploration': navigateToBestFitResearch,
+                                'Residential Design': navigateToBestFitResidential
+                            };
+                            const navigate = categoryMap[selectedId];
+                            if (navigate) {
+                                navigate();
+                            }
+                        }}
+                        className="text-zinc-400 hover:text-white transition-colors underline"
+                    >
+                        Who should hire us for {selectedId}?
+                    </button>
+                </div>
+            )}
+        </div>
 
         {/* Featured/Cover Project (First Project) */}
         {filteredProjects.length > 0 && (

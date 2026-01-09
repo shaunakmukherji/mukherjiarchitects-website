@@ -6,7 +6,7 @@ import { useInViewportCenter } from '../../hooks/useInViewportCenter';
 import OptimizedImage from '../ui/OptimizedImage';
 
 const About: React.FC = () => {
-  const { navigateToCreativeDirector, navigateToArchitectureAI } = useNavigation();
+  const { navigateToCreativeDirector, navigateToArchitectureAI, navigateToAboutStudio } = useNavigation();
   const { ref: imageRef, isInCenter } = useInViewportCenter();
   
   return (
@@ -31,9 +31,11 @@ const About: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 lg:gap-12 items-start">
             
             {/* Image */}
-            <div
-              className="md:col-span-5 relative group overflow-hidden md:sticky md:top-32 order-2 md:order-1"
-              ref={imageRef as React.RefObject<HTMLDivElement>}
+            <button
+              onClick={navigateToAboutStudio}
+              className="md:col-span-5 relative group overflow-hidden md:sticky md:top-32 order-2 md:order-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-pure-grey"
+              ref={imageRef as React.RefObject<HTMLButtonElement>}
+              aria-label="Learn more about Mukherji Architects Milano"
             >
                  <div className="aspect-[4/5] w-full overflow-hidden bg-pure-grey-light">
                     <OptimizedImage 
@@ -55,13 +57,20 @@ const About: React.FC = () => {
                  <div className="absolute top-4 left-4 p-2 bg-black/50 backdrop-blur-sm border border-white/10 group-hover:border-accent/50 transition-colors">
                      <ArrowUpRight className="text-white w-4 h-4" />
                  </div>
-            </div>
+            </button>
 
             {/* Text & Philosophy */}
             <div className="md:col-span-7 flex flex-col h-full md:pl-8 lg:pl-12 order-1 md:order-2">
                 <div className="space-y-10 md:space-y-14">
                     <p className="text-base md:text-lg text-zinc-900 leading-[1.7] md:leading-[1.75] font-normal tracking-tight">
-                        Mukherji Architects Milano is the international extension of{' '}
+                        <button
+                            onClick={navigateToAboutStudio}
+                            className="text-black underline underline-offset-4 decoration-zinc-600 hover:decoration-black transition-colors duration-300 cursor-pointer font-medium"
+                            aria-label="Learn more about Mukherji Architects Milano"
+                        >
+                            Mukherji Architects Milano
+                        </button>
+                        {' '}is the international extension of{' '}
                         <a 
                             href="https://bobbymukherji.com/" 
                             target="_blank" 

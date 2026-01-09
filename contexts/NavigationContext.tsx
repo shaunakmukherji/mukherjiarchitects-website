@@ -14,6 +14,20 @@ const updateURL = (view: ViewState, id: string | null) => {
     url = '/shaunak-mukherji';
   } else if (view === 'ARCHITECTURE_AI') {
     url = '/architecture-artificial-intelligence';
+  } else if (view === 'ABOUT_STUDIO') {
+    url = '/about-mukherji-architects-milano';
+  } else if (view === 'BEST_FIT_COMMERCIAL') {
+    url = '/best-fit/commercial-design';
+  } else if (view === 'BEST_FIT_INSTITUTIONAL') {
+    url = '/best-fit/institutional-design';
+  } else if (view === 'BEST_FIT_MASTER_PLANNING') {
+    url = '/best-fit/master-planning';
+  } else if (view === 'BEST_FIT_MIXED_USE') {
+    url = '/best-fit/mixed-use-design';
+  } else if (view === 'BEST_FIT_RESEARCH') {
+    url = '/best-fit/research-exploration';
+  } else if (view === 'BEST_FIT_RESIDENTIAL') {
+    url = '/best-fit/residential-design';
   }
   
   window.history.pushState({ view, id }, '', url);
@@ -37,6 +51,20 @@ const parseURL = (): { view: ViewState; id: string | null } => {
     return { view: 'CREATIVE_DIRECTOR', id: null };
   } else if (path === '/architecture-artificial-intelligence') {
     return { view: 'ARCHITECTURE_AI', id: null };
+  } else if (path === '/about-mukherji-architects-milano' || path === '/about') {
+    return { view: 'ABOUT_STUDIO', id: null };
+  } else if (path === '/best-fit/commercial-design') {
+    return { view: 'BEST_FIT_COMMERCIAL', id: null };
+  } else if (path === '/best-fit/institutional-design') {
+    return { view: 'BEST_FIT_INSTITUTIONAL', id: null };
+  } else if (path === '/best-fit/master-planning') {
+    return { view: 'BEST_FIT_MASTER_PLANNING', id: null };
+  } else if (path === '/best-fit/mixed-use-design') {
+    return { view: 'BEST_FIT_MIXED_USE', id: null };
+  } else if (path === '/best-fit/research-exploration') {
+    return { view: 'BEST_FIT_RESEARCH', id: null };
+  } else if (path === '/best-fit/residential-design') {
+    return { view: 'BEST_FIT_RESIDENTIAL', id: null };
   }
   
   return { view: 'HOME', id: null };
@@ -69,12 +97,31 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
     // Initialize URL on first load if we're not on the home page
     // Replace state instead of push to avoid adding an extra history entry
     if (initialState.view !== 'HOME' || initialState.id !== null) {
-      window.history.replaceState({ view: initialState.view, id: initialState.id }, '', 
-        initialState.view === 'PROJECT_DETAIL' && initialState.id ? `/project/${encodeURIComponent(initialState.id)}` :
-        initialState.view === 'CATEGORY_LISTING' && initialState.id ? `/category/${encodeURIComponent(initialState.id)}` :
-        initialState.view === 'CREATIVE_DIRECTOR' ? '/shaunak-mukherji' :
-        initialState.view === 'ARCHITECTURE_AI' ? '/architecture-artificial-intelligence' : '/'
-      );
+      let url = '/';
+      if (initialState.view === 'PROJECT_DETAIL' && initialState.id) {
+        url = `/project/${encodeURIComponent(initialState.id)}`;
+      } else if (initialState.view === 'CATEGORY_LISTING' && initialState.id) {
+        url = `/category/${encodeURIComponent(initialState.id)}`;
+      } else if (initialState.view === 'CREATIVE_DIRECTOR') {
+        url = '/shaunak-mukherji';
+      } else if (initialState.view === 'ARCHITECTURE_AI') {
+        url = '/architecture-artificial-intelligence';
+      } else if (initialState.view === 'ABOUT_STUDIO') {
+        url = '/about-mukherji-architects-milano';
+      } else if (initialState.view === 'BEST_FIT_COMMERCIAL') {
+        url = '/best-fit/commercial-design';
+      } else if (initialState.view === 'BEST_FIT_INSTITUTIONAL') {
+        url = '/best-fit/institutional-design';
+      } else if (initialState.view === 'BEST_FIT_MASTER_PLANNING') {
+        url = '/best-fit/master-planning';
+      } else if (initialState.view === 'BEST_FIT_MIXED_USE') {
+        url = '/best-fit/mixed-use-design';
+      } else if (initialState.view === 'BEST_FIT_RESEARCH') {
+        url = '/best-fit/research-exploration';
+      } else if (initialState.view === 'BEST_FIT_RESIDENTIAL') {
+        url = '/best-fit/residential-design';
+      }
+      window.history.replaceState({ view: initialState.view, id: initialState.id }, '', url);
     }
 
     return () => {
@@ -145,8 +192,73 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
     window.scrollTo(0, 0);
   };
 
+  const navigateToAboutStudio = () => {
+    setSelectedId(null);
+    setCurrentView('ABOUT_STUDIO');
+    updateURL('ABOUT_STUDIO', null);
+    window.scrollTo(0, 0);
+  };
+
+  const navigateToBestFitCommercial = () => {
+    setSelectedId(null);
+    setCurrentView('BEST_FIT_COMMERCIAL');
+    updateURL('BEST_FIT_COMMERCIAL', null);
+    window.scrollTo(0, 0);
+  };
+
+  const navigateToBestFitInstitutional = () => {
+    setSelectedId(null);
+    setCurrentView('BEST_FIT_INSTITUTIONAL');
+    updateURL('BEST_FIT_INSTITUTIONAL', null);
+    window.scrollTo(0, 0);
+  };
+
+  const navigateToBestFitMasterPlanning = () => {
+    setSelectedId(null);
+    setCurrentView('BEST_FIT_MASTER_PLANNING');
+    updateURL('BEST_FIT_MASTER_PLANNING', null);
+    window.scrollTo(0, 0);
+  };
+
+  const navigateToBestFitMixedUse = () => {
+    setSelectedId(null);
+    setCurrentView('BEST_FIT_MIXED_USE');
+    updateURL('BEST_FIT_MIXED_USE', null);
+    window.scrollTo(0, 0);
+  };
+
+  const navigateToBestFitResearch = () => {
+    setSelectedId(null);
+    setCurrentView('BEST_FIT_RESEARCH');
+    updateURL('BEST_FIT_RESEARCH', null);
+    window.scrollTo(0, 0);
+  };
+
+  const navigateToBestFitResidential = () => {
+    setSelectedId(null);
+    setCurrentView('BEST_FIT_RESIDENTIAL');
+    updateURL('BEST_FIT_RESIDENTIAL', null);
+    window.scrollTo(0, 0);
+  };
+
   return (
-    <NavigationContext.Provider value={{ currentView, selectedId, navigateToHome, navigateToProject, navigateToCategory, navigateToCreativeDirector, navigateToContact, navigateToArchitectureAI }}>
+    <NavigationContext.Provider value={{ 
+      currentView, 
+      selectedId, 
+      navigateToHome, 
+      navigateToProject, 
+      navigateToCategory, 
+      navigateToCreativeDirector, 
+      navigateToContact, 
+      navigateToArchitectureAI, 
+      navigateToAboutStudio,
+      navigateToBestFitCommercial,
+      navigateToBestFitInstitutional,
+      navigateToBestFitMasterPlanning,
+      navigateToBestFitMixedUse,
+      navigateToBestFitResearch,
+      navigateToBestFitResidential
+    }}>
       {children}
     </NavigationContext.Provider>
   );

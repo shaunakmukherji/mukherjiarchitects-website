@@ -13,6 +13,13 @@ import ProjectDetail from './components/Views/ProjectDetail';
 import CategoryListing from './components/Views/CategoryListing';
 import CreativeDirector from './components/Views/CreativeDirector';
 import ArchitectureAI from './components/Views/ArchitectureAI';
+import AboutStudio from './components/Views/AboutStudio';
+import BestFitCommercial from './components/Views/BestFitCommercial';
+import BestFitInstitutional from './components/Views/BestFitInstitutional';
+import BestFitMasterPlanning from './components/Views/BestFitMasterPlanning';
+import BestFitMixedUse from './components/Views/BestFitMixedUse';
+import BestFitResearch from './components/Views/BestFitResearch';
+import BestFitResidential from './components/Views/BestFitResidential';
 
 // Separating the Main Content to handle view logic cleanly
 const MainContent = () => {
@@ -67,6 +74,34 @@ const MainContent = () => {
 
   if (currentView === 'ARCHITECTURE_AI') {
     return <ArchitectureAI />;
+  }
+
+  if (currentView === 'ABOUT_STUDIO') {
+    return <AboutStudio />;
+  }
+
+  if (currentView === 'BEST_FIT_COMMERCIAL') {
+    return <BestFitCommercial />;
+  }
+
+  if (currentView === 'BEST_FIT_INSTITUTIONAL') {
+    return <BestFitInstitutional />;
+  }
+
+  if (currentView === 'BEST_FIT_MASTER_PLANNING') {
+    return <BestFitMasterPlanning />;
+  }
+
+  if (currentView === 'BEST_FIT_MIXED_USE') {
+    return <BestFitMixedUse />;
+  }
+
+  if (currentView === 'BEST_FIT_RESEARCH') {
+    return <BestFitResearch />;
+  }
+
+  if (currentView === 'BEST_FIT_RESIDENTIAL') {
+    return <BestFitResidential />;
   }
 
   return (

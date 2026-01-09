@@ -34,7 +34,7 @@ export interface AboutContent {
   philosophy: string;
 }
 
-export type ViewState = 'HOME' | 'PROJECT_DETAIL' | 'CATEGORY_LISTING' | 'CREATIVE_DIRECTOR' | 'ARCHITECTURE_AI';
+export type ViewState = 'HOME' | 'PROJECT_DETAIL' | 'CATEGORY_LISTING' | 'CREATIVE_DIRECTOR' | 'ARCHITECTURE_AI' | 'ABOUT_STUDIO' | 'BEST_FIT_COMMERCIAL' | 'BEST_FIT_INSTITUTIONAL' | 'BEST_FIT_MASTER_PLANNING' | 'BEST_FIT_MIXED_USE' | 'BEST_FIT_RESEARCH' | 'BEST_FIT_RESIDENTIAL';
 
 export interface NavigationContextType {
   currentView: ViewState;
@@ -45,4 +45,11 @@ export interface NavigationContextType {
   navigateToCreativeDirector: () => void;
   navigateToContact: () => void;
   navigateToArchitectureAI: () => void;
+  navigateToAboutStudio: () => void;
+  navigateToBestFitCommercial: () => void;
+  navigateToBestFitInstitutional: () => void;
+  navigateToBestFitMasterPlanning: () => void;
+  navigateToBestFitMixedUse: () => void;
+  navigateToBestFitResearch: () => void;
+  navigateToBestFitResidential: () => void;
 }
