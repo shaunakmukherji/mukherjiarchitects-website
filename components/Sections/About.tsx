@@ -10,19 +10,19 @@ const About: React.FC = () => {
   const { ref: imageRef, isInCenter } = useInViewportCenter();
   
   return (
-    <section id="about" className="relative py-16 md:py-24 border-b border-zinc-900 bg-black">
+    <section id="about" className="relative py-16 md:py-24 border-b border-zinc-900 bg-pure-grey text-black">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         
         {/* Header */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 mb-12 md:mb-20">
             <div>
-                 <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold uppercase tracking-tight mb-4 md:mb-6">
+                 <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold uppercase tracking-tight mb-4 md:mb-6 text-black">
                     Intelligent design <br />
                     <span className="text-zinc-600">meets intelligent</span> <br/>
                     <span className="text-zinc-600">technology.</span>
                 </h2>
             </div>
-            <div className="flex flex-col justify-start md:justify-end items-start md:items-end text-zinc-500 text-xs md:text-sm font-mono">
+            <div className="flex flex-col justify-start md:justify-end items-start md:items-end text-zinc-600 text-xs md:text-sm font-mono">
                 <p>(01) About Us</p>
             </div>
         </div>
@@ -35,7 +35,7 @@ const About: React.FC = () => {
               className="md:col-span-5 relative group overflow-hidden md:sticky md:top-32 order-2 md:order-1"
               ref={imageRef as React.RefObject<HTMLDivElement>}
             >
-                 <div className="aspect-[4/5] w-full overflow-hidden bg-zinc-900">
+                 <div className="aspect-[4/5] w-full overflow-hidden bg-pure-grey-light">
                     <OptimizedImage 
                         src={ABOUT_CONTENT.imageUrl} 
                         alt={ABOUT_CONTENT.imageAlt}
@@ -60,30 +60,30 @@ const About: React.FC = () => {
             {/* Text & Philosophy */}
             <div className="md:col-span-7 flex flex-col h-full md:pl-8 lg:pl-12 order-1 md:order-2">
                 <div className="space-y-10 md:space-y-14">
-                    <p className="text-base md:text-lg text-zinc-200 leading-[1.7] md:leading-[1.75] font-normal tracking-tight">
+                    <p className="text-base md:text-lg text-zinc-900 leading-[1.7] md:leading-[1.75] font-normal tracking-tight">
                         Mukherji Architects Milano is the international extension of{' '}
                         <a 
                             href="https://bobbymukherji.com/" 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="text-white underline underline-offset-4 decoration-zinc-500 hover:decoration-white transition-colors duration-300"
+                            className="text-black underline underline-offset-4 decoration-zinc-600 hover:decoration-black transition-colors duration-300 font-medium"
                         >
                             Bobby Mukherji Architects
                         </a>
                         , a globally recognized practice with over{' '}
-                        <span className="text-white font-medium">30</span>
+                        <span className="text-black font-semibold">30</span>
                         {' '}years of experience,{' '}
-                        <span className="text-white font-medium">1,000+</span>
+                        <span className="text-black font-semibold">1,000+</span>
                         {' '}projects delivered worldwide, and more than{' '}
-                        <span className="text-white font-medium">USD 12B</span>
+                        <span className="text-black font-semibold">USD 12B</span>
                         {' '}in built project value across hospitality, commercial, and mixed-use sectors.
                     </p>
-                    <div className="h-px w-full bg-zinc-900" />
-                    <p className="text-zinc-400 text-base md:text-lg leading-[1.7] md:leading-[1.75] font-normal tracking-tight max-w-2xl">
+                    <div className="h-px w-full bg-pure-grey-medium" />
+                    <p className="text-zinc-700 text-base md:text-lg leading-[1.7] md:leading-[1.75] font-normal tracking-tight max-w-2xl">
                         Founded and led by{' '}
                         <button
                             onClick={navigateToCreativeDirector}
-                            className="text-white underline underline-offset-4 decoration-zinc-500 hover:decoration-white transition-colors duration-300 cursor-pointer font-normal"
+                            className="text-black underline underline-offset-4 decoration-zinc-600 hover:decoration-black transition-colors duration-300 cursor-pointer font-medium"
                             aria-label="Learn more about Shaunak Mukherji, Creative Director"
                         >
                             Shaunak Mukherji
@@ -95,7 +95,7 @@ const About: React.FC = () => {
                                 e.preventDefault();
                                 navigateToArchitectureAI();
                             }}
-                            className="text-white underline underline-offset-4 decoration-zinc-500 hover:decoration-white transition-colors duration-300"
+                            className="text-black underline underline-offset-4 decoration-zinc-600 hover:decoration-black transition-colors duration-300 font-medium"
                             aria-label="Learn about our AI-first approach to architecture"
                         >
                             artificial intelligence

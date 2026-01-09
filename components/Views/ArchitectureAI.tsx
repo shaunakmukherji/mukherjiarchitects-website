@@ -76,16 +76,19 @@ const ArchitectureAI: React.FC = () => {
 
         <div className="max-w-4xl">
           {/* Main Title */}
-          <h1 className="font-display text-5xl md:text-6xl font-bold text-white uppercase tracking-tight mb-16">
+          <h1 className="font-display text-5xl md:text-6xl font-bold text-white uppercase tracking-tight mb-4">
             Architecture and Artificial Intelligence
           </h1>
+          <h2 className="font-display text-xl md:text-2xl font-normal text-zinc-400 mb-16">
+            How work is changing
+          </h2>
 
           {/* Content Sections */}
           <div className="space-y-16">
             {/* The reality */}
             <section>
               <h2 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
-                The reality
+                THE REALITY
               </h2>
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
@@ -98,16 +101,15 @@ const ArchitectureAI: React.FC = () => {
                   Architecture is no different.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  This doesn't change what gets built.
-                  It changes how reliably, efficiently, and clearly decisions are made before anything is built.
+                  This doesn't change what gets built. It changes how reliably, efficiently, and clearly decisions are made before anything is built.
                 </p>
               </div>
             </section>
 
-            {/* What actually changes in practice */}
+            {/* What AI changes in architectural design */}
             <section>
               <h2 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
-                What actually changes in practice
+                What AI changes in architectural design
               </h2>
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
@@ -127,10 +129,10 @@ const ArchitectureAI: React.FC = () => {
               </div>
             </section>
 
-            {/* What this means for clients */}
+            {/* What clients should look for */}
             <section>
               <h2 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
-                What this means for clients
+                What clients should look for
               </h2>
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
@@ -140,8 +142,7 @@ const ArchitectureAI: React.FC = () => {
                   That does not mean they understand architecture.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  AI renders are easy to produce.
-                  Buildable projects are not.
+                  AI renders are easy to produce. Buildable projects are not.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
                   A convincing image does not explain:
@@ -153,7 +154,7 @@ const ArchitectureAI: React.FC = () => {
                   <li>how the building actually gets built</li>
                 </ul>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  That is why we show process.
+                  That is why we showcase our architectural thinking and show process.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
                   Sketches.
@@ -162,24 +163,22 @@ const ArchitectureAI: React.FC = () => {
                   Sections.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Not as decoration, but as proof that what you see is the result of architectural thinking—not another meaningless image generated and passed off as authorship.
+                  As proof that what you see is the result of architectural thinking—not another meaningless image generated and passed off as authorship.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Buildings are systems.
-                  Images are not.
+                  Buildings are systems. Images are not.
                 </p>
               </div>
             </section>
 
-            {/* The people behind the tools */}
+            {/* The role of people, not just tools */}
             <section>
               <h2 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
-                The people behind the tools
+                The role of people, not just tools
               </h2>
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Artificial intelligence does not replace ability.
-                  It amplifies what already exists.
+                  Artificial intelligence does not replace ability. It amplifies what already exists.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
                   If the thinking is weak, AI makes it obvious.
@@ -189,23 +188,21 @@ const ArchitectureAI: React.FC = () => {
                   We believe in hiring the best people first.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Our team includes graduates from Politecnico di Milano, the leading technical architecture and design university in Italy.
-                  The studio is led by an alumnus of the same institution.
+                  Our team includes graduates from Politecnico di Milano, the leading technical architecture and design university in Italy. The studio is led by Shaunak Mukherji, an alumnus of the same institution.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
                   We are obsessed with technology, but equally obsessed with design quality.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  For us, artistry does not disappear.
-                  It gets amplified.
+                  For us, artistry does not disappear. It gets amplified.
                 </p>
               </div>
             </section>
 
-            {/* How we use artificial intelligence */}
+            {/* How AI is used in our work */}
             <section>
               <h2 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
-                How we use artificial intelligence
+                How AI is used in our work
               </h2>
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
@@ -216,12 +213,10 @@ const ArchitectureAI: React.FC = () => {
                   If a better one appears, we move on.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  There is no attachment to tools.
-                  There is only commitment to results.
+                  There is no attachment to tools. There is only commitment to results.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Creativity is not something we protect for its own sake.
-                  If a system can do something better, we let it.
+                  Creativity is not something we protect for its own sake. If a system can do something better, we let it.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
                   What matters is maximum clarity, maximum efficiency, and maximum return on effort.
@@ -229,10 +224,10 @@ const ArchitectureAI: React.FC = () => {
               </div>
             </section>
 
-            {/* Why this matters now */}
+            {/* Why moving early matters */}
             <section>
               <h2 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
-                Why this matters now
+                Why moving early matters
               </h2>
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
@@ -240,18 +235,13 @@ const ArchitectureAI: React.FC = () => {
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
                   Entire tools become obsolete overnight.
-                  Workflows collapse overnight.
                   Fields that rely on digital processes are being restructured in real time.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Architecture has been slow to respond.
+                  Architecture can be slow to respond.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Not because it is immune, but because it is comfortable.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  The architects who will remain are not the ones who wait to adapt later.
-                  They are the ones who reorganize early—around tools, systems, and ways of working that reflect how the world actually operates now.
+                  The architects who will remain are not the ones who wait to adapt later. They are the ones who reorganize early—around tools, systems, and ways of working that reflect how the world actually operates now.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
                   Most will cope.

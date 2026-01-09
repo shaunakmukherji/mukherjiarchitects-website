@@ -81,7 +81,7 @@ const ScrollWheelIndicator: React.FC = () => {
               key={id}
               className={`
                 block rounded-full transition-all duration-300
-                ${isActive ? 'w-2.5 h-2.5 bg-accent' : 'w-1.5 h-1.5 bg-zinc-700/70'}
+                ${isActive ? 'w-2.5 h-2.5 bg-white' : 'w-1.5 h-1.5 bg-zinc-700/70'}
               `}
             />
           );

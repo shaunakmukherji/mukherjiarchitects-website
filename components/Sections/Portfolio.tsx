@@ -235,7 +235,7 @@ const Portfolio: React.FC = () => {
       <div 
         key={project.id}
         onClick={() => navigateToProject(project.id)}
-        className={`${isLarge ? 'lg:col-span-8' : 'flex-1'} aspect-square group cursor-pointer relative overflow-hidden bg-zinc-900 border border-zinc-800 flex-shrink-0`}
+        className={`${isLarge ? 'lg:col-span-8' : 'flex-1'} aspect-square group cursor-pointer relative overflow-hidden bg-pure-grey-light border border-pure-grey-medium flex-shrink-0`}
         style={isMobile ? { width: '85vw', minWidth: '85vw' } : {}}
         ref={(el) => {
           if (!isMobile) {
@@ -270,7 +270,7 @@ const Portfolio: React.FC = () => {
         
         <div className={`absolute bottom-0 left-0 w-full ${isLarge ? 'p-6 md:p-8' : 'p-6'} flex justify-between items-end transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300`}>
           <div>
-            <span className="text-zinc-400 text-xs font-mono uppercase tracking-widest mb-2 block">
+            <span className="text-zinc-300 text-xs font-mono uppercase tracking-widest mb-2 block">
               {project.category} — {project.year}
             </span>
             <h3 className={`${isLarge ? 'text-2xl md:text-3xl' : 'text-xl md:text-2xl'} font-display font-bold text-white`}>
@@ -283,7 +283,7 @@ const Portfolio: React.FC = () => {
         </div>
 
         {/* Subtle Numbering */}
-        <div className="absolute top-6 right-6 text-xs font-mono text-zinc-500">
+        <div className="absolute top-6 right-6 text-xs font-mono text-zinc-400">
           {String(globalIndex + 1).padStart(2, '0')}
         </div>
       </div>
@@ -291,29 +291,29 @@ const Portfolio: React.FC = () => {
   };
 
   return (
-    <section id="portfolio" className="py-24 border-b border-zinc-900 bg-black">
+    <section id="portfolio" className="py-24 border-b border-zinc-900 bg-pure-grey text-black">
       <div className="max-w-7xl mx-auto px-6">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between md:items-end mb-20 gap-6 border-b border-zinc-900 pb-8">
-          <h2 className="font-display text-4xl md:text-5xl font-bold uppercase tracking-tight text-white max-w-lg">
+        <div className="flex flex-col md:flex-row justify-between md:items-end mb-20 gap-6 border-b border-zinc-400 pb-8">
+          <h2 className="font-display text-4xl md:text-5xl font-bold uppercase tracking-tight text-black max-w-lg">
             Our Signature Projects
           </h2>
 
           <div className="flex items-center gap-4">
-            <span className="text-zinc-600 font-mono text-xs">(03) Portfolio</span>
+            <span className="text-zinc-700 font-mono text-xs">(03) Portfolio</span>
             {/* Hide navigation buttons on mobile */}
             <div className="hidden md:flex gap-2">
               <button
                 onClick={goToPrevious}
-                className="w-10 h-10 border border-zinc-800 flex items-center justify-center hover:bg-white hover:text-black transition-all"
+                className="w-10 h-10 border border-zinc-400 flex items-center justify-center hover:bg-black hover:text-white transition-all text-black"
                 aria-label="Previous slide"
               >
                 ←
               </button>
               <button
                 onClick={goToNext}
-                className="w-10 h-10 border border-zinc-800 flex items-center justify-center hover:bg-white hover:text-black transition-all"
+                className="w-10 h-10 border border-zinc-400 flex items-center justify-center hover:bg-black hover:text-white transition-all text-black"
                 aria-label="Next slide"
               >
                 →
@@ -340,16 +340,18 @@ const Portfolio: React.FC = () => {
           </div>
           
           {/* Minimal Scroll Indicator */}
-          <div className="mt-6 px-6">
+            <div className="mt-6 px-6">
             <div className="flex items-center justify-center gap-2 mb-3">
               <span className="text-zinc-700 text-[9px] font-mono uppercase tracking-widest">
                 Swipe
               </span>
             </div>
-            <div className="relative h-1 bg-zinc-900 rounded-full overflow-hidden">
-              {/* Scrollbar thumb */}
+            <div className="relative h-[2px] bg-zinc-600/60 rounded-full overflow-hidden">
+              {/* Dark background line */}
+              <div className="absolute inset-0 bg-zinc-700/70 rounded-full" />
+              {/* Scrollbar thumb - bright white for maximum contrast */}
               <div 
-                className="absolute top-0 h-full bg-white/80 rounded-full transition-all duration-150 ease-out"
+                className="absolute top-0 h-full bg-white rounded-full transition-all duration-150 ease-out"
                 style={{ 
                   width: `${Math.max(10, Math.min(100, scrollableRatio * 100))}%`,
                   left: `${Math.max(0, Math.min(100 - (scrollableRatio * 100), scrollProgress * (100 - (scrollableRatio * 100))))}%`
@@ -383,7 +385,7 @@ const Portfolio: React.FC = () => {
                 key={index}
                 onClick={() => goToSlide(index)}
                 className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentSlide ? 'bg-white' : 'bg-zinc-800 hover:bg-zinc-600'
+                  index === currentSlide ? 'bg-black' : 'bg-zinc-500 hover:bg-zinc-600'
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
