@@ -44,6 +44,32 @@ const CreativeDirector: React.FC = () => {
       twitterDescription.setAttribute('content', 'Shaunak Mukherji is a Creative Director and architect focused on finding the best way to solve problems. Learn about his AI-first, system-driven approach to architecture.');
     }
 
+    // Add Person structured data (JSON-LD)
+    const personSchema = {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Shaunak Mukherji",
+      "jobTitle": "Creative Director",
+      "image": "https://mukherjiarchitects.com/images/about/creative-director.png",
+      "url": "https://mukherjiarchitects.com/shaunak-mukherji",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Mukherji Architects Milano",
+        "url": "https://mukherjiarchitects.com"
+      },
+      "description": "Shaunak Mukherji is an architect focused on finding the best way to solve problems. He believes architecture must continuously evolve to remain efficient, relevant, and precise. His approach is AI-first and system-driven, centered on building workflows that prioritize speed, clarity, and efficiency.",
+      "alumniOf": {
+        "@type": "EducationalOrganization",
+        "name": "Politecnico di Milano"
+      }
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(personSchema);
+    script.id = 'person-structured-data';
+    document.head.appendChild(script);
+
     // Cleanup: restore original values when component unmounts
     return () => {
       document.title = originalTitle;
@@ -61,6 +87,11 @@ const CreativeDirector: React.FC = () => {
       }
       if (twitterDescription && originalTwitterDescription) {
         twitterDescription.setAttribute('content', originalTwitterDescription);
+      }
+      // Remove structured data script
+      const personScript = document.getElementById('person-structured-data');
+      if (personScript) {
+        personScript.remove();
       }
     };
   }, []);
