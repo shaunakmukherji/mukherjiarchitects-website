@@ -1,7 +1,9 @@
 import { NavItem, Project, Service, AboutContent } from './types';
 
-// Hero Cover Image - The main background image behind the hero text
-export const HERO_IMAGE_URL = '/images/hero/hero-cover.jpg.jpeg'; // Put your hero image in public/images/hero/
+// Landing page hero image — driven by the project folder in public/images/projects/_hero/
+// Falls back to the static file if no project folder is set.
+import { SITE_HERO_IMAGE_URL } from './generated/site-hero';
+export const HERO_IMAGE_URL = SITE_HERO_IMAGE_URL ?? '/images/hero/hero-cover.jpg.jpeg';
 
 // Logo - Replace the text logo in navbar
 export const LOGO_URL = '/images/logo/logo.png'; // Put your logo PNG in public/images/logo/

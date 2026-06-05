@@ -1,35 +1,46 @@
+import { ABOUT_IMAGE_VERSIONS } from '../generated/about-image-versions';
+import { splitImageUrl, stripImageExtension } from './imageExtensions';
+
+export function isAboutImage(url: string): boolean {
+  return splitImageUrl(url).pathname.startsWith('/images/about/');
+}
+
 /**
- * Converts image URL to WebP format for optimized serving
- * Excludes hero images from conversion
- * @param url - Original image URL
- * @param options - Optimization options
- * @param options.mobile - If true, uses lower quality for mobile devices
- * @param options.width - Optional width hint for responsive images
+ * Converts image URL to WebP format for optimized serving.
+ * About and hero images are always served as originals.
  */
 export function getOptimizedImageUrl(
-  url: string, 
+  url: string,
   options?: { mobile?: boolean; width?: number }
 ): string {
-  // Skip hero images
-  if (url.includes('/images/hero/')) {
-    return url;
-  }
-
-  // Skip if already WebP
   if (url.endsWith('.webp')) {
     return url;
   }
 
-  // Add mobile quality parameter if requested
+  let optimized = withImageCacheBust(url);
+
   if (options?.mobile) {
-    const separator = url.includes('?') ? '&' : '?';
-    return `${url}${separator}mobile=true`;
+    const separator = optimized.includes('?') ? '&' : '?';
+    optimized = `${optimized}${separator}mobile=true`;
   }
 
-  // For production build, Vite will handle the conversion
-  // In dev, the Vite plugin handles it automatically
-  // Just return the URL as-is - the middleware will convert it
-  return url;
+  return optimized;
+}
+
+/** Append file mtime so replaced images with the same name bust browser cache. */
+export function withImageCacheBust(url: string): string {
+  const { pathname, search } = splitImageUrl(url);
+  const base = stripImageExtension(pathname) ?? pathname;
+  const version = ABOUT_IMAGE_VERSIONS[base] ?? ABOUT_IMAGE_VERSIONS[pathname];
+
+  if (!version) {
+    return url;
+  }
+
+  const params = new URLSearchParams(search.replace(/^\?/, ''));
+  params.set('v', String(version));
+  const query = params.toString();
+  return query ? `${pathname}?${query}` : pathname;
 }
 
 /**
@@ -45,19 +56,16 @@ export function isMobileDevice(): boolean {
  * Ensures only WebP versions can be downloaded
  */
 export function preventImageDownload(imgElement: HTMLImageElement): void {
-  // Prevent context menu (right-click)
   imgElement.addEventListener('contextmenu', (e) => {
     e.preventDefault();
   });
 
-  // Intercept drag start (prevents drag-to-download)
   imgElement.addEventListener('dragstart', (e) => {
     e.preventDefault();
   });
 
-  // Intercept any download attempts
   imgElement.addEventListener('mousedown', (e) => {
-    if (e.button === 1) { // Middle mouse button
+    if (e.button === 1) {
       e.preventDefault();
     }
   });
@@ -67,19 +75,11 @@ export function preventImageDownload(imgElement: HTMLImageElement): void {
  * Creates a download handler that serves WebP version
  */
 export function createWebPDownloadHandler(imgElement: HTMLImageElement): void {
-  // Override any programmatic download attempts
   const originalSrc = imgElement.src;
-  
-  // Ensure the image loads as WebP
+
   if (!originalSrc.includes('/images/hero/') && !originalSrc.endsWith('.webp')) {
-    // The Vite middleware will automatically serve WebP
-    // But we can force it by checking if it's already WebP
     imgElement.addEventListener('load', () => {
       // Image is already loaded as WebP by the middleware
     });
   }
 }
-
-
-
-

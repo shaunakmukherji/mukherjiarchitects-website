@@ -113,6 +113,19 @@
       }
     </script>
     <style>
+      /* Custom dot cursor: React sets .has-custom-cursor on fine pointers only */
+      @media (pointer: fine) {
+        html.has-custom-cursor,
+        html.has-custom-cursor body,
+        html.has-custom-cursor body * {
+          cursor: none !important;
+        }
+        html.has-custom-cursor input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]),
+        html.has-custom-cursor textarea,
+        html.has-custom-cursor [contenteditable="true"] {
+          cursor: text !important;
+        }
+      }
       body {
         background-color: #000000;
         color: #ffffff;

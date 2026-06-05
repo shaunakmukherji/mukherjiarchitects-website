@@ -3,7 +3,7 @@ import { useNavigation } from '../../contexts/NavigationContext';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 
 const BestFitResidential: React.FC = () => {
-  const { navigateToHome, navigateToContact, navigateToCategory } = useNavigation();
+  const { navigateBack, backLabel, navigateToContact, navigateToCategory } = useNavigation();
 
   // Update page title and meta tags for SEO
   useEffect(() => {
@@ -103,10 +103,10 @@ const BestFitResidential: React.FC = () => {
     <div className="pt-32 pb-24 min-h-screen bg-black">
       <div className="max-w-7xl mx-auto px-6">
         <button 
-          onClick={navigateToHome} 
+          onClick={navigateBack} 
           className="flex items-center gap-2 text-zinc-500 hover:text-white mb-16 transition-colors text-sm uppercase tracking-widest"
         >
-          <ArrowLeft size={16} /> Back to Home
+          <ArrowLeft size={16} /> {backLabel}
         </button>
 
         <div className="max-w-4xl">

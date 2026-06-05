@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { getOptimizedImageUrl, isMobileDevice } from '../../lib/imageUtils';
+import { getNextAlternateImageUrl } from '../../lib/imageExtensions';
+import { getOptimizedImageUrl, isAboutImage, isMobileDevice } from '../../lib/imageUtils';
 
 interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
@@ -20,14 +21,22 @@ interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({ 
   src, 
   alt, 
-  skipOptimization = false,
+  skipOptimization = isAboutImage(src),
   lazy = true, // Default to lazy loading
   priority = false,
   ...props 
 }) => {
   const imgRef = useRef<HTMLImageElement>(null);
+  const triedSrcs = useRef<string[]>([]);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [resolvedSrc, setResolvedSrc] = useState(src);
+
+  useEffect(() => {
+    triedSrcs.current = [];
+    setResolvedSrc(src);
+    setImageLoaded(false);
+  }, [src]);
 
   // Detect mobile on mount and resize
   useEffect(() => {
@@ -42,7 +51,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     if (!img) return;
 
     // Skip optimization for hero images
-    if (skipOptimization || src.includes('/images/hero/')) {
+    if (skipOptimization || src.includes('/images/hero/') || isAboutImage(src)) {
       return;
     }
 
@@ -102,7 +111,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       img.removeEventListener('click', handleClick);
       img.removeEventListener('selectstart', handleSelectStart);
     };
-  }, [src, alt, skipOptimization, imageLoaded]);
+  }, [resolvedSrc, alt, skipOptimization, imageLoaded]);
 
   // Function to download image as WebP (cropped as displayed)
   const downloadAsWebP = (img: HTMLImageElement, filename: string, isDrag = false) => {
@@ -165,14 +174,31 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   // Get optimized URL (WebP conversion handled by Vite plugin)
   // Use mobile quality for mobile devices
-  const optimizedSrc = skipOptimization 
-    ? src 
-    : getOptimizedImageUrl(src, { mobile: isMobile });
+  const useMobileOptimization =
+    isMobile && !skipOptimization && !isAboutImage(resolvedSrc) && !resolvedSrc.includes('/images/hero/');
+  const optimizedSrc = getOptimizedImageUrl(resolvedSrc, { mobile: useMobileOptimization });
 
   const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     setImageLoaded(true);
     if (props.onLoad) {
       props.onLoad(e);
+    }
+  };
+
+  const handleError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    if (!triedSrcs.current.includes(resolvedSrc)) {
+      triedSrcs.current.push(resolvedSrc);
+    }
+
+    const nextSrc = getNextAlternateImageUrl(src, triedSrcs.current);
+    if (nextSrc) {
+      triedSrcs.current.push(nextSrc);
+      setResolvedSrc(nextSrc);
+      return;
+    }
+
+    if (props.onError) {
+      props.onError(e);
     }
   };
 
@@ -190,6 +216,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       decoding="async"
       {...props}
       onLoad={handleLoad}
+      onError={handleError}
       style={{
         ...props.style,
         userSelect: 'none',

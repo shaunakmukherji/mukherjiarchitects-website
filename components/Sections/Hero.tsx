@@ -1,40 +1,42 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Button from '../ui/Button';
 import { HERO_IMAGE_URL } from '../../constants';
+import { useNavigation } from '../../contexts/NavigationContext';
 
 const Hero: React.FC = () => {
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const { navigateToPortfolioFeed } = useNavigation();
+  const [textProgress, setTextProgress] = useState(0);
+  const [imageProgress, setImageProgress] = useState(0);
   const heroRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
       if (!heroRef.current) return;
-      
+
       const heroSection = heroRef.current;
       const heroHeight = heroSection.offsetHeight;
       const scrollY = window.scrollY;
-      
-      // Calculate progress - fade happens in first 25% of hero section (much faster!)
-      const rawProgress = Math.min(scrollY / (heroHeight * 0.25), 1);
-      // Apply easing for smoother fade
-      const progress = Math.pow(rawProgress, 1.2);
-      setScrollProgress(progress);
+
+      // Text: fades over a moderate band so the headline stays readable while you start scrolling.
+      const textBand = heroHeight * 0.22;
+      const textRaw = Math.min(scrollY / textBand, 1);
+      setTextProgress(Math.pow(textRaw, 1.08));
+
+      // Image: reaches full clarity sooner (shorter scroll distance) so the render reads fully before you leave the hero.
+      const imageBand = heroHeight * 0.11;
+      const imageRaw = Math.min(scrollY / imageBand, 1);
+      setImageProgress(Math.pow(imageRaw, 0.88));
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll(); // Initial calculation
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Text opacity: fades from 1 to 0 much faster (completes by 25% scroll)
-  const textOpacity = Math.max(0, 1 - scrollProgress);
-  
-  // Text translate: moves up as you scroll (faster movement)
-  const textTranslateY = scrollProgress * -80; // Moves up 80px max
-  
-  // Image opacity: increases from 0.2 to 1 as you scroll (becomes much clearer, faster)
-  const imageOpacity = 0.2 + (scrollProgress * 0.8);
+  const textOpacity = Math.max(0, 1 - textProgress);
+  const textTranslateY = textProgress * -80;
+  const imageOpacity = 0.2 + imageProgress * 0.8;
 
   return (
     <section 
@@ -90,11 +92,9 @@ const Hero: React.FC = () => {
           </p>
 
           <div className="pt-4 md:pt-8 flex flex-wrap gap-4">
-             <a href="#portfolio">
-                <Button variant="primary" icon>
-                EXPLORE OUR WORK
-                </Button>
-             </a>
+             <Button variant="primary" icon onClick={navigateToPortfolioFeed}>
+               EXPLORE OUR WORK
+             </Button>
           </div>
         </div>
 

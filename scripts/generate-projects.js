@@ -9,54 +9,69 @@ function getCategoryInfo(folderName) {
   const mapping = {
     'commercial': {
       displayName: 'COMMERCIAL DESIGN',
-      category: 'Commercial',
-      description: 'Functional, inspiring environments for businesses to thrive. We design spaces that embody brand identity.'
+      category: 'Commercial Design',
+      description: 'Commercial architecture is built around maximizing value — sellable area, revenue per square metre, return on investment. Every design decision is evaluated against those outcomes.'
     },
     'commercial-design': {
       displayName: 'COMMERCIAL DESIGN',
-      category: 'Commercial',
-      description: 'Functional, inspiring environments for businesses to thrive. We design spaces that embody brand identity.'
+      category: 'Commercial Design',
+      description: 'Commercial architecture is built around maximizing value — sellable area, revenue per square metre, return on investment. Every design decision is evaluated against those outcomes.'
     },
     'residential': {
       displayName: 'RESIDENTIAL DESIGN',
-      category: 'Residential',
-      description: 'Custom homes that reflect your lifestyle and aspirations. We blend modern aesthetics with functional living spaces.'
+      category: 'Residential Design',
+      description: 'We approach housing through modularity, construction efficiency, and economies of scale. Every project carries a strong concept and a distinct architectural identity — which is what gives a developer a real market advantage.'
     },
     'residential-design': {
       displayName: 'RESIDENTIAL DESIGN',
-      category: 'Residential',
-      description: 'Custom homes that reflect your lifestyle and aspirations. We blend modern aesthetics with functional living spaces.'
+      category: 'Residential Design',
+      description: 'We approach housing through modularity, construction efficiency, and economies of scale. Every project carries a strong concept and a distinct architectural identity — which is what gives a developer a real market advantage.'
     },
     'mixed-use': {
       displayName: 'MIXED-USE DESIGN',
-      category: 'Commercial',
-      description: 'Integrated developments combining multiple uses into cohesive urban experiences that enhance community living.'
+      category: 'Mixed-use Design',
+      description: 'Projects that span multiple typologies or resist easy classification. Whatever the brief, every project receives a strong concept and a clear architectural identity.'
     },
     'mixed-use-design': {
       displayName: 'MIXED-USE DESIGN',
-      category: 'Commercial',
-      description: 'Integrated developments combining multiple uses into cohesive urban experiences that enhance community living.'
+      category: 'Mixed-use Design',
+      description: 'Projects that span multiple typologies or resist easy classification. Whatever the brief, every project receives a strong concept and a clear architectural identity.'
     },
     'master-planning': {
       displayName: 'MASTER PLANNING',
-      category: 'Commercial',
-      description: 'Comprehensive master planning projects that create sustainable and integrated community developments.'
-    },
-    'master-planning': {
-      displayName: 'MASTER PLANNING',
-      category: 'Commercial',
-      description: 'Comprehensive master planning projects that create sustainable and integrated community developments.'
+      category: 'Master Planning',
+      description: 'A master plan requires one strong concept capable of driving the entire development. We work macro to micro — establishing the system and logic first, then letting every subsequent decision follow from it.'
     },
     'explorations': {
       displayName: 'EXPLORATIONS',
-      category: 'Commercial',
-      description: 'Conceptual studies and experimental designs that push the boundaries of architectural innovation.'
+      category: 'Explorations',
+      description: 'Exploratory and academic work by Shaunak Mukherji. Projects built around ideas and positions rather than client briefs, communicating what the studio believes architecture should look like.'
+    },
+    'hospitality': {
+      displayName: 'HOSPITALITY DESIGN',
+      category: 'Hospitality Design',
+      description: 'Through our connection with Bobby Mukherji Architects, we bring decades of institutional hospitality knowledge to every project — room count, brand standards, operator requirements, profitability. This is a technically demanding sector and we know it well.'
+    },
+    'hospitality-design': {
+      displayName: 'HOSPITALITY DESIGN',
+      category: 'Hospitality Design',
+      description: 'Through our connection with Bobby Mukherji Architects, we bring decades of institutional hospitality knowledge to every project — room count, brand standards, operator requirements, profitability. This is a technically demanding sector and we know it well.'
+    },
+    'research-&-exploration': {
+      displayName: 'RESEARCH & EXPLORATION',
+      category: 'Research & Exploration',
+      description: 'Exploratory and academic work by Shaunak Mukherji. Projects built around ideas and positions rather than client briefs, communicating what the studio believes architecture should look like.'
+    },
+    'research-exploration': {
+      displayName: 'RESEARCH & EXPLORATION',
+      category: 'Research & Exploration',
+      description: 'Exploratory and academic work by Shaunak Mukherji. Projects built around ideas and positions rather than client briefs, communicating what the studio believes architecture should look like.'
     }
   };
 
   return mapping[normalized] || {
     displayName: folderName.toUpperCase().replace(/-/g, ' '),
-    category: 'Commercial',
+    category: folderName,
     description: `Projects in ${folderName} category.`
   };
 }
@@ -187,7 +202,35 @@ function findImages(folderPath) {
   };
 }
 
-function scanProjectsFolder() {
+/**
+ * Load the existing generated/projects.ts and build a lookup map by "title||category".
+ * This lets the generator preserve manually-curated fields (description, credit,
+ * isSignature, signatureOrder, categoryOrder, location) across re-runs.
+ */
+function loadExistingProjectsMap(outputDir) {
+  const projectsPath = path.join(outputDir, 'projects.ts');
+  if (!fs.existsSync(projectsPath)) return {};
+
+  try {
+    const content = fs.readFileSync(projectsPath, 'utf-8');
+    // Extract the JSON array from the TS file
+    const match = content.match(/export const PROJECTS[^=]*=\s*(\[[\s\S]*\]);[\s\n]*export default/);
+    if (!match) return {};
+    const existing = JSON.parse(match[1]);
+    const map = {};
+    for (const p of existing) {
+      const key = `${p.title}||${p.category}`;
+      map[key] = p;
+    }
+    console.log(`🔒 Loaded ${Object.keys(map).length} existing project(s) for description/credit preservation`);
+    return map;
+  } catch (e) {
+    console.warn('⚠️  Could not parse existing projects.ts — descriptions will not be preserved this run:', e.message);
+    return {};
+  }
+}
+
+function scanProjectsFolder(existingMap = {}) {
   const projectsDir = path.join(__dirname, '..', 'public', 'images', 'projects');
   const projects = [];
   const categorySet = new Set();
@@ -207,8 +250,7 @@ function scanProjectsFolder() {
   // Scan each category folder
   for (const categoryFolder of categoryFolders) {
     const categoryPath = path.join(projectsDir, categoryFolder);
-    const categoryKey = categoryFolder.toLowerCase().replace(/\s+/g, '-').replace(/_/g, '-');
-    
+
     // Track this category (store original folder name for reference)
     categorySet.add(categoryFolder);
 
@@ -226,22 +268,31 @@ function scanProjectsFolder() {
     for (const projectFolder of projectFolders) {
       const projectPath = path.join(categoryPath, projectFolder);
       const { main, gallery } = findImages(projectPath);
-      const { description, year, location } = readDescriptionFile(projectPath);
+      const { description: mdDescription, year: mdYear, location: mdLocation } = readDescriptionFile(projectPath);
 
       // Get category info
       const categoryInfo = getCategoryInfo(categoryFolder);
 
-      // Extract location and year
-      const projectLocation = location || extractLocationFromTitle(projectFolder);
-      const projectYear = year || extractYearFromFolder(projectFolder);
+      // Check for existing curated data for this project
+      const existingKey = `${projectFolder}||${categoryInfo.category}`;
+      const existing = existingMap[existingKey] || null;
 
-      // Generate description if not found
-      const projectDescription = description || 
-        `A ${categoryInfo.category.toLowerCase()} project${projectLocation ? ` in ${projectLocation}` : ''} showcasing innovative design and architectural excellence.`;
+      // --- DESCRIPTION ---
+      // Priority: description.md > existing curated > generic fallback
+      const genericFallback = `A ${categoryInfo.category.toLowerCase()} project${mdLocation ? ` in ${mdLocation}` : ''} showcasing innovative design and architectural excellence.`;
+      const projectDescription = mdDescription || (existing && existing.description) || genericFallback;
 
-      // Create project data
+      // --- LOCATION / YEAR ---
+      const projectLocation = mdLocation || (existing && existing.location) || extractLocationFromTitle(projectFolder);
+      const projectYear     = mdYear     || (existing && existing.year)     || extractYearFromFolder(projectFolder);
+
+      // --- ID --- preserve existing id so URLs/links don't break
+      const projectId_str = existing ? existing.id : `p${projectId++}`;
+      if (!existing) {} else { /* id reused, don't increment */ }
+
+      // --- CURATED FIELDS --- preserve all manually-set fields from existing data
       const project = {
-        id: `p${projectId++}`,
+        id: projectId_str,
         title: projectFolder,
         category: categoryInfo.category,
         year: projectYear,
@@ -249,7 +300,11 @@ function scanProjectsFolder() {
         description: projectDescription,
         imageUrl: `/images/projects/${categoryFolder}/${projectFolder}/${main}`,
         gallery: gallery.map(img => `/images/projects/${categoryFolder}/${projectFolder}/${img}`),
-        isSignature: projectId <= 5 // First 4 projects are signature (after increment)
+        // Preserve manual curation — fall back to auto-detect only for brand-new projects
+        isSignature:    existing ? existing.isSignature    : false,
+        signatureOrder: existing ? existing.signatureOrder : null,
+        categoryOrder:  existing ? existing.categoryOrder  : null,
+        ...(existing && existing.credit ? { credit: existing.credit } : {}),
       };
 
       projects.push(project);
@@ -258,7 +313,7 @@ function scanProjectsFolder() {
 
   // Generate services from categories
   const services = Array.from(categorySet)
-    .map((categoryFolder, index) => {
+    .map((categoryFolder) => {
       const categoryKey = categoryFolder.toLowerCase().replace(/\s+/g, '-').replace(/_/g, '-');
       const categoryInfo = getCategoryInfo(categoryFolder);
 
@@ -278,21 +333,24 @@ function scanProjectsFolder() {
 // Main execution
 function generateProjectsData() {
   console.log('🔍 Scanning projects folder structure...');
-  
-  const { projects, services } = scanProjectsFolder();
-  
-  console.log(`✅ Found ${projects.length} projects across ${services.length} categories`);
-  
-  // Write projects data to generated folder (at root level for easier imports)
+
+  // Output dir needed early so we can load existing data for preservation
   const outputDir = path.join(__dirname, '..', 'generated');
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
+  // Load existing curated data BEFORE scanning so we can merge it in
+  const existingMap = loadExistingProjectsMap(outputDir);
+
+  const { projects, services } = scanProjectsFolder(existingMap);
+
+  console.log(`✅ Found ${projects.length} projects across ${services.length} categories`);
+
   // Generate TypeScript files for better type safety and Vite compatibility
-  const projectsTs = `// Auto-generated file - do not edit manually
-// This file is generated by scripts/generate-projects.js
-// Run "npm run generate" to regenerate
+  const projectsTs = `// Auto-generated file — structural data (images, folders) is managed by scripts/generate-projects.js
+// DESCRIPTIONS and CREDITS are manually curated — the generate script preserves them.
+// To update descriptions, edit this file directly. To add new projects, run "npm run generate".
 
 import { Project } from '../types';
 
@@ -331,6 +389,7 @@ if (require.main === module) {
 }
 
 module.exports = { generateProjectsData };
+
 
 
 

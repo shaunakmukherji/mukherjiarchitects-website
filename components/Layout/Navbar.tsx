@@ -6,7 +6,7 @@ import { useNavigation } from '../../contexts/NavigationContext';
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { navigateToHome, currentView } = useNavigation();
+  const { navigateToHome, navigateToPortfolioFeed, currentView } = useNavigation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -82,15 +82,26 @@ const Navbar: React.FC = () => {
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
           {NAV_ITEMS.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              onClick={(e) => handleNavClick(e, item.href)}
-              className="text-sm font-medium text-zinc-400 hover:text-white transition-colors relative group"
-            >
-              {item.label}
-              <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-accent transition-all duration-300 group-hover:w-full" />
-            </a>
+            item.label === 'Portfolio' ? (
+              <button
+                key={item.label}
+                onClick={navigateToPortfolioFeed}
+                className="text-sm font-medium text-zinc-400 hover:text-white transition-colors relative group"
+              >
+                {item.label}
+                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-accent transition-all duration-300 group-hover:w-full" />
+              </button>
+            ) : (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={(e) => handleNavClick(e, item.href)}
+                className="text-sm font-medium text-zinc-400 hover:text-white transition-colors relative group"
+              >
+                {item.label}
+                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-accent transition-all duration-300 group-hover:w-full" />
+              </a>
+            )
           ))}
           <a href="#contact" onClick={(e) => handleNavClick(e, '#contact')} className="ml-4 px-4 py-2 text-xs font-semibold bg-white text-black hover:bg-zinc-200 transition-colors">
             CONTACT US
@@ -135,17 +146,27 @@ const Navbar: React.FC = () => {
       >
         <div className="flex flex-col items-center justify-center h-full w-full gap-8 px-6">
           {NAV_ITEMS.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              onClick={(e) => {
+            item.label === 'Portfolio' ? (
+              <button
+                key={item.label}
+                onClick={() => { navigateToPortfolioFeed(); setIsMobileMenuOpen(false); }}
+                className="text-2xl font-display font-bold text-white hover:text-zinc-400 transition-colors py-2"
+              >
+                {item.label}
+              </button>
+            ) : (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={(e) => {
                   handleNavClick(e, item.href);
                   setIsMobileMenuOpen(false);
-              }}
-              className="text-2xl font-display font-bold text-white hover:text-zinc-400 transition-colors py-2"
-            >
-              {item.label}
-            </a>
+                }}
+                className="text-2xl font-display font-bold text-white hover:text-zinc-400 transition-colors py-2"
+              >
+                {item.label}
+              </a>
+            )
           ))}
           {/* Explicit Contact Link for Mobile */}
           <a

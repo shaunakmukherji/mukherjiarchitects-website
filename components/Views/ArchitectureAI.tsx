@@ -3,7 +3,7 @@ import { useNavigation } from '../../contexts/NavigationContext';
 import { ArrowLeft } from 'lucide-react';
 
 const ArchitectureAI: React.FC = () => {
-  const { navigateToHome } = useNavigation();
+  const { navigateBack, backLabel } = useNavigation();
 
   // Update page title and meta tags for SEO
   useEffect(() => {
@@ -68,10 +68,10 @@ const ArchitectureAI: React.FC = () => {
     <div className="pt-32 pb-24 min-h-screen bg-black">
       <div className="max-w-7xl mx-auto px-6">
         <button 
-          onClick={navigateToHome} 
+          onClick={navigateBack}
           className="flex items-center gap-2 text-zinc-500 hover:text-white mb-16 transition-colors text-sm uppercase tracking-widest"
         >
-          <ArrowLeft size={16} /> Back to Home
+          <ArrowLeft size={16} /> {backLabel}
         </button>
 
         <div className="max-w-4xl">
@@ -80,181 +80,84 @@ const ArchitectureAI: React.FC = () => {
             Architecture and Artificial Intelligence
           </h1>
           <h2 className="font-display text-xl md:text-2xl font-normal text-zinc-400 mb-16">
-            How work is changing
+            On amplification, input quality, and why the machine is only half the equation
           </h2>
 
           {/* Content Sections */}
           <div className="space-y-16">
-            {/* The reality */}
+
+            {/* The machine is constant */}
             <section>
               <h2 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
-                THE REALITY
+                The machine is constant. The input is everything.
               </h2>
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Most work today happens on a computer.
+                  AI is a deterministic process. It takes an input and produces an output. The technology is the same for everyone who uses it.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  When that's the case, it can be done faster, cheaper, and with fewer mistakes by machines.
+                  What varies — entirely — is the quality of what goes in.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Architecture is no different.
+                  A spatially resolved, architecturally intelligent input produces something disproportionately better than the input itself: more options tested, more constraints resolved, more decisions made with precision. The return on a well-crafted input is not linear. It is multiplied.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  This doesn't change what gets built. It changes how reliably, efficiently, and clearly decisions are made before anything is built.
+                  This is what amplification means in practice. The ceiling for strong input is far higher than any manual process could reach.
                 </p>
               </div>
             </section>
 
-            {/* What AI changes in architectural design */}
+            {/* Creativity is the other input */}
             <section>
               <h2 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
-                What AI changes in architectural design
+                Creativity is the other input
               </h2>
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Artificial intelligence removes friction from the design process.
+                  Technical intelligence is one kind of input. Creative intelligence is another — and it scales the same way.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  It allows more options to be tested.
-                  More constraints to be checked.
-                  More decisions to be validated early.
+                  A designer with genuine artistic vision has always had that vision. What has changed is the ability to act on it at speed. To iterate on a spatial idea dozens of times in a session. To test a formal concept against material, light, proportion. To communicate what previously took far longer to communicate — clearly, precisely, and fast.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  This reduces rework, coordination errors, and avoidable mistakes later in construction.
+                  The creative act itself — the original idea, the spatial instinct, the compositional judgment — remains entirely human. What AI gives is the ability to pursue that idea further than was previously possible in the time available.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  The result is control.
+                  When real creativity meets that kind of iteration velocity, the compounding effect is significant. Each refined version becomes the input for the next. Each cycle produces something more resolved. Over a project, this accumulates into a quality of output that a slower process simply cannot reach.
                 </p>
               </div>
             </section>
 
-            {/* What clients should look for */}
+            {/* The compounding effect */}
             <section>
               <h2 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
-                What clients should look for
+                The compounding effect
               </h2>
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Anyone can generate images of buildings today.
+                  Using the most capable tool at every stage of a project means each decision creates a stronger foundation for the next. Better information at concept stage produces a better brief for design development. A better-resolved design produces fewer problems in technical coordination. Fewer problems in coordination produce fewer surprises in construction.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  That does not mean they understand architecture.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  AI renders are easy to produce. Buildable projects are not.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  A convincing image does not explain:
-                </p>
-                <ul className="list-disc list-inside space-y-2 text-zinc-400 text-base md:text-lg leading-relaxed ml-4">
-                  <li>how space works</li>
-                  <li>how geometry is resolved</li>
-                  <li>how systems integrate</li>
-                  <li>how the building actually gets built</li>
-                </ul>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  That is why we showcase our architectural thinking and show process.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Sketches.
-                  Drawings.
-                  Plans.
-                  Sections.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  As proof that what you see is the result of architectural thinking—not another meaningless image generated and passed off as authorship.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Buildings are systems. Images are not.
+                  The advantage at each step is modest. Across an entire project, it is substantial.
                 </p>
               </div>
             </section>
 
-            {/* The role of people, not just tools */}
+            {/* Why the input quality here is different */}
             <section>
               <h2 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
-                The role of people, not just tools
+                Why the input quality here is different
               </h2>
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Artificial intelligence does not replace ability. It amplifies what already exists.
+                  The studio operates out of Milan. Our team are top graduates of Politecnico di Milano — the highest-ranked architecture and design university in Italy. Italy is the Mecca of design, and Milan sits at its centre. The design culture here, the standards, the spatial intelligence embedded in the training — this is the input.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  If the thinking is weak, AI makes it obvious.
-                  If the thinking is strong, AI multiplies it.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  We believe in hiring the best people first.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Our team includes graduates from Politecnico di Milano, the leading technical architecture and design university in Italy. The studio is led by Shaunak Mukherji, an alumnus of the same institution.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  We are obsessed with technology, but equally obsessed with design quality.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  For us, artistry does not disappear. It gets amplified.
+                  The purest design thinking, applied through the most capable tools available, produces the strongest possible output. That is how the process works.
                 </p>
               </div>
             </section>
 
-            {/* How AI is used in our work */}
-            <section>
-              <h2 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
-                How AI is used in our work
-              </h2>
-              <div className="space-y-5 max-w-prose">
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  We use AI to remove repetitive work, test options faster, and challenge assumptions early.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  If a tool improves the outcome, we use it.
-                  If a better one appears, we move on.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  There is no attachment to tools. There is only commitment to results.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Creativity is not something we protect for its own sake. If a system can do something better, we let it.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  What matters is maximum clarity, maximum efficiency, and maximum return on effort.
-                </p>
-              </div>
-            </section>
-
-            {/* Why moving early matters */}
-            <section>
-              <h2 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
-                Why moving early matters
-              </h2>
-              <div className="space-y-5 max-w-prose">
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  The speed at which technology is evolving is unprecedented.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Entire tools become obsolete overnight.
-                  Fields that rely on digital processes are being restructured in real time.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Architecture can be slow to respond.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  The architects who will remain are not the ones who wait to adapt later. They are the ones who reorganize early—around tools, systems, and ways of working that reflect how the world actually operates now.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Most will cope.
-                  A few will move first.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  We choose to move first.
-                </p>
-                <p className="text-red-500 text-base md:text-lg leading-relaxed font-medium">
-                  That is the AI advantage.
-                </p>
-              </div>
-            </section>
           </div>
         </div>
       </div>

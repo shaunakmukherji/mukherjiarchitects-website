@@ -6,13 +6,13 @@ import { useInViewportCenter } from '../../hooks/useInViewportCenter';
 import OptimizedImage from '../ui/OptimizedImage';
 
 const About: React.FC = () => {
-  const { navigateToCreativeDirector, navigateToArchitectureAI, navigateToAboutStudio } = useNavigation();
+  const { navigateToCreativeDirector, navigateToBobbyMukherji, navigateToArchitectureAI, navigateToAboutStudio } = useNavigation();
   const { ref: imageRef, isInCenter } = useInViewportCenter();
-  
+
   return (
     <section id="about" className="relative py-16 md:py-24 border-b border-zinc-900 bg-pure-grey text-black">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
-        
+
         {/* Header */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 mb-12 md:mb-20">
             <div>
@@ -29,7 +29,7 @@ const About: React.FC = () => {
 
         {/* Content */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 lg:gap-12 items-start">
-            
+
             {/* Image */}
             <button
               onClick={navigateToAboutStudio}
@@ -37,19 +37,17 @@ const About: React.FC = () => {
               ref={imageRef as React.RefObject<HTMLButtonElement>}
               aria-label="Learn more about Mukherji Architects Milano"
             >
-                 <div className="aspect-[4/5] w-full overflow-hidden bg-pure-grey-light">
-                    <OptimizedImage 
-                        src={ABOUT_CONTENT.imageUrl} 
+                 <div className="aspect-square w-full overflow-hidden bg-pure-grey-light">
+                    <OptimizedImage
+                        src={ABOUT_CONTENT.imageUrl}
                         alt={ABOUT_CONTENT.imageAlt}
                         lazy={true}
                         className={
-                          `w-full h-full object-cover transition-[transform,opacity,filter] duration-700 ` +
-                          // Scroll-based highlight
+                          `w-full h-full object-contain object-center transition-[transform,opacity] duration-700 ` +
                           (isInCenter
-                            ? 'scale-105 opacity-100 grayscale-0 '
-                            : 'opacity-70 grayscale ') +
-                          // Hover keeps extra emphasis and overlay behaviour
-                          'group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0'
+                            ? 'scale-105 opacity-100 '
+                            : 'opacity-70 ') +
+                          'group-hover:scale-110 group-hover:opacity-100'
                         }
                     />
                  </div>
@@ -71,9 +69,9 @@ const About: React.FC = () => {
                             Mukherji Architects Milano
                         </button>
                         {' '}is the international extension of{' '}
-                        <a 
-                            href="https://bobbymukherji.com/" 
-                            target="_blank" 
+                        <a
+                            href="https://bobbymukherji.com/"
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="text-black underline underline-offset-4 decoration-zinc-600 hover:decoration-black transition-colors duration-300 font-medium"
                         >
@@ -97,7 +95,16 @@ const About: React.FC = () => {
                         >
                             Shaunak Mukherji
                         </button>
-                        , son of Bobby Mukherji, the Milan studio builds on this legacy while advancing a contemporary design approach driven by computational design,{' '}
+                        , son of{' '}
+                        <button
+                            type="button"
+                            onClick={navigateToBobbyMukherji}
+                            className="text-black underline underline-offset-4 decoration-zinc-600 hover:decoration-black transition-colors duration-300 cursor-pointer font-medium"
+                            aria-label="Learn more about Bobby Mukherji"
+                        >
+                            Bobby Mukherji
+                        </button>
+                        , the Milan studio builds on this legacy while advancing a contemporary design approach driven by computational design,{' '}
                         <a
                             href="/architecture-artificial-intelligence"
                             onClick={(e) => {
@@ -113,12 +120,6 @@ const About: React.FC = () => {
                     </p>
                 </div>
 
-                {/* Minimal graphic element */}
-                <div className="mt-12 md:mt-24 opacity-60">
-                     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ backgroundColor: 'unset', background: 'unset' }}>
-                        <circle cx="20" cy="20" r="18" stroke="#DC2626" strokeWidth="2"/>
-                    </svg>
-                </div>
             </div>
         </div>
       </div>

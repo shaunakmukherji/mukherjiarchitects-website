@@ -1,260 +1,197 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
 import { PROJECTS } from '../../constants';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import OptimizedImage from '../ui/OptimizedImage';
+import { encodeImageUrl } from '../../lib/imageUrl';
+
+const LOOP_COPIES = 3;
 
 const Portfolio: React.FC = () => {
-  const { navigateToProject } = useNavigation();
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const imageContainersRef = useRef<(HTMLDivElement | null)[]>([]);
+  const { navigateToProject, navigateToPortfolioFeed } = useNavigation();
   const [inViewStates, setInViewStates] = useState<boolean[]>(() => new Array(PROJECTS.length).fill(false));
   const horizontalScrollRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollableRatio, setScrollableRatio] = useState(1);
+  const loopWidthRef = useRef(0);
+  const didInitLoopScroll = useRef(false);
+  const infiniteEnabled = PROJECTS.length >= 2;
 
-  // Helper function to encode image URLs with spaces
-  const encodeImageUrl = (url: string): string => {
-    // Split by '/' and encode each segment (except empty ones), then rejoin
-    return url.split('/').map(segment => segment ? encodeURIComponent(segment) : '').join('/');
-  };
-
-  // Group all projects into slides (3 projects per slide: 1 large + 2 small)
-  const slides = useMemo(() => {
-    const allProjects = PROJECTS;
-    const grouped: typeof PROJECTS[] = [];
-    
-    for (let i = 0; i < allProjects.length; i += 3) {
-      grouped.push(allProjects.slice(i, i + 3));
-    }
-    
-    return grouped;
+  const measureLoopWidth = useCallback((): number => {
+    const el = horizontalScrollRef.current;
+    if (!el) return 0;
+    const markers = el.querySelectorAll<HTMLElement>('[data-loop-start]');
+    if (markers.length < 2) return 0;
+    const w = markers[1].offsetLeft - markers[0].offsetLeft;
+    return w > 0 ? w : 0;
   }, []);
 
-  const totalSlides = slides.length;
-  const currentProjects = slides[currentSlide] || [];
+  /** Normalize scroll into the middle copy and update progress bar (one full loop = 0…1). */
+  const updateInfiniteScrollUi = useCallback(() => {
+    const el = horizontalScrollRef.current;
+    const loopW = loopWidthRef.current;
+    if (!el) return;
 
-  // Detect mobile viewport
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Continuous scroll-based color transition for desktop (like Services section)
-  // This ensures colors update smoothly on scroll and work continuously
-  useEffect(() => {
-    if (isMobile) return;
-
-    const portfolioSection = document.getElementById('portfolio');
-    if (!portfolioSection) return;
-
-    const handleScroll = () => {
-      const rect = portfolioSection.getBoundingClientRect();
-      const viewportHeight = window.innerHeight || 0;
-      const viewportCenter = viewportHeight / 2;
-
-      // If the portfolio section is out of view, don't change states
-      if (rect.bottom <= 0 || rect.top >= viewportHeight) {
-        return;
-      }
-
-      // Find all project cards and determine which ones are closest to viewport center
-      const projectCards = portfolioSection.querySelectorAll('[data-portfolio-index]');
-      const visibleProjects: Array<{ index: number; distance: number }> = [];
-
-      projectCards.forEach((card) => {
-        const indexAttr = card.getAttribute('data-portfolio-index');
-        if (indexAttr == null) return;
-        const idx = parseInt(indexAttr, 10);
-        if (Number.isNaN(idx)) return;
-
-        const cardRect = card.getBoundingClientRect();
-        
-        // Check if card is visible in viewport
-        if (cardRect.bottom > 0 && cardRect.top < viewportHeight) {
-          const cardCenter = cardRect.top + cardRect.height / 2;
-          const distance = Math.abs(cardCenter - viewportCenter);
-          visibleProjects.push({ index: idx, distance });
-        }
-      });
-
-      // Update inViewStates: color projects within 400px of viewport center
-      setInViewStates((prev) => {
-        const next = [...prev]; // Preserve all existing states
-        
-        // Update colors for visible projects based on distance from center
-        visibleProjects.forEach(({ index, distance }) => {
-          if (index >= 0 && index < PROJECTS.length) {
-            // Color projects within 400px of viewport center
-            next[index] = distance < 400;
-          }
-        });
-        
-        return next;
-      });
-    };
-
-    handleScroll(); // Initial calculation
-    
-    // Also trigger when slide changes to update colors immediately
-    const timeoutId = setTimeout(() => {
-      handleScroll();
-    }, 100);
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll);
-
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
-    };
-  }, [isMobile, currentSlide]); // Add currentSlide as dependency to re-run when slide changes
-
-  // When slide changes on desktop, immediately color all 3 images in the current slide
-  // This works alongside the scroll handler to ensure button navigation works
-  useEffect(() => {
-    if (isMobile) return;
-
-    // Use requestAnimationFrame to ensure this runs after scroll handler if needed
-    const frameId = requestAnimationFrame(() => {
-      setInViewStates((prev) => {
-        const next = [...prev]; // Preserve existing states for other projects
-        
-        // Color all 3 projects in the current slide
-        currentProjects.forEach((project) => {
-          const globalIndex = PROJECTS.findIndex(p => p.id === project.id);
-          if (globalIndex >= 0) {
-            next[globalIndex] = true;
-          }
-        });
-        
-        return next;
-      });
-    });
-
-    return () => cancelAnimationFrame(frameId);
-  }, [currentSlide, isMobile, currentProjects]);
-
-  // Track horizontal scroll progress (for mobile)
-  useEffect(() => {
-    if (!isMobile) return;
-
-    const scrollContainer = horizontalScrollRef.current;
-    if (!scrollContainer) return;
-
-    const updateScrollProgress = () => {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollContainer;
+    if (!infiniteEnabled || loopW <= 0) {
+      const { scrollLeft, scrollWidth, clientWidth } = el;
       const maxScroll = scrollWidth - clientWidth;
       if (maxScroll > 0) {
-        const progress = scrollLeft / maxScroll;
-        setScrollProgress(progress);
-        // Calculate how much of the content is visible (thumb size)
-        const ratio = clientWidth / scrollWidth;
-        setScrollableRatio(ratio);
+        setScrollProgress(scrollLeft / maxScroll);
+        setScrollableRatio(clientWidth / scrollWidth);
       } else {
         setScrollProgress(0);
         setScrollableRatio(1);
       }
-    };
-
-    updateScrollProgress();
-    scrollContainer.addEventListener('scroll', updateScrollProgress, { passive: true });
-    
-    // Also update on resize
-    const resizeObserver = new ResizeObserver(updateScrollProgress);
-    resizeObserver.observe(scrollContainer);
-    window.addEventListener('resize', updateScrollProgress, { passive: true });
-
-    return () => {
-      scrollContainer.removeEventListener('scroll', updateScrollProgress);
-      window.removeEventListener('resize', updateScrollProgress);
-      resizeObserver.disconnect();
-    };
-  }, [isMobile]);
-
-  // Observe projects in horizontal scroll (for mobile)
-  useEffect(() => {
-    if (typeof IntersectionObserver === 'undefined' || !isMobile) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const indexAttr = entry.target.getAttribute('data-portfolio-index');
-          if (indexAttr == null) return;
-          const idx = parseInt(indexAttr, 10);
-          if (Number.isNaN(idx)) return;
-
-          if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
-            setInViewStates((prev) => {
-              const next = new Array(PROJECTS.length).fill(false);
-              next[idx] = true;
-              return next;
-            });
-          }
-        });
-      },
-      {
-        rootMargin: '0px -10% 0px -10%',
-        threshold: [0.3, 0.5, 0.7],
-      }
-    );
-
-    const scrollContainer = horizontalScrollRef.current;
-    if (scrollContainer) {
-      const projectCards = scrollContainer.querySelectorAll('[data-portfolio-index]');
-      projectCards.forEach((card) => observer.observe(card));
+      return;
     }
 
-    return () => {
-      observer.disconnect();
+    const cw = el.clientWidth;
+    const sl = el.scrollLeft;
+    const buffer = Math.max(24, Math.min(80, loopW * 0.02));
+
+    if (sl < buffer) {
+      el.scrollLeft = sl + loopW;
+    } else if (sl > 2 * loopW - cw - buffer) {
+      el.scrollLeft = sl - loopW;
+    }
+
+    const denom = Math.max(1, loopW - cw);
+    const numer = el.scrollLeft - loopW;
+    setScrollProgress(Math.max(0, Math.min(1, numer / denom)));
+    setScrollableRatio(Math.min(1, cw / loopW));
+  }, [infiniteEnabled]);
+
+  const scrollByOneCard = useCallback((direction: -1 | 1) => {
+    const el = horizontalScrollRef.current;
+    if (!el) return;
+    const firstCard = el.querySelector<HTMLElement>('[data-portfolio-card]');
+    const step = (firstCard?.offsetWidth ?? 320) + 16;
+    el.scrollBy({ left: direction * step, behavior: 'smooth' });
+  }, []);
+
+  useLayoutEffect(() => {
+    const el = horizontalScrollRef.current;
+    if (!el || !infiniteEnabled) return;
+
+    const init = () => {
+      const w = measureLoopWidth();
+      if (w <= 0) return;
+      loopWidthRef.current = w;
+      if (!didInitLoopScroll.current) {
+        el.scrollLeft = w;
+        didInitLoopScroll.current = true;
+      }
+      updateInfiniteScrollUi();
     };
-  }, [isMobile]);
 
-  const goToPrevious = () => {
-    setCurrentSlide((prev) => (prev === 0 ? totalSlides - 1 : prev - 1));
-  };
+    init();
+    const ro = new ResizeObserver(() => {
+      const w = measureLoopWidth();
+      if (w > 0) loopWidthRef.current = w;
+      updateInfiniteScrollUi();
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [infiniteEnabled, measureLoopWidth, updateInfiniteScrollUi]);
 
-  const goToNext = () => {
-    setCurrentSlide((prev) => (prev === totalSlides - 1 ? 0 : prev + 1));
-  };
+  useEffect(() => {
+    const scrollContainer = horizontalScrollRef.current;
+    if (!scrollContainer) return;
 
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-  };
+    updateInfiniteScrollUi();
+    scrollContainer.addEventListener('scroll', updateInfiniteScrollUi, { passive: true });
+    const resizeObserver = new ResizeObserver(updateInfiniteScrollUi);
+    resizeObserver.observe(scrollContainer);
+    window.addEventListener('resize', updateInfiniteScrollUi, { passive: true });
 
-  // Render a single project card
-  const renderProjectCard = (project: typeof PROJECTS[0], index: number, isLarge = false) => {
-    const globalIndex = PROJECTS.findIndex(p => p.id === project.id);
-    return (
-      <div 
-        key={project.id}
-        onClick={() => navigateToProject(project.id)}
-        className={`${isLarge ? 'lg:col-span-8' : 'flex-1'} aspect-square group cursor-pointer relative overflow-hidden bg-pure-grey-light border border-pure-grey-medium flex-shrink-0`}
-        style={isMobile ? { width: '85vw', minWidth: '85vw' } : {}}
-        ref={(el) => {
-          if (!isMobile) {
-            imageContainersRef.current[index] = el;
+    return () => {
+      scrollContainer.removeEventListener('scroll', updateInfiniteScrollUi);
+      window.removeEventListener('resize', updateInfiniteScrollUi);
+      resizeObserver.disconnect();
+    };
+  }, [updateInfiniteScrollUi]);
+
+  useEffect(() => {
+    const el = horizontalScrollRef.current;
+    if (!el) return;
+
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      e.preventDefault();
+      el.scrollLeft += e.deltaY;
+    };
+
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
+
+  useEffect(() => {
+    const scrollContainer = horizontalScrollRef.current;
+    if (!scrollContainer) return;
+
+    let raf = 0;
+    const updateCenteredCard = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const rail = scrollContainer.getBoundingClientRect();
+        const railCenter = rail.left + rail.width / 2;
+        let bestIdx = -1;
+        let bestDist = Infinity;
+        scrollContainer.querySelectorAll<HTMLElement>('[data-portfolio-index]').forEach((node) => {
+          const r = node.getBoundingClientRect();
+          const cardCenter = r.left + r.width / 2;
+          const d = Math.abs(cardCenter - railCenter);
+          if (d < bestDist) {
+            bestDist = d;
+            const attr = node.getAttribute('data-portfolio-index');
+            if (attr != null) {
+              const idx = parseInt(attr, 10);
+              if (!Number.isNaN(idx)) bestIdx = idx;
+            }
           }
-        }}
+        });
+        if (bestIdx < 0) return;
+        setInViewStates((prev) => {
+          if (prev[bestIdx]) return prev;
+          const next = new Array(PROJECTS.length).fill(false);
+          next[bestIdx] = true;
+          return next;
+        });
+      });
+    };
+
+    updateCenteredCard();
+    scrollContainer.addEventListener('scroll', updateCenteredCard, { passive: true });
+    window.addEventListener('resize', updateCenteredCard, { passive: true });
+
+    return () => {
+      scrollContainer.removeEventListener('scroll', updateCenteredCard);
+      window.removeEventListener('resize', updateCenteredCard);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  const renderProjectCard = (project: (typeof PROJECTS)[0], loopIndex: number, indexInLoop: number) => {
+    const globalIndex = PROJECTS.findIndex((p) => p.id === project.id);
+    return (
+      <div
+        key={`${loopIndex}-${project.id}`}
+        data-portfolio-card
+        {...(indexInLoop === 0 ? { 'data-loop-start': String(loopIndex) } : {})}
+        onClick={() => navigateToProject(project.id)}
+        className="group aspect-square cursor-pointer relative overflow-hidden bg-pure-grey-light border border-pure-grey-medium flex-shrink-0 w-[min(85vw,22rem)] sm:w-[min(80vw,24rem)] md:w-[min(48vw,20rem)] lg:w-[min(40vw,22rem)] xl:w-[min(34vw,24rem)]"
         data-portfolio-index={globalIndex}
       >
-        <OptimizedImage 
-          src={encodeImageUrl(project.imageUrl)} 
+        <OptimizedImage
+          src={encodeImageUrl(project.imageUrl)}
           alt={project.title}
           lazy={globalIndex > 2}
           priority={globalIndex <= 2}
           className={
-            `w-full h-full object-cover transition-transform duration-700 ` +
-            (inViewStates[globalIndex]
-              ? 'scale-105 opacity-100 grayscale-0 '
-              : 'opacity-70 grayscale ') +
-            'group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0'
+            'w-full h-full object-cover transition-transform duration-700 opacity-100 ' +
+            (inViewStates[globalIndex] ? 'scale-105 ' : 'scale-100 ') +
+            'group-hover:scale-110'
           }
           onError={(e) => {
             console.error('Failed to load image:', project.imageUrl);
@@ -264,25 +201,23 @@ const Portfolio: React.FC = () => {
             }
           }}
         />
-        
-        {/* Overlay Info */}
+
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-90 transition-opacity duration-300" />
-        
-        <div className={`absolute bottom-0 left-0 w-full ${isLarge ? 'p-6 md:p-8' : 'p-6'} flex justify-between items-end transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300`}>
-          <div>
+
+        <div className="absolute bottom-0 left-0 w-full p-5 md:p-6 flex justify-between items-end transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+          <div className="min-w-0 pr-2">
             <span className="text-zinc-300 text-xs font-mono uppercase tracking-widest mb-2 block">
               {project.category} — {project.year}
             </span>
-            <h3 className={`${isLarge ? 'text-2xl md:text-3xl' : 'text-xl md:text-2xl'} font-display font-bold text-white`}>
+            <h3 className="text-lg md:text-xl font-display font-bold text-white leading-tight">
               {project.title}
             </h3>
           </div>
-          <div className="w-10 h-10 rounded-full bg-white text-black group-hover:bg-accent group-hover:text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 delay-100">
+          <div className="w-10 h-10 rounded-full bg-white text-black group-hover:bg-accent group-hover:text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 delay-100 shrink-0">
             <ArrowUpRight size={20} />
           </div>
         </div>
 
-        {/* Subtle Numbering */}
         <div className="absolute top-6 right-6 text-xs font-mono text-zinc-400">
           {String(globalIndex + 1).padStart(2, '0')}
         </div>
@@ -290,108 +225,87 @@ const Portfolio: React.FC = () => {
     );
   };
 
-  return (
-    <section id="portfolio" className="py-24 border-b border-zinc-900 bg-pure-grey text-black">
-      <div className="max-w-7xl mx-auto px-6">
-        
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between md:items-end mb-20 gap-6 border-b border-zinc-400 pb-8">
-          <h2 className="font-display text-4xl md:text-5xl font-bold uppercase tracking-tight text-black max-w-lg">
-            Our Signature Projects
-          </h2>
+  const loopsToRender = infiniteEnabled    ? Array.from({ length: LOOP_COPIES }, (_, i) => i)
+    : [0];
 
-          <div className="flex items-center gap-4">
+  return (
+    <section id="portfolio" className="py-16 md:py-24 border-b border-zinc-900 bg-pure-grey text-black">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4 border-b border-zinc-400 pb-8 mb-10 md:mb-12">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold uppercase tracking-tight text-black max-w-lg">
+            Selected Works
+          </h2>
+          <div className="flex items-center gap-6 shrink-0">
+            <button
+              onClick={navigateToPortfolioFeed}
+              className="text-zinc-700 hover:text-black text-xs uppercase tracking-widest transition-colors flex items-center gap-1 group"
+            >
+              View All <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </button>
             <span className="text-zinc-700 font-mono text-xs">(03) Portfolio</span>
-            {/* Hide navigation buttons on mobile */}
-            <div className="hidden md:flex gap-2">
-              <button
-                onClick={goToPrevious}
-                className="w-10 h-10 border border-zinc-400 flex items-center justify-center hover:bg-black hover:text-white transition-all text-black"
-                aria-label="Previous slide"
-              >
-                ←
-              </button>
-              <button
-                onClick={goToNext}
-                className="w-10 h-10 border border-zinc-400 flex items-center justify-center hover:bg-black hover:text-white transition-all text-black"
-                aria-label="Next slide"
-              >
-                →
-              </button>
-            </div>
           </div>
         </div>
 
-        {/* Mobile: Horizontal Scrollable Gallery */}
-        <div className="md:hidden relative -mx-6 px-6">
-          <div 
+        <div className="relative -mx-6 px-6">
+          <div
             ref={horizontalScrollRef}
-            className="flex gap-4 overflow-x-auto overflow-y-hidden no-scrollbar pb-4"
+            className="flex gap-4 overflow-x-auto overflow-y-hidden no-scrollbar pb-2 snap-x snap-mandatory [scroll-behavior:auto]"
             style={{
               scrollSnapType: 'x mandatory',
               WebkitOverflowScrolling: 'touch',
             }}
+            tabIndex={0}
+            aria-label="Signature projects — use the wheel, drag, or arrows to move horizontally"
           >
-            {PROJECTS.map((project, index) => (
-              <div key={project.id} style={{ scrollSnapAlign: 'start' }}>
-                {renderProjectCard(project, index)}
-              </div>
-            ))}
+            {loopsToRender.map((loopIndex) =>
+              PROJECTS.map((project, indexInLoop) => (
+                <div key={`${loopIndex}-${project.id}`} className="snap-start snap-always">
+                  {renderProjectCard(project, loopIndex, indexInLoop)}
+                </div>
+              ))
+            )}
           </div>
-          
-          {/* Minimal Scroll Indicator */}
-            <div className="mt-6 px-6">
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <span className="text-zinc-700 text-[9px] font-mono uppercase tracking-widest">
-                Swipe
-              </span>
-            </div>
-            <div className="relative h-[2px] bg-zinc-600/60 rounded-full overflow-hidden">
-              {/* Dark background line */}
-              <div className="absolute inset-0 bg-zinc-700/70 rounded-full" />
-              {/* Scrollbar thumb - bright white for maximum contrast */}
-              <div 
-                className="absolute top-0 h-full bg-white rounded-full transition-all duration-150 ease-out"
-                style={{ 
-                  width: `${Math.max(10, Math.min(100, scrollableRatio * 100))}%`,
-                  left: `${Math.max(0, Math.min(100 - (scrollableRatio * 100), scrollProgress * (100 - (scrollableRatio * 100))))}%`
-                }}
-              />
-            </div>
-          </div>
-        </div>
 
-        {/* Desktop: Grid Slideshow Layout */}
-        <div className="hidden md:block relative">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 min-h-[600px]">
-            
-            {/* Large image on the left */}
-            {currentProjects[0] && renderProjectCard(currentProjects[0], 0, true)}
-
-            {/* Two smaller images on the right */}
-            <div className="lg:col-span-4 flex flex-col gap-6">
-              {currentProjects[1] && renderProjectCard(currentProjects[1], 1)}
-              {currentProjects[2] && renderProjectCard(currentProjects[2], 2)}
-            </div>
-
-          </div>
-        </div>
-
-        {/* Carousel Indicators - Desktop only */}
-        {totalSlides > 1 && (
-          <div className="hidden md:flex justify-center mt-12 gap-2">
-            {slides.map((_, index) => (
+          <div className="mt-8 flex flex-col items-center gap-5">
+            <div className="flex items-center justify-center gap-3 w-full max-w-md">
               <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentSlide ? 'bg-black' : 'bg-zinc-500 hover:bg-zinc-600'
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
+                type="button"
+                onClick={() => scrollByOneCard(-1)}
+                className="hidden sm:flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-zinc-500 text-black hover:bg-black hover:text-white transition-colors"
+                aria-label="Previous project"
+              >
+                <ChevronLeft className="w-5 h-5" strokeWidth={1.5} />
+              </button>
+
+              <div className="flex-1 min-w-0 flex flex-col justify-center">
+                <div className="flex justify-center mb-2 sm:hidden">
+                  <span className="text-zinc-600 text-[9px] uppercase tracking-widest">
+                    Swipe
+                  </span>
+                </div>
+                <div className="relative h-[2px] bg-zinc-600/60 rounded-full overflow-hidden">
+                  <div className="absolute inset-0 bg-zinc-700/70 rounded-full" />
+                  <div
+                    className="absolute top-0 h-full bg-black rounded-full transition-all duration-150 ease-out"
+                    style={{
+                      width: `${Math.max(8, Math.min(100, scrollableRatio * 100))}%`,
+                      left: `${Math.max(0, Math.min(100 - scrollableRatio * 100, scrollProgress * (100 - scrollableRatio * 100)))}%`,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => scrollByOneCard(1)}
+                className="hidden sm:flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-zinc-500 text-black hover:bg-black hover:text-white transition-colors"
+                aria-label="Next project"
+              >
+                <ChevronRight className="w-5 h-5" strokeWidth={1.5} />
+              </button>
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </section>
   );

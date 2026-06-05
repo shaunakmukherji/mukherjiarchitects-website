@@ -8,7 +8,7 @@ interface FAQItem {
 }
 
 const AboutStudio: React.FC = () => {
-  const { navigateToHome, navigateToCreativeDirector, navigateToArchitectureAI } = useNavigation();
+  const { navigateBack, backLabel, navigateToCreativeDirector, navigateToBobbyMukherji, navigateToArchitectureAI } = useNavigation();
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
 
   const faqs: FAQItem[] = [
@@ -143,7 +143,7 @@ const AboutStudio: React.FC = () => {
   }, []);
 
   const handlePortfolioClick = () => {
-    navigateToHome();
+    navigateBack();
     setTimeout(() => {
       const portfolioElement = document.getElementById('portfolio');
       portfolioElement?.scrollIntoView({ behavior: 'smooth' });
@@ -154,10 +154,10 @@ const AboutStudio: React.FC = () => {
     <div className="pt-32 pb-24 min-h-screen bg-black">
       <div className="max-w-7xl mx-auto px-6">
         <button 
-          onClick={navigateToHome} 
+          onClick={navigateBack} 
           className="flex items-center gap-2 text-zinc-500 hover:text-white mb-16 transition-colors text-sm uppercase tracking-widest"
         >
-          <ArrowLeft size={16} /> Back to Home
+          <ArrowLeft size={16} /> {backLabel}
         </button>
 
         <div className="max-w-4xl">
@@ -213,7 +213,15 @@ const AboutStudio: React.FC = () => {
                   >
                     Shaunak Mukherji
                   </button>
-                  , son of Bobby Mukherji, and represents the next-generation evolution of the broader Mukherji practice.
+                  , son of{' '}
+                  <button
+                    type="button"
+                    onClick={navigateToBobbyMukherji}
+                    className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 cursor-pointer font-medium"
+                  >
+                    Bobby Mukherji
+                  </button>
+                  , and represents the next-generation evolution of the broader Mukherji practice.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
                   The Milan office maintains a direct professional and intellectual lineage with{' '}
@@ -324,6 +332,13 @@ const AboutStudio: React.FC = () => {
                   className="block text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 text-base md:text-lg"
                 >
                   Shaunak Mukherji
+                </button>
+                <button
+                  type="button"
+                  onClick={navigateToBobbyMukherji}
+                  className="block text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 text-base md:text-lg text-left"
+                >
+                  Bobby Mukherji
                 </button>
                 <button
                   onClick={handlePortfolioClick}

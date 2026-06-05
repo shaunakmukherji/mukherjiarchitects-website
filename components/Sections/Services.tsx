@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { SERVICES, PROJECTS } from '../../constants';
 import { ArrowRight } from 'lucide-react';
 import { useNavigation } from '../../contexts/NavigationContext';
+import { encodeImageUrl } from '../../lib/imageUrl';
+import { getCategoryHeroProject } from '../../lib/projectSort';
 import OptimizedImage from '../ui/OptimizedImage';
 
 const Services: React.FC = () => {
@@ -9,29 +11,15 @@ const Services: React.FC = () => {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [cardInView, setCardInView] = useState<boolean[]>([]);
 
-  // Find the main project for each service category
   const getMainProjectImage = (categoryFilter: string): string => {
-    // Find projects in this category
-    const categoryProjects = PROJECTS.filter(p => p.category === categoryFilter);
-    
-    if (categoryProjects.length === 0) {
-      // Fallback to service image if no projects found
-      const service = SERVICES.find(s => s.categoryFilter === categoryFilter);
-      return service?.imageUrl || '';
-    }
+    const hero = getCategoryHeroProject(PROJECTS, categoryFilter);
+    if (hero?.imageUrl) return hero.imageUrl;
 
-    // First, try to find a project with categoryOrder: 1
-    const mainProject = categoryProjects.find(p => p.categoryOrder === 1);
-    if (mainProject) {
-      return mainProject.imageUrl;
-    }
-
-    // Otherwise, use the first project in the category
-    return categoryProjects[0].imageUrl;
+    const service = SERVICES.find((s) => s.categoryFilter === categoryFilter);
+    return service?.imageUrl || '';
   };
 
-  // Scroll-based highlighting for services cards (auto zoom/saturate)
-  // Exactly one card is highlighted at a time based on scroll progress
+  // Scroll-based zoom highlight (images stay full color; one card scales up at a time)
   // through the Services section, so cards are highlighted in order.
   useEffect(() => {
     const handleScroll = () => {
@@ -125,17 +113,15 @@ const Services: React.FC = () => {
                         <span>Design Service</span>
                     </div>
 
-                    {/* Image Area */}
-                    <div className="aspect-[4/3] w-full mb-8 overflow-hidden bg-zinc-900 relative border border-zinc-800">
+                    {/* Image Area — taller frame so imagery reads larger on the grid */}
+                    <div className="aspect-square w-full mb-8 overflow-hidden bg-zinc-900 relative border border-zinc-800">
                          <OptimizedImage 
-                            src={getMainProjectImage(service.categoryFilter)} 
+                            src={encodeImageUrl(getMainProjectImage(service.categoryFilter))} 
                             alt={service.title} 
                             className={
-                              `w-full h-full object-cover transition-transform duration-1000 ease-out ` +
-                              (cardInView[index]
-                                ? 'scale-105 opacity-100 grayscale-0 '
-                                : 'opacity-70 grayscale ') +
-                              'group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0'
+                              'w-full h-full object-cover transition-transform duration-1000 ease-out opacity-100 ' +
+                              (cardInView[index] ? 'scale-105 ' : 'scale-100 ') +
+                              'group-hover:scale-110'
                             } 
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />

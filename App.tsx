@@ -8,18 +8,22 @@ import Portfolio from './components/Sections/Portfolio';
 import Contact from './components/Sections/Contact';
 import SpotlightBackground from './components/ui/SpotlightBackground';
 import ScrollWheelIndicator from './components/ui/ScrollWheelIndicator';
+import CustomCursor from './components/ui/CustomCursor';
 import { NavigationProvider, useNavigation } from './contexts/NavigationContext';
 import ProjectDetail from './components/Views/ProjectDetail';
 import CategoryListing from './components/Views/CategoryListing';
 import CreativeDirector from './components/Views/CreativeDirector';
+import BobbyMukherji from './components/Views/BobbyMukherji';
 import ArchitectureAI from './components/Views/ArchitectureAI';
 import AboutStudio from './components/Views/AboutStudio';
 import BestFitCommercial from './components/Views/BestFitCommercial';
+import BestFitHospitality from './components/Views/BestFitHospitality';
 import BestFitInstitutional from './components/Views/BestFitInstitutional';
 import BestFitMasterPlanning from './components/Views/BestFitMasterPlanning';
 import BestFitMixedUse from './components/Views/BestFitMixedUse';
 import BestFitResearch from './components/Views/BestFitResearch';
 import BestFitResidential from './components/Views/BestFitResidential';
+import PortfolioFeed from './components/Views/PortfolioFeed';
 
 // Separating the Main Content to handle view logic cleanly
 const MainContent = () => {
@@ -72,6 +76,10 @@ const MainContent = () => {
     return <CreativeDirector />;
   }
 
+  if (currentView === 'BOBBY_MUKHERJI') {
+    return <BobbyMukherji />;
+  }
+
   if (currentView === 'ARCHITECTURE_AI') {
     return <ArchitectureAI />;
   }
@@ -82,6 +90,10 @@ const MainContent = () => {
 
   if (currentView === 'BEST_FIT_COMMERCIAL') {
     return <BestFitCommercial />;
+  }
+
+  if (currentView === 'BEST_FIT_HOSPITALITY') {
+    return <BestFitHospitality />;
   }
 
   if (currentView === 'BEST_FIT_INSTITUTIONAL') {
@@ -102,6 +114,10 @@ const MainContent = () => {
 
   if (currentView === 'BEST_FIT_RESIDENTIAL') {
     return <BestFitResidential />;
+  }
+
+  if (currentView === 'PORTFOLIO_FEED') {
+    return <PortfolioFeed />;
   }
 
   return (
@@ -128,6 +144,7 @@ function App() {
   return (
     <NavigationProvider>
       <div className="relative min-h-screen bg-black text-white selection:bg-white selection:text-black font-sans antialiased">
+        <CustomCursor />
         {/* Dynamic Background */}
         <SpotlightBackground />
         

@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigation } from '../../contexts/NavigationContext';
-import { PROJECTS } from '../../constants';
+import { PROJECTS, SERVICES } from '../../constants';
+import { compareProjectsByCategoryOrder } from '../../lib/projectSort';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import OptimizedImage from '../ui/OptimizedImage';
 
 const CategoryListing: React.FC = () => {
   const { 
     selectedId, 
-    navigateToHome, 
+    navigateBack,
+    backLabel,
     navigateToProject,
     navigateToBestFitCommercial,
+    navigateToBestFitHospitality,
     navigateToBestFitInstitutional,
     navigateToBestFitMasterPlanning,
     navigateToBestFitMixedUse,
@@ -18,18 +21,9 @@ const CategoryListing: React.FC = () => {
   } = useNavigation();
   // selectedId here represents the categoryFilter string (e.g., 'Residential')
   const filteredProjects = PROJECTS
-    .filter(p => p.category === selectedId)
-    .sort((a, b) => {
-      // Sort by categoryOrder if specified
-      if (a.categoryOrder !== null && a.categoryOrder !== undefined && 
-          b.categoryOrder !== null && b.categoryOrder !== undefined) {
-        return a.categoryOrder - b.categoryOrder;
-      }
-      if (a.categoryOrder !== null && a.categoryOrder !== undefined) return -1;
-      if (b.categoryOrder !== null && b.categoryOrder !== undefined) return 1;
-      // Fallback to alphabetical
-      return a.title.localeCompare(b.title);
-    });
+    .filter((p) => p.category === selectedId)
+    .sort(compareProjectsByCategoryOrder);
+  const categoryDescription = SERVICES.find((s) => s.categoryFilter === selectedId)?.description ?? '';
 
   // Update page title and meta tags for SEO
   useEffect(() => {
@@ -199,10 +193,10 @@ const CategoryListing: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center mb-12">
             <button 
-            onClick={navigateToHome} 
+            onClick={navigateBack}
             className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-sm uppercase tracking-widest"
             >
-            <ArrowLeft size={16} /> Back to Overview
+            <ArrowLeft size={16} /> {backLabel}
             </button>
         </div>
 
@@ -211,7 +205,7 @@ const CategoryListing: React.FC = () => {
         </h1>
         <div className="mb-16 max-w-2xl">
             <p className="text-zinc-500 mb-4">
-                Selected works demonstrating our approach to {selectedId?.toLowerCase()} architecture.
+                {categoryDescription}
             </p>
             {selectedId && (
                 <div className="text-zinc-500">
@@ -220,6 +214,7 @@ const CategoryListing: React.FC = () => {
                         onClick={() => {
                             const categoryMap: Record<string, () => void> = {
                                 'Commercial Design': navigateToBestFitCommercial,
+                                'Hospitality Design': navigateToBestFitHospitality,
                                 'Institutional Design': navigateToBestFitInstitutional,
                                 'Master Planning': navigateToBestFitMasterPlanning,
                                 'Mixed-use Design': navigateToBestFitMixedUse,
@@ -257,9 +252,9 @@ const CategoryListing: React.FC = () => {
               className={
                 `w-full h-full object-cover transition-[transform,opacity,filter] duration-700 ` +
                 (inViewStates[0]
-                  ? 'scale-105 opacity-100 grayscale-0 '
-                  : 'opacity-60 grayscale ') +
-                'group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0'
+                  ? 'scale-105 opacity-100 '
+                  : 'opacity-60 ') +
+                'group-hover:scale-110 group-hover:opacity-100'
               }
               onError={(e) => {
                 console.error('Failed to load cover image:', filteredProjects[0].imageUrl);
@@ -271,7 +266,7 @@ const CategoryListing: React.FC = () => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
             <div className="absolute bottom-0 left-0 w-full p-8">
-              <span className="text-zinc-400 text-xs font-mono uppercase tracking-widest mb-2 block">
+              <span className="text-zinc-400 text-xs uppercase tracking-widest mb-2 block">
                 {filteredProjects[0].category} — {filteredProjects[0].year}
               </span>
               <h2 className="text-3xl md:text-4xl font-display font-bold text-white">
@@ -305,9 +300,9 @@ const CategoryListing: React.FC = () => {
                             className={
                               `w-full h-full object-cover transition-[transform,opacity,filter] duration-700 ` +
                               (inViewStates[projectIndex]
-                                ? 'scale-105 opacity-100 grayscale-0 '
-                                : 'opacity-60 grayscale ') +
-                              'group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0'
+                                ? 'scale-105 opacity-100 '
+                                : 'opacity-60 ') +
+                              'group-hover:scale-110 group-hover:opacity-100'
                             }
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
@@ -329,7 +324,7 @@ const CategoryListing: React.FC = () => {
                             <h3 className="text-2xl font-display font-bold text-white group-hover:text-accent transition-colors">
                                 {project.title}
                             </h3>
-                            <span className="text-zinc-500 text-sm font-mono mt-1 block">
+                            <span className="text-zinc-500 text-sm mt-1 block">
                                 {project.location} — {project.year}
                             </span>
                         </div>
@@ -339,7 +334,7 @@ const CategoryListing: React.FC = () => {
             })}
             
             {filteredProjects.length === 0 && (
-                <div className="col-span-full py-20 text-center text-zinc-600 font-mono">
+                <div className="col-span-full py-20 text-center text-zinc-600">
                     No projects found in this category.
                 </div>
             )}

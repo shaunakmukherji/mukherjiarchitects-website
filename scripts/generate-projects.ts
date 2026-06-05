@@ -30,28 +30,63 @@ interface ServiceData {
 const categoryMapping: Record<string, { displayName: string; category: string; description: string }> = {
   'commercial': {
     displayName: 'COMMERCIAL DESIGN',
-    category: 'Commercial',
-    description: 'Functional, inspiring environments for businesses to thrive. We design spaces that embody brand identity.'
+    category: 'Commercial Design',
+    description: 'Commercial architecture is built around maximizing value — sellable area, revenue per square metre, return on investment. Every design decision is evaluated against those outcomes.'
+  },
+  'commercial-design': {
+    displayName: 'COMMERCIAL DESIGN',
+    category: 'Commercial Design',
+    description: 'Commercial architecture is built around maximizing value — sellable area, revenue per square metre, return on investment. Every design decision is evaluated against those outcomes.'
   },
   'residential': {
     displayName: 'RESIDENTIAL DESIGN',
-    category: 'Residential',
-    description: 'Custom homes that reflect your lifestyle and aspirations. We blend modern aesthetics with functional living spaces.'
+    category: 'Residential Design',
+    description: 'We approach housing through modularity, construction efficiency, and economies of scale. Every project carries a strong concept and a distinct architectural identity — which is what gives a developer a real market advantage.'
+  },
+  'residential-design': {
+    displayName: 'RESIDENTIAL DESIGN',
+    category: 'Residential Design',
+    description: 'We approach housing through modularity, construction efficiency, and economies of scale. Every project carries a strong concept and a distinct architectural identity — which is what gives a developer a real market advantage.'
   },
   'mixed-use': {
     displayName: 'MIXED-USE DESIGN',
-    category: 'Commercial',
-    description: 'Integrated developments combining multiple uses into cohesive urban experiences that enhance community living.'
+    category: 'Mixed-use Design',
+    description: 'Projects that span multiple typologies or resist easy classification. Whatever the brief, every project receives a strong concept and a clear architectural identity.'
+  },
+  'mixed-use-design': {
+    displayName: 'MIXED-USE DESIGN',
+    category: 'Mixed-use Design',
+    description: 'Projects that span multiple typologies or resist easy classification. Whatever the brief, every project receives a strong concept and a clear architectural identity.'
   },
   'master-planning': {
     displayName: 'MASTER PLANNING',
-    category: 'Commercial',
-    description: 'Comprehensive master planning projects that create sustainable and integrated community developments.'
+    category: 'Master Planning',
+    description: 'A master plan requires one strong concept capable of driving the entire development. We work macro to micro — establishing the system and logic first, then letting every subsequent decision follow from it.'
   },
   'explorations': {
     displayName: 'EXPLORATIONS',
-    category: 'Commercial',
-    description: 'Conceptual studies and experimental designs that push the boundaries of architectural innovation.'
+    category: 'Explorations',
+    description: 'Exploratory and academic work by Shaunak Mukherji. Projects built around ideas and positions rather than client briefs, communicating what the studio believes architecture should look like.'
+  },
+  'hospitality': {
+    displayName: 'HOSPITALITY DESIGN',
+    category: 'Hospitality Design',
+    description: 'Through our connection with Bobby Mukherji Architects, we bring decades of institutional hospitality knowledge to every project — room count, brand standards, operator requirements, profitability. This is a technically demanding sector and we know it well.'
+  },
+  'hospitality-design': {
+    displayName: 'HOSPITALITY DESIGN',
+    category: 'Hospitality Design',
+    description: 'Through our connection with Bobby Mukherji Architects, we bring decades of institutional hospitality knowledge to every project — room count, brand standards, operator requirements, profitability. This is a technically demanding sector and we know it well.'
+  },
+  'research-&-exploration': {
+    displayName: 'RESEARCH & EXPLORATION',
+    category: 'Research & Exploration',
+    description: 'Exploratory and academic work by Shaunak Mukherji. Projects built around ideas and positions rather than client briefs, communicating what the studio believes architecture should look like.'
+  },
+  'research-exploration': {
+    displayName: 'RESEARCH & EXPLORATION',
+    category: 'Research & Exploration',
+    description: 'Exploratory and academic work by Shaunak Mukherji. Projects built around ideas and positions rather than client briefs, communicating what the studio believes architecture should look like.'
   }
 };
 
@@ -294,6 +329,7 @@ function generateProjectsData() {
 }
 
 generateProjectsData();
+
 
 
 
