@@ -9,7 +9,7 @@ export const HERO_IMAGE_URL = SITE_HERO_IMAGE_URL ?? '/images/hero/hero-cover.jp
 export const LOGO_URL = '/images/logo/logo.png'; // Put your logo PNG in public/images/logo/
 
 export const NAV_ITEMS: NavItem[] = [
-  { label: 'About Us', href: '#about' },
+  { label: 'About', href: '#about' },
   { label: 'Services', href: '#services' },
   { label: 'Portfolio', href: '#portfolio' },
 ];

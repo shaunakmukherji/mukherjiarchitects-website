@@ -1,68 +1,16 @@
 import React, { useEffect } from 'react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { ArrowLeft } from 'lucide-react';
+import { applySEO, breadcrumb } from '../../lib/seo';
 
 const ArchitectureAI: React.FC = () => {
   const { navigateBack, backLabel } = useNavigation();
 
-  // Update page title and meta tags for SEO
-  useEffect(() => {
-    const originalTitle = document.title;
-    const originalDescription = document.querySelector('meta[name="description"]')?.getAttribute('content');
-    const originalOGTitle = document.querySelector('meta[property="og:title"]')?.getAttribute('content');
-    const originalOGDescription = document.querySelector('meta[property="og:description"]')?.getAttribute('content');
-    const originalTwitterTitle = document.querySelector('meta[name="twitter:title"]')?.getAttribute('content');
-    const originalTwitterDescription = document.querySelector('meta[name="twitter:description"]')?.getAttribute('content');
-
-    // Update title
-    document.title = 'Architecture and Artificial Intelligence | Shaunak Mukherji | Mukherji Architects Milano';
-
-    // Update meta description
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'A direct view on AI in architecture from Shaunak Mukherji at Mukherji Architects Milano—why it matters, what changes, and how we use it in real architectural work.');
-    }
-
-    // Update Open Graph tags
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) {
-      ogTitle.setAttribute('content', 'Architecture and Artificial Intelligence | Shaunak Mukherji | Mukherji Architects Milano');
-    }
-    const ogDescription = document.querySelector('meta[property="og:description"]');
-    if (ogDescription) {
-      ogDescription.setAttribute('content', 'A direct view on AI in architecture from Shaunak Mukherji at Mukherji Architects Milano—why it matters, what changes, and how we use it in real architectural work.');
-    }
-
-    // Update Twitter tags
-    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
-    if (twitterTitle) {
-      twitterTitle.setAttribute('content', 'Architecture and Artificial Intelligence | Shaunak Mukherji | Mukherji Architects Milano');
-    }
-    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
-    if (twitterDescription) {
-      twitterDescription.setAttribute('content', 'A direct view on AI in architecture from Shaunak Mukherji at Mukherji Architects Milano—why it matters, what changes, and how we use it in real architectural work.');
-    }
-
-    // Cleanup: restore original values when component unmounts
-    return () => {
-      document.title = originalTitle;
-      if (metaDescription && originalDescription) {
-        metaDescription.setAttribute('content', originalDescription);
-      }
-      if (ogTitle && originalOGTitle) {
-        ogTitle.setAttribute('content', originalOGTitle);
-      }
-      if (ogDescription && originalOGDescription) {
-        ogDescription.setAttribute('content', originalOGDescription);
-      }
-      if (twitterTitle && originalTwitterTitle) {
-        twitterTitle.setAttribute('content', originalTwitterTitle);
-      }
-      if (twitterDescription && originalTwitterDescription) {
-        twitterDescription.setAttribute('content', originalTwitterDescription);
-      }
-    };
-  }, []);
+  useEffect(() => applySEO({
+    title: 'Architecture and Artificial Intelligence | Mukherji Architects Milano',
+    description: 'How Mukherji Architects Milano uses AI in architectural work — the case for quality of thinking over the tool itself, written by Shaunak Mukherji from Milan.',
+    schemas: [breadcrumb('Architecture and Artificial Intelligence', '/architecture-artificial-intelligence')],
+  }), []);
 
   return (
     <div className="pt-32 pb-24 min-h-screen bg-black">
@@ -76,6 +24,7 @@ const ArchitectureAI: React.FC = () => {
 
         <div className="max-w-4xl">
           {/* Main Title */}
+          <p className="text-zinc-600 text-xs uppercase tracking-[0.2em] mb-3">Mukherji Architects Milano</p>
           <h1 className="font-display text-5xl md:text-6xl font-bold text-white uppercase tracking-tight mb-4">
             Architecture and Artificial Intelligence
           </h1>

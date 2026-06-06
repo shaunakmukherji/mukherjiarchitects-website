@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { PROJECTS, SERVICES } from '../../constants';
 import { encodeImageUrl } from '../../lib/imageUrl';
 import OptimizedImage from '../ui/OptimizedImage';
+import { applySEO, breadcrumb } from '../../lib/seo';
 
 const ALL = 'All';
 
@@ -13,6 +14,12 @@ const PortfolioFeed: React.FC = () => {
 
   const categories = Array.from(new Set(PROJECTS.map((p) => p.category))).sort();
 
+  useEffect(() => applySEO({
+    title: 'All Projects | Mukherji Architects Milano',
+    description: 'Complete portfolio of Mukherji Architects Milano — commercial, hospitality, master planning, mixed-use, residential, and research projects from our studio in Milan, Italy.',
+    schemas: [breadcrumb('Portfolio', '/portfolio')],
+  }), []);
+
   const categoryLabel = (cat: string) =>
     SERVICES.find((s) => s.categoryFilter === cat)?.title ?? cat;
 
@@ -21,10 +28,10 @@ const PortfolioFeed: React.FC = () => {
     : PROJECTS.filter((p) => p.category === active);
 
   return (
-    <div className="min-h-screen bg-black text-white pt-20">
+    <div className="min-h-screen bg-black text-white pt-[4.75rem]">
 
       {/* ── Header ── */}
-      <header className="sticky top-20 z-40 bg-black border-b border-zinc-900">
+      <header className="sticky top-[4.75rem] z-40 bg-black border-b border-zinc-900">
         <div className="flex items-center justify-between px-6 md:px-10 h-14">
 
           <button
@@ -67,9 +74,27 @@ const PortfolioFeed: React.FC = () => {
           return (
             <div
               key={project.id}
-              className="border-b border-zinc-900 cursor-pointer group"
+              className="border-t border-zinc-900 cursor-pointer group"
               onClick={() => navigateToProject(project.id)}
             >
+              {/* Caption — above images so title clearly belongs to what follows */}
+              <div className="flex items-baseline justify-between px-6 md:px-10 pt-6 pb-3">
+                <div className="flex items-baseline gap-6">
+                  <span className="text-zinc-600 text-sm tabular-nums">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <h2 className="font-display font-bold text-xl md:text-2xl text-white tracking-tight">
+                    {project.title}
+                  </h2>
+                </div>
+                <div className="flex items-center gap-4 shrink-0 ml-4">
+                  <span className="text-zinc-500 text-sm hidden sm:block">
+                    {project.category} · {project.year}
+                  </span>
+                  <ArrowUpRight className="w-4 h-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200" />
+                </div>
+              </div>
+
               {/* Image row */}
               <div className={`grid ${secondImage ? 'grid-cols-2' : 'grid-cols-1'} gap-px bg-zinc-900`}>
                 {/* Main image */}
@@ -95,24 +120,6 @@ const PortfolioFeed: React.FC = () => {
                     />
                   </div>
                 )}
-              </div>
-
-              {/* Caption */}
-              <div className="flex items-baseline justify-between px-6 md:px-10 py-5">
-                <div className="flex items-baseline gap-6">
-                  <span className="text-zinc-600 text-sm tabular-nums">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <h2 className="font-display font-bold text-xl md:text-2xl text-white tracking-tight">
-                    {project.title}
-                  </h2>
-                </div>
-                <div className="flex items-center gap-4 shrink-0 ml-4">
-                  <span className="text-zinc-500 text-sm hidden sm:block">
-                    {project.category} · {project.year}
-                  </span>
-                  <ArrowUpRight className="w-4 h-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200" />
-                </div>
               </div>
             </div>
           );

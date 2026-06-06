@@ -34,6 +34,8 @@ const updateURL = (view: ViewState, id: string | null) => {
     url = '/best-fit/residential-design';
   } else if (view === 'PORTFOLIO_FEED') {
     url = '/portfolio';
+  } else if (view === 'TEAM') {
+    url = '/the-studio/people';
   }
 
   window.history.pushState({ view, id }, '', url);
@@ -77,6 +79,8 @@ const parseURL = (): { view: ViewState; id: string | null } => {
     return { view: 'BEST_FIT_RESIDENTIAL', id: null };
   } else if (path === '/portfolio') {
     return { view: 'PORTFOLIO_FEED', id: null };
+  } else if (path === '/the-studio/people') {
+    return { view: 'TEAM', id: null };
   }
 
   return { view: 'HOME', id: null };
@@ -150,6 +154,8 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
         url = '/best-fit/residential-design';
       } else if (initialState.view === 'PORTFOLIO_FEED') {
         url = '/portfolio';
+      } else if (initialState.view === 'TEAM') {
+        url = '/the-studio/people';
       }
       window.history.replaceState({ view: initialState.view, id: initialState.id }, '', url);
     }
@@ -320,6 +326,14 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
     window.scrollTo(0, 0);
   };
 
+  const navigateToTeam = () => {
+    pushCurrent();
+    setSelectedId(null);
+    setCurrentView('TEAM');
+    updateURL('TEAM', null);
+    window.scrollTo(0, 0);
+  };
+
   return (
     <NavigationContext.Provider value={{
       currentView,
@@ -344,7 +358,8 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
       navigateToBestFitMixedUse,
       navigateToBestFitResearch,
       navigateToBestFitResidential,
-      navigateToPortfolioFeed
+      navigateToPortfolioFeed,
+      navigateToTeam
     }}>
       {children}
     </NavigationContext.Provider>

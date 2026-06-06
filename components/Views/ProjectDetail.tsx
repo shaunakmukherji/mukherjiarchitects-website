@@ -127,37 +127,10 @@ const ProjectDetail: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
 
             {/* Left: images */}
-            <div className="lg:col-span-8">
-              <h1 className="font-display text-5xl md:text-7xl font-bold text-white mb-6 leading-[0.9]">
-                {project.title}
-              </h1>
-              <p className="text-zinc-400 leading-relaxed text-lg mb-4">
-                {project.description}
-              </p>
-
-              {/* Credit line */}
-              {project.credit && (
-                <p className="text-zinc-600 text-sm mb-10 flex items-center gap-1 flex-wrap">
-                  <span>Project by</span>
-                  {project.credit.linkTo === 'CREATIVE_DIRECTOR' ? (
-                    <button
-                      onClick={navigateToCreativeDirector}
-                      className="text-zinc-400 hover:text-white transition-colors underline underline-offset-2 decoration-zinc-700 hover:decoration-zinc-400"
-                    >
-                      {project.credit.name}
-                    </button>
-                  ) : (
-                    <span className="text-zinc-400">{project.credit.name}</span>
-                  )}
-                  {project.credit.institution && (
-                    <span>— {project.credit.institution}</span>
-                  )}
-                </p>
-              )}
-
+            <div className="lg:col-span-8 space-y-3 order-2 lg:order-1">
               {/* Hero image — full width, natural aspect ratio */}
               <div
-                className="w-full mb-3 cursor-zoom-in overflow-hidden bg-zinc-900 border border-zinc-800"
+                className="w-full cursor-zoom-in overflow-hidden bg-zinc-900 border border-zinc-800"
                 onClick={() => openLightbox(0)}
               >
                 <OptimizedImage
@@ -175,7 +148,7 @@ const ProjectDetail: React.FC = () => {
 
               {/* Gallery — full width stacked, natural ratio */}
               {project.gallery && project.gallery.length > 0 && (
-                <div className="space-y-3">
+                <>
                   {project.gallery.map((img, idx) => (
                     <div
                       key={idx}
@@ -194,25 +167,54 @@ const ProjectDetail: React.FC = () => {
                       />
                     </div>
                   ))}
-                </div>
+                </>
               )}
             </div>
 
-            {/* Right: project info */}
-            <div className="lg:col-span-4 space-y-8">
+            {/* Right: sticky project info */}
+            <div className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start space-y-8 order-1 lg:order-2">
+              <div>
+                <h1 className="font-display text-3xl md:text-4xl font-bold text-white mb-5 leading-[1.0]">
+                  {project.title}
+                </h1>
+                <p className="text-zinc-400 leading-relaxed text-sm mb-4">
+                  {project.description}
+                </p>
+
+                {/* Credit line */}
+                {project.credit && (
+                  <p className="text-zinc-600 text-xs flex items-center gap-1 flex-wrap mt-3">
+                    <span>Project by</span>
+                    {project.credit.linkTo === 'CREATIVE_DIRECTOR' ? (
+                      <button
+                        onClick={navigateToCreativeDirector}
+                        className="text-zinc-500 hover:text-white transition-colors underline underline-offset-2 decoration-zinc-700 hover:decoration-zinc-400"
+                      >
+                        {project.credit.name}
+                      </button>
+                    ) : (
+                      <span className="text-zinc-500">{project.credit.name}</span>
+                    )}
+                    {project.credit.institution && (
+                      <span>— {project.credit.institution}</span>
+                    )}
+                  </p>
+                )}
+              </div>
+
               <div className="border-t border-zinc-800 pt-6">
                 <span className="block text-xs uppercase tracking-widest text-zinc-500 mb-1">Location</span>
-                <span className="text-xl text-white">{project.location}</span>
+                <span className="text-base text-white">{project.location}</span>
               </div>
               <div className="border-t border-zinc-800 pt-6">
                 <span className="block text-xs uppercase tracking-widest text-zinc-500 mb-1">Year</span>
-                <span className="text-xl text-white">{project.year}</span>
+                <span className="text-base text-white">{project.year}</span>
               </div>
               <div className="border-t border-zinc-800 pt-6">
                 <span className="block text-xs uppercase tracking-widest text-zinc-500 mb-1">Category</span>
-                <span className="text-xl text-white">{project.category}</span>
+                <span className="text-base text-white">{project.category}</span>
               </div>
-              <div className="pt-8">
+              <div className="pt-2">
                 <Button variant="outline" className="w-full" onClick={navigateToContact}>
                   Inquire About This Project
                 </Button>

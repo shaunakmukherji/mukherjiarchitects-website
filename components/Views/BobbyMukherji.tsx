@@ -2,97 +2,27 @@ import React, { useEffect } from 'react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { ArrowLeft } from 'lucide-react';
 import OptimizedImage from '../ui/OptimizedImage';
+import { applySEO, breadcrumb } from '../../lib/seo';
 
 const BobbyMukherji: React.FC = () => {
   const { navigateBack, backLabel, navigateToCreativeDirector } = useNavigation();
 
-  useEffect(() => {
-    const originalTitle = document.title;
-    const originalDescription = document.querySelector('meta[name="description"]')?.getAttribute('content');
-    const originalOGTitle = document.querySelector('meta[property="og:title"]')?.getAttribute('content');
-    const originalOGDescription = document.querySelector('meta[property="og:description"]')?.getAttribute('content');
-    const originalTwitterTitle = document.querySelector('meta[name="twitter:title"]')?.getAttribute('content');
-    const originalTwitterDescription = document.querySelector('meta[name="twitter:description"]')?.getAttribute('content');
-
-    document.title = 'Bobby Mukherji - Principal | Mukherji Architects Milano';
-
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute(
-        'content',
-        'Bobby Mukherji is Principal of Bobby Mukherji Architects and a foundational link to Mukherji Architects Milano—decades of experience in hospitality, commercial, and mixed-use work.'
-      );
-    }
-
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) {
-      ogTitle.setAttribute('content', 'Bobby Mukherji - Principal | Mukherji Architects Milano');
-    }
-    const ogDescription = document.querySelector('meta[property="og:description"]');
-    if (ogDescription) {
-      ogDescription.setAttribute(
-        'content',
-        'Established architect and founder of Bobby Mukherji Architects. Legacy and practical strength behind Mukherji Architects Milano.'
-      );
-    }
-
-    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
-    if (twitterTitle) {
-      twitterTitle.setAttribute('content', 'Bobby Mukherji - Principal | Mukherji Architects Milano');
-    }
-    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
-    if (twitterDescription) {
-      twitterDescription.setAttribute(
-        'content',
-        'Established architect and founder of Bobby Mukherji Architects. Legacy and practical strength behind Mukherji Architects Milano.'
-      );
-    }
-
-    const personSchema = {
-      '@context': 'https://schema.org',
-      '@type': 'Person',
-      name: 'Bobby Mukherji',
-      jobTitle: 'Principal',
-      image: 'https://www.mukherjiarchitects.com/images/about/bobby-mukherji.png',
-      url: 'https://www.mukherjiarchitects.com/bobby-mukherji',
-      worksFor: {
-        '@type': 'Organization',
-        name: 'Bobby Mukherji Architects',
-        url: 'https://bobbymukherji.com/',
+  useEffect(() => applySEO({
+    title: 'Bobby Mukherji — Principal | Mukherji Architects Milano',
+    description: 'Bobby Mukherji is founder of Bobby Mukherji Architects and the institutional backbone of Mukherji Architects Milano — 30+ years of experience across hospitality, commercial, and mixed-use projects worldwide.',
+    schemas: [
+      breadcrumb('Bobby Mukherji', '/bobby-mukherji'),
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: 'Bobby Mukherji',
+        jobTitle: 'Principal',
+        image: 'https://www.mukherjiarchitects.com/images/about/bobby-mukherji.png',
+        url: 'https://www.mukherjiarchitects.com/bobby-mukherji',
+        worksFor: { '@type': 'Organization', name: 'Bobby Mukherji Architects', url: 'https://bobbymukherji.com/' },
       },
-      description:
-        'Established architect with decades of experience across hospitality, commercial, and mixed-use projects; founder of Bobby Mukherji Architects.',
-    };
-
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.textContent = JSON.stringify(personSchema);
-    script.id = 'person-structured-data-bobby';
-    document.head.appendChild(script);
-
-    return () => {
-      document.title = originalTitle;
-      if (metaDescription && originalDescription) {
-        metaDescription.setAttribute('content', originalDescription);
-      }
-      if (ogTitle && originalOGTitle) {
-        ogTitle.setAttribute('content', originalOGTitle);
-      }
-      if (ogDescription && originalOGDescription) {
-        ogDescription.setAttribute('content', originalOGDescription);
-      }
-      if (twitterTitle && originalTwitterTitle) {
-        twitterTitle.setAttribute('content', originalTwitterTitle);
-      }
-      if (twitterDescription && originalTwitterDescription) {
-        twitterDescription.setAttribute('content', originalTwitterDescription);
-      }
-      const personScript = document.getElementById('person-structured-data-bobby');
-      if (personScript) {
-        personScript.remove();
-      }
-    };
-  }, []);
+    ],
+  }), []);
 
   return (
     <div className="pt-32 pb-24 min-h-screen bg-black">
@@ -105,7 +35,7 @@ const BobbyMukherji: React.FC = () => {
         </button>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16">
-          <div className="md:col-span-5 space-y-6">
+          <div className="md:col-span-5 space-y-6 order-2 md:order-1">
             <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-900">
               <OptimizedImage
                 src="/images/about/bobby-mukherji.png"
@@ -125,8 +55,9 @@ const BobbyMukherji: React.FC = () => {
             </p>
           </div>
 
-          <div className="md:col-span-7">
+          <div className="md:col-span-7 order-1 md:order-2">
             <div className="max-w-2xl">
+              <p className="text-zinc-600 text-xs uppercase tracking-[0.2em] mb-3">Mukherji Architects Milano</p>
               <h1 className="font-display text-5xl md:text-6xl font-bold text-white uppercase tracking-tight mb-3">
                 Bobby Mukherji
               </h1>

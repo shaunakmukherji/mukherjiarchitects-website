@@ -2,104 +2,29 @@ import React, { useEffect } from 'react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { ArrowLeft } from 'lucide-react';
 import OptimizedImage from '../ui/OptimizedImage';
+import { applySEO, breadcrumb } from '../../lib/seo';
 
 const CreativeDirector: React.FC = () => {
   const { navigateBack, backLabel, navigateToBobbyMukherji } = useNavigation();
 
-  // Update page title and meta tags for SEO
-  useEffect(() => {
-    const originalTitle = document.title;
-    const originalDescription = document.querySelector('meta[name="description"]')?.getAttribute('content');
-    const originalOGTitle = document.querySelector('meta[property="og:title"]')?.getAttribute('content');
-    const originalOGDescription = document.querySelector('meta[property="og:description"]')?.getAttribute('content');
-    const originalTwitterTitle = document.querySelector('meta[name="twitter:title"]')?.getAttribute('content');
-    const originalTwitterDescription = document.querySelector('meta[name="twitter:description"]')?.getAttribute('content');
-
-    // Update title
-    document.title = 'Shaunak Mukherji - Creative Director | Mukherji Architects Milano';
-
-    // Update meta description
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Shaunak Mukherji is a Creative Director and architect focused on finding the best way to solve problems. Learn about his AI-first, system-driven approach to architecture at Mukherji Architects Milano.');
-    }
-
-    // Update Open Graph tags
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) {
-      ogTitle.setAttribute('content', 'Shaunak Mukherji - Creative Director | Mukherji Architects Milano');
-    }
-    const ogDescription = document.querySelector('meta[property="og:description"]');
-    if (ogDescription) {
-      ogDescription.setAttribute('content', 'Shaunak Mukherji is a Creative Director and architect focused on finding the best way to solve problems. Learn about his AI-first, system-driven approach to architecture.');
-    }
-
-    // Update Twitter tags
-    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
-    if (twitterTitle) {
-      twitterTitle.setAttribute('content', 'Shaunak Mukherji - Creative Director | Mukherji Architects Milano');
-    }
-    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
-    if (twitterDescription) {
-      twitterDescription.setAttribute('content', 'Shaunak Mukherji is a Creative Director and architect focused on finding the best way to solve problems. Learn about his AI-first, system-driven approach to architecture.');
-    }
-
-    // Add Person structured data (JSON-LD)
-    const personSchema = {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Shaunak Mukherji",
-      "jobTitle": "Founder and Creative Director",
-      "image": "https://www.mukherjiarchitects.com/images/about/creative-director.png",
-      "url": "https://www.mukherjiarchitects.com/shaunak-mukherji",
-      "worksFor": {
-        "@type": "Organization",
-        "name": "Mukherji Architects Milano",
-        "url": "https://www.mukherjiarchitects.com"
+  useEffect(() => applySEO({
+    title: 'Shaunak Mukherji — Creative Director | Mukherji Architects Milano',
+    description: 'Shaunak Mukherji is Creative Director of Mukherji Architects Milano, a high-performance architecture studio in Milan, Italy. AI-first approach, Politecnico di Milano graduate.',
+    schemas: [
+      breadcrumb('Shaunak Mukherji', '/shaunak-mukherji'),
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: 'Shaunak Mukherji',
+        jobTitle: 'Founder and Creative Director',
+        image: 'https://www.mukherjiarchitects.com/images/about/creative-director.png',
+        url: 'https://www.mukherjiarchitects.com/shaunak-mukherji',
+        worksFor: { '@type': 'Organization', name: 'Mukherji Architects Milano', url: 'https://www.mukherjiarchitects.com' },
+        affiliation: { '@type': 'Organization', name: 'Bobby Mukherji Architects', url: 'https://bobbymukherji.com/' },
+        alumniOf: { '@type': 'EducationalOrganization', name: 'Politecnico di Milano' },
       },
-      "affiliation": {
-        "@type": "Organization",
-        "name": "Bobby Mukherji Architects",
-        "url": "https://bobbymukherji.com/"
-      },
-      "description": "Shaunak Mukherji is an architect focused on finding the best way to solve problems. He believes architecture must continuously evolve to remain efficient, relevant, and precise. His approach is AI-first and system-driven, centered on building workflows that prioritize speed, clarity, and efficiency.",
-      "alumniOf": {
-        "@type": "EducationalOrganization",
-        "name": "Politecnico di Milano"
-      }
-    };
-
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.textContent = JSON.stringify(personSchema);
-    script.id = 'person-structured-data';
-    document.head.appendChild(script);
-
-    // Cleanup: restore original values when component unmounts
-    return () => {
-      document.title = originalTitle;
-      if (metaDescription && originalDescription) {
-        metaDescription.setAttribute('content', originalDescription);
-      }
-      if (ogTitle && originalOGTitle) {
-        ogTitle.setAttribute('content', originalOGTitle);
-      }
-      if (ogDescription && originalOGDescription) {
-        ogDescription.setAttribute('content', originalOGDescription);
-      }
-      if (twitterTitle && originalTwitterTitle) {
-        twitterTitle.setAttribute('content', originalTwitterTitle);
-      }
-      if (twitterDescription && originalTwitterDescription) {
-        twitterDescription.setAttribute('content', originalTwitterDescription);
-      }
-      // Remove structured data script
-      const personScript = document.getElementById('person-structured-data');
-      if (personScript) {
-        personScript.remove();
-      }
-    };
-  }, []);
+    ],
+  }), []);
 
   return (
     <div className="pt-32 pb-24 min-h-screen bg-black">
@@ -112,8 +37,8 @@ const CreativeDirector: React.FC = () => {
         </button>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16">
-          {/* Left Column */}
-          <div className="md:col-span-5 space-y-6">
+          {/* Left Column — image, below text on mobile */}
+          <div className="md:col-span-5 space-y-6 order-2 md:order-1">
             <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-900">
               <OptimizedImage
                 src="/images/about/creative-director.png"
@@ -126,14 +51,15 @@ const CreativeDirector: React.FC = () => {
             </p>
           </div>
 
-          {/* Right Column */}
-          <div className="md:col-span-7">
+          {/* Right Column — name/title/bio first on mobile */}
+          <div className="md:col-span-7 order-1 md:order-2">
             <div className="max-w-2xl">
               {/* Main Title */}
+              <p className="text-zinc-600 text-xs uppercase tracking-[0.2em] mb-3">Mukherji Architects Milano</p>
               <h1 className="font-display text-5xl md:text-6xl font-bold text-white uppercase tracking-tight mb-3">
                 Shaunak Mukherji
               </h1>
-              
+
               {/* Subtitle */}
               <p className="text-zinc-400 text-lg uppercase tracking-wide mb-8">
                 Creative Director

@@ -6,7 +6,7 @@ import { useInViewportCenter } from '../../hooks/useInViewportCenter';
 import OptimizedImage from '../ui/OptimizedImage';
 
 const About: React.FC = () => {
-  const { navigateToCreativeDirector, navigateToBobbyMukherji, navigateToArchitectureAI, navigateToAboutStudio } = useNavigation();
+  const { navigateToCreativeDirector, navigateToBobbyMukherji, navigateToArchitectureAI, navigateToAboutStudio, navigateToTeam } = useNavigation();
   const { ref: imageRef, isInCenter } = useInViewportCenter();
 
   return (
@@ -58,8 +58,8 @@ const About: React.FC = () => {
             </button>
 
             {/* Text & Philosophy */}
-            <div className="md:col-span-7 flex flex-col h-full md:pl-8 lg:pl-12 order-1 md:order-2">
-                <div className="space-y-10 md:space-y-14">
+            <div className="md:col-span-7 flex flex-col md:pl-8 lg:pl-12 order-1 md:order-2">
+                <div className="space-y-10 md:space-y-14 flex-1">
                     <p className="text-base md:text-lg text-zinc-900 leading-[1.7] md:leading-[1.75] font-normal tracking-tight">
                         <button
                             onClick={navigateToAboutStudio}
@@ -104,7 +104,16 @@ const About: React.FC = () => {
                         >
                             Bobby Mukherji
                         </button>
-                        , the Milan studio builds on this legacy while advancing a contemporary design approach driven by computational design,{' '}
+                        , the Milan studio — and its{' '}
+                        <button
+                            type="button"
+                            onClick={navigateToTeam}
+                            className="text-black underline underline-offset-4 decoration-zinc-600 hover:decoration-black transition-colors duration-300 cursor-pointer font-medium"
+                            aria-label="Meet the team"
+                        >
+                            team
+                        </button>
+                        {' '}— build on this legacy while advancing a contemporary design approach driven by computational design,{' '}
                         <a
                             href="/architecture-artificial-intelligence"
                             onClick={(e) => {
@@ -119,6 +128,7 @@ const About: React.FC = () => {
                         , and system-based design thinking.
                     </p>
                 </div>
+
 
             </div>
         </div>

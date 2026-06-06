@@ -24,6 +24,23 @@ import BestFitMixedUse from './components/Views/BestFitMixedUse';
 import BestFitResearch from './components/Views/BestFitResearch';
 import BestFitResidential from './components/Views/BestFitResidential';
 import PortfolioFeed from './components/Views/PortfolioFeed';
+import Team from './components/Views/Team';
+
+// Floating "Work" shortcut — hidden when already in portfolio views
+const FloatingWorkButton: React.FC = () => {
+  const { currentView, navigateToPortfolioFeed } = useNavigation();
+  const hidden = currentView === 'PORTFOLIO_FEED' || currentView === 'PROJECT_DETAIL';
+  if (hidden) return null;
+  return (
+    <button
+      onClick={navigateToPortfolioFeed}
+      className="fixed bottom-6 right-6 z-40 flex items-center gap-3 px-5 py-2.5 rounded-full bg-zinc-900/80 backdrop-blur-md border border-zinc-700 hover:border-zinc-400 text-white text-xs uppercase tracking-[0.15em] transition-all duration-300 hover:bg-zinc-800/80"
+    >
+      <span className="w-1.5 h-1.5 rounded-full bg-white opacity-70" />
+      Work
+    </button>
+  );
+};
 
 // Separating the Main Content to handle view logic cleanly
 const MainContent = () => {
@@ -120,6 +137,10 @@ const MainContent = () => {
     return <PortfolioFeed />;
   }
 
+  if (currentView === 'TEAM') {
+    return <Team />;
+  }
+
   return (
     <>
       <Hero />
@@ -159,6 +180,9 @@ function App() {
         </main>
 
         <Footer />
+
+        {/* Floating portfolio shortcut */}
+        <FloatingWorkButton />
       </div>
     </NavigationProvider>
   );
