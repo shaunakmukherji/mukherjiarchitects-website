@@ -32,7 +32,7 @@ const About: React.FC = () => {
 
             {/* Image */}
             <button
-              onClick={navigateToAboutStudio}
+              onClick={navigateToTeam}
               className="md:col-span-5 relative group overflow-hidden md:sticky md:top-32 order-2 md:order-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-pure-grey"
               ref={imageRef as React.RefObject<HTMLButtonElement>}
               aria-label="Learn more about Mukherji Architects Milano"
@@ -62,7 +62,7 @@ const About: React.FC = () => {
                 <div className="space-y-10 md:space-y-14 flex-1">
                     <p className="text-base md:text-lg text-zinc-900 leading-[1.7] md:leading-[1.75] font-normal tracking-tight">
                         <button
-                            onClick={navigateToAboutStudio}
+                            onClick={navigateToTeam}
                             className="text-black underline underline-offset-4 decoration-zinc-600 hover:decoration-black transition-colors duration-300 cursor-pointer font-medium"
                             aria-label="Learn more about Mukherji Architects Milano"
                         >

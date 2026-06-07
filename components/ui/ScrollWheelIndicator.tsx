@@ -64,15 +64,15 @@ const ScrollWheelIndicator: React.FC = () => {
         flex flex-col items-center gap-3
       "
     >
-      {/* Vertical progress bar */}
-      <div className="w-[2px] h-24 md:h-32 rounded-full bg-zinc-900 overflow-hidden">
+      {/* Progress bar — desktop only */}
+      <div className="hidden md:block w-[2px] h-32 rounded-full bg-zinc-900 overflow-hidden">
         <div
-          className="w-full bg-zinc-300/80 md:bg-zinc-100 transition-all duration-300 ease-out"
+          className="w-full bg-zinc-100 transition-all duration-300 ease-out"
           style={{ height: `${Math.max(4, progress * 100)}%` }}
         />
       </div>
 
-      {/* Section dots — home only */}
+      {/* Section dots — home only, both mobile and desktop */}
       {currentView === 'HOME' && (
         <div className="flex flex-col gap-2 mt-1">
           {SECTION_IDS.map((id, index) => {
@@ -82,7 +82,7 @@ const ScrollWheelIndicator: React.FC = () => {
                 key={id}
                 className={`
                   block rounded-full transition-all duration-300
-                  ${isActive ? 'w-2.5 h-2.5 bg-white' : 'w-1.5 h-1.5 bg-zinc-700/70'}
+                  ${isActive ? 'w-2 h-2 bg-white' : 'w-1.5 h-1.5 bg-zinc-700/70'}
                 `}
               />
             );

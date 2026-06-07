@@ -28,3 +28,6 @@ dist-ssr
 
 # Generated files (auto-generated from folder structure)
 generated/
+
+# Archive folders — local only, never deploy
+**/archived/
