@@ -1070,14 +1070,133 @@ export const TEAM_MEMBERS: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)
   fs.writeFileSync(sitemapPath, sitemapXml, 'utf-8');
   // ─────────────────────────────────────────────────────────────────────────
 
+  // ── SEO manifest — one entry per route, consumed by scripts/prerender-seo.cjs ──
+  // Crawlers (Facebook, Twitter/X, WhatsApp, Slack, iMessage) never run this site's
+  // JS, so the client-side applySEO() calls are invisible to them. This manifest lets
+  // the post-build prerender step bake correct <title>/og:image/description into a
+  // real static index.html per route, so link previews are correct without SSR.
+  const LOGO_IMAGE = `${SITE_URL}/images/logo/logo.png`;
+  // Encode each path segment so spaces/commas/em-dashes in folder names survive as a URL
+  const encodeImagePath = (url) => url.split('/').map((seg) => (seg ? encodeURIComponent(seg) : '')).join('/');
+  const absoluteUrl = (url) => (url ? (url.startsWith('http') ? url : `${SITE_URL}${encodeImagePath(url)}`) : LOGO_IMAGE);
+
+  const staticSeoRoutes = [
+    {
+      path: '/portfolio',
+      title: 'All Projects | Mukherji Architects Milano',
+      description: 'Complete portfolio of Mukherji Architects Milano — commercial, hospitality, master planning, mixed-use, residential, and research projects from our studio in Milan, Italy.',
+      image: LOGO_IMAGE,
+    },
+    {
+      path: '/the-studio/people',
+      title: 'People | Mukherji Architects Milano',
+      description: "The team at Mukherji Architects Milano — architects and designers trained at Italy's leading institutions, working across international markets from our studio in Milan.",
+      image: LOGO_IMAGE, // no single "hero" photo represents the whole team — use the logo
+    },
+    {
+      path: '/shaunak-mukherji',
+      title: 'Shaunak Mukherji — Founder & Creative Director | Mukherji Architects Milano',
+      description: 'Shaunak Mukherji is Founder & Creative Director of Mukherji Architects Milano, a high-performance architecture studio in Milan, Italy. AI-first approach, Politecnico di Milano graduate.',
+      image: absoluteUrl('/images/about/creative-director.png'),
+    },
+    {
+      path: '/bobby-mukherji',
+      title: 'Bobby Mukherji — Principal | Mukherji Architects Milano',
+      description: 'Bobby Mukherji is founder of Bobby Mukherji Architects and the institutional backbone of Mukherji Architects Milano — 30+ years of experience across hospitality, commercial, and mixed-use projects worldwide.',
+      image: absoluteUrl('/images/about/bobby-mukherji.png'),
+    },
+    {
+      path: '/architecture-artificial-intelligence',
+      title: 'Architecture and Artificial Intelligence | Mukherji Architects Milano',
+      description: 'How Mukherji Architects Milano uses AI in architectural work — the case for quality of thinking over the tool itself, written by Shaunak Mukherji from Milan.',
+      image: LOGO_IMAGE,
+    },
+    {
+      path: '/about-mukherji-architects-milano',
+      title: 'About Mukherji Architects Milano',
+      description: 'About Mukherji Architects Milano — a high-performance architecture studio in Milan, Italy, working across residential, commercial, institutional, and mixed-use design.',
+      image: LOGO_IMAGE,
+    },
+    {
+      path: '/best-fit/commercial-design',
+      title: 'Best-Fit Commercial Design | Mukherji Architects Milano',
+      description: 'Is Mukherji Architects Milano the right fit for your commercial design project? An honest breakdown of who we work best with.',
+      image: LOGO_IMAGE,
+    },
+    {
+      path: '/best-fit/hospitality-design',
+      title: 'Best-Fit Hospitality Design | Mukherji Architects Milano',
+      description: 'Is Mukherji Architects Milano the right fit for your hospitality design project? An honest breakdown of who we work best with.',
+      image: LOGO_IMAGE,
+    },
+    {
+      path: '/best-fit/institutional-design',
+      title: 'Best-Fit Institutional Design | Mukherji Architects Milano',
+      description: 'Is Mukherji Architects Milano the right fit for your institutional design project? An honest breakdown of who we work best with.',
+      image: LOGO_IMAGE,
+    },
+    {
+      path: '/best-fit/master-planning',
+      title: 'Best-Fit Master Planning | Mukherji Architects Milano',
+      description: 'Is Mukherji Architects Milano the right fit for your master planning project? An honest breakdown of who we work best with.',
+      image: LOGO_IMAGE,
+    },
+    {
+      path: '/best-fit/mixed-use-design',
+      title: 'Best-Fit Mixed-Use Design | Mukherji Architects Milano',
+      description: 'Is Mukherji Architects Milano the right fit for your mixed-use design project? An honest breakdown of who we work best with.',
+      image: LOGO_IMAGE,
+    },
+    {
+      path: '/best-fit/research-exploration',
+      title: 'Best-Fit Research & Exploration | Mukherji Architects Milano',
+      description: 'Is Mukherji Architects Milano the right fit for your research or exploratory project? An honest breakdown of who we work best with.',
+      image: LOGO_IMAGE,
+    },
+    {
+      path: '/best-fit/residential-design',
+      title: 'Best-Fit Residential Design | Mukherji Architects Milano',
+      description: 'Is Mukherji Architects Milano the right fit for your residential design project? An honest breakdown of who we work best with.',
+      image: LOGO_IMAGE,
+    },
+  ];
+
+  const projectSeoRoutes = projects.map((p) => {
+    const pageTitle = `${p.title} — ${p.category} | Mukherji Architects Milano`;
+    const description = p.description
+      ? `${p.description.substring(0, 150)}${p.description.length > 150 ? '...' : ''}`
+      : `${p.title} — ${p.category} project by Mukherji Architects Milano${p.location ? ` in ${p.location}` : ''}.`;
+    return {
+      path: `/project/${p.id}`,
+      title: pageTitle,
+      description,
+      image: absoluteUrl(p.imageUrl),
+    };
+  });
+
+  const categorySeoRoutes = mergedServices.map((s) => {
+    const projectCount = projects.filter((p) => (p.categories ?? [p.category]).includes(s.categoryFilter)).length;
+    return {
+      path: `/category/${s.categoryFilter}`,
+      title: `${s.categoryFilter} Architecture Projects | Mukherji Architects Milano`,
+      description: `Explore ${projectCount} ${s.categoryFilter.toLowerCase()} architecture projects by Mukherji Architects Milano. View our portfolio of ${s.categoryFilter.toLowerCase()} design work, including commercial, residential, and institutional projects.`,
+      image: absoluteUrl(s.imageUrl),
+    };
+  });
+
+  const seoManifest = [...staticSeoRoutes, ...projectSeoRoutes, ...categorySeoRoutes];
+  const seoManifestPath = path.join(outputDir, 'seo-manifest.json');
+  fs.writeFileSync(seoManifestPath, JSON.stringify(seoManifest, null, 2), 'utf-8');
+
   console.log(`📝 Generated ${projectsPath}`);
   console.log(`📝 Generated ${servicesPath}`);
   console.log(`📝 Generated ${teamImagesPath} (${teamImageUrls.length} team image(s))`);
   console.log(`📝 Generated ${path.join(outputDir, 'site-hero.ts')}${siteHeroUrl ? ` → ${siteHeroUrl}` : ' (no hero set)'}`);
   console.log(`📝 Generated ${sitemapPath} (${projects.length} project URLs + ${staticRoutes.length} static)`);
+  console.log(`📝 Generated ${seoManifestPath} (${seoManifest.length} routes)`);
   generateAboutImageVersions();
   console.log('✨ Done!');
-  
+
   return { projects, services };
 }
 

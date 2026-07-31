@@ -20,7 +20,7 @@ const Team: React.FC = () => {
   useEffect(() => applySEO({
     title: 'People | Mukherji Architects Milano',
     description: "The team at Mukherji Architects Milano — architects and designers trained at Italy's leading institutions, working across international markets from our studio in Milan.",
-    image: '/images/about/People/_gallery/1.jpg',
+    image: '/images/logo/logo.png',
     canonicalPath: '/the-studio/people',
     schemas: [breadcrumb('People', '/the-studio/people')],
   }), []);
