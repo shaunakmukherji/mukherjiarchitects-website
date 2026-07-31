@@ -108,9 +108,8 @@ const Services: React.FC = () => {
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
                     
                     {/* Meta Data */}
-                    <div className="flex justify-between items-start mb-8 opacity-60 text-[10px] uppercase tracking-wider font-mono">
+                    <div className="flex items-start mb-8 opacity-60 text-[10px] uppercase tracking-wider font-mono">
                         <span className="border border-zinc-700 px-2 py-1 rounded-full group-hover:border-accent group-hover:text-accent transition-colors">0{index + 1}</span>
-                        <span>Design Service</span>
                     </div>
 
                     {/* Image Area — taller frame so imagery reads larger on the grid */}

@@ -21,7 +21,7 @@ const CategoryListing: React.FC = () => {
   } = useNavigation();
   // selectedId here represents the categoryFilter string (e.g., 'Residential')
   const filteredProjects = PROJECTS
-    .filter((p) => p.category === selectedId)
+    .filter((p) => (p.categories ?? [p.category]).includes(selectedId ?? ''))
     .sort(compareProjectsByCategoryOrder);
   const categoryDescription = SERVICES.find((s) => s.categoryFilter === selectedId)?.description ?? '';
 

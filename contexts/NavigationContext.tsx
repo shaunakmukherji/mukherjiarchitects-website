@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { NavigationContextType, ViewState } from '../types';
+import { PROJECT_REDIRECTS } from '../lib/projectRedirects';
 
 const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
 
@@ -8,6 +9,8 @@ const updateURL = (view: ViewState, id: string | null) => {
   let url = '/';
   if (view === 'PROJECT_DETAIL' && id) {
     url = `/project/${encodeURIComponent(id)}`;
+  } else if (view === 'PROJECT_CONSTRUCTION' && id) {
+    url = `/project/${encodeURIComponent(id)}/construction`;
   } else if (view === 'CATEGORY_LISTING' && id) {
     url = `/category/${encodeURIComponent(id)}`;
   } else if (view === 'CREATIVE_DIRECTOR') {
@@ -46,8 +49,18 @@ const parseURL = (): { view: ViewState; id: string | null } => {
   const path = window.location.pathname;
   
   if (path.startsWith('/project/')) {
-    const id = decodeURIComponent(path.split('/project/')[1]);
-    return { view: 'PROJECT_DETAIL', id };
+    let rest = decodeURIComponent(path.split('/project/')[1] || '');
+    const isConstruction = rest.endsWith('/construction');
+    let id = isConstruction ? rest.slice(0, -('/construction'.length)) : rest;
+    const view: ViewState = isConstruction ? 'PROJECT_CONSTRUCTION' : 'PROJECT_DETAIL';
+
+    const canonical = PROJECT_REDIRECTS[id];
+    if (canonical) {
+      const canonicalPath = isConstruction ? `/project/${encodeURIComponent(canonical)}/construction` : `/project/${encodeURIComponent(canonical)}`;
+      window.history.replaceState({ view, id: canonical }, '', canonicalPath);
+      id = canonical;
+    }
+    return { view, id };
   } else if (path.startsWith('/category/')) {
     const id = decodeURIComponent(path.split('/category/')[1]);
     return { view: 'CATEGORY_LISTING', id };
@@ -128,6 +141,8 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
       let url = '/';
       if (initialState.view === 'PROJECT_DETAIL' && initialState.id) {
         url = `/project/${encodeURIComponent(initialState.id)}`;
+      } else if (initialState.view === 'PROJECT_CONSTRUCTION' && initialState.id) {
+        url = `/project/${encodeURIComponent(initialState.id)}/construction`;
       } else if (initialState.view === 'CATEGORY_LISTING' && initialState.id) {
         url = `/category/${encodeURIComponent(initialState.id)}`;
       } else if (initialState.view === 'CREATIVE_DIRECTOR') {
@@ -194,6 +209,14 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
     setSelectedId(id);
     setCurrentView('PROJECT_DETAIL');
     updateURL('PROJECT_DETAIL', id);
+    window.scrollTo(0, 0);
+  };
+
+  const navigateToProjectConstruction = (id: string) => {
+    pushCurrent();
+    setSelectedId(id);
+    setCurrentView('PROJECT_CONSTRUCTION');
+    updateURL('PROJECT_CONSTRUCTION', id);
     window.scrollTo(0, 0);
   };
 
@@ -345,6 +368,7 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
       navigateBack,
       navigateToHome,
       navigateToProject,
+      navigateToProjectConstruction,
       navigateToCategory,
       navigateToCreativeDirector,
       navigateToBobbyMukherji,

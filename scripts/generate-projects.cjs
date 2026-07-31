@@ -115,17 +115,11 @@ function getSiteHeroImageUrl() {
 
   // Use the first project folder found
   const projectPath = path.join(heroDir, projectFolders[0].name);
-  const { main } = findImages(projectPath);
+  const { main, mediaDir } = findImages(projectPath);
 
   if (!main) return null;
 
-  // Build the public URL path
-  const rel = path.relative(
-    path.join(__dirname, '..', 'public'),
-    path.join(projectPath, main)
-  ).replace(/\\/g, '/');
-
-  return `/${rel}`;
+  return toPublicUrl(path.join(mediaDir, main));
 }
 
 /**
@@ -195,30 +189,49 @@ function extractYearFromFolder(folderName) {
   return new Date().getFullYear().toString();
 }
 
+// Structured facts read straight from project.json — each optional/independent, never invented.
+const FACT_KEYS = ['client', 'status', 'siteArea', 'builtUpArea', 'scope'];
+
 function readProjectConfig(folderPath) {
   const configPath = path.join(folderPath, 'project.json');
   if (!fs.existsSync(configPath)) {
     return {
       isSignature: false,
       signatureOrder: null,
-      categoryOrder: null
+      categoryOrder: null,
+      facts: {}
     };
   }
 
   try {
     const content = fs.readFileSync(configPath, 'utf-8');
     const config = JSON.parse(content);
+    const facts = {};
+    for (const key of FACT_KEYS) {
+      if (typeof config[key] === 'string' && config[key].trim() !== '') {
+        facts[key] = config[key].trim();
+      }
+    }
+    // Extra categories a project also belongs to, beyond the one implied by its folder location.
+    // The project still lives at a single canonical page — this only adds it to more category listings.
+    const additionalCategories = Array.isArray(config.additionalCategories)
+      ? config.additionalCategories.filter((c) => typeof c === 'string' && c.trim() !== '').map((c) => c.trim())
+      : [];
     return {
       isSignature: config.isSignature === true,
       signatureOrder: typeof config.signatureOrder === 'number' ? config.signatureOrder : null,
-      categoryOrder: typeof config.categoryOrder === 'number' ? config.categoryOrder : null
+      categoryOrder: typeof config.categoryOrder === 'number' ? config.categoryOrder : null,
+      facts,
+      additionalCategories
     };
   } catch (error) {
     console.warn(`Error reading project.json in ${folderPath}:`, error);
     return {
       isSignature: false,
       signatureOrder: null,
-      categoryOrder: null
+      categoryOrder: null,
+      facts: {},
+      additionalCategories: []
     };
   }
 }
@@ -307,17 +320,88 @@ function readDescriptionFile(folderPath) {
   }
 }
 
+/** Special subfolder inside a project folder — drop construction-progress photos/videos here. */
+const CONSTRUCTION_FOLDER = '_construction';
+const CONSTRUCTION_IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp'];
+const CONSTRUCTION_VIDEO_EXTS = ['.mp4', '.mov', '.webm'];
+
+/**
+ * Construction-progress media lives in an optional `_construction/` subfolder inside a project's
+ * own folder. Sorted naturally (leading number wins, else alphabetical) so dated filenames like
+ * "01-foundation.jpg" or "2025-03-site.jpg" order correctly. An optional `note.md` inside that
+ * folder supplies the short intro text shown at the top of the progress gallery.
+ */
+function findConstructionMedia(folderPath) {
+  const dir = path.join(folderPath, CONSTRUCTION_FOLDER);
+  if (!fs.existsSync(dir)) return { media: [], note: '' };
+
+  let entries = [];
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch (error) {
+    console.warn(`Error reading ${dir}:`, error);
+    return { media: [], note: '' };
+  }
+
+  const files = entries.filter((e) => e.isFile()).map((e) => e.name);
+
+  const mediaFiles = files.filter((f) => {
+    const ext = path.extname(f).toLowerCase();
+    return CONSTRUCTION_IMAGE_EXTS.includes(ext) || CONSTRUCTION_VIDEO_EXTS.includes(ext);
+  });
+
+  const naturalSort = (a, b) => {
+    const aNum = a.match(/^(\d+)/);
+    const bNum = b.match(/^(\d+)/);
+    if (aNum && bNum) return parseInt(aNum[1], 10) - parseInt(bNum[1], 10);
+    if (aNum) return -1;
+    if (bNum) return 1;
+    return a.localeCompare(b);
+  };
+  mediaFiles.sort(naturalSort);
+
+  const media = mediaFiles.map((f) => {
+    const ext = path.extname(f).toLowerCase();
+    const type = CONSTRUCTION_VIDEO_EXTS.includes(ext) ? 'video' : 'image';
+    return { type, file: f };
+  });
+
+  let note = '';
+  const notePath = path.join(dir, 'note.md');
+  if (fs.existsSync(notePath)) {
+    try {
+      note = fs.readFileSync(notePath, 'utf-8').trim();
+    } catch (error) {
+      console.warn(`Error reading ${notePath}:`, error);
+    }
+  }
+
+  return { media, note };
+}
+
+/** Renders/gallery images live in an optional `_renders/` subfolder inside a project's own folder.
+ *  Falls back to the project folder root itself for any project not yet migrated into `_renders/`. */
+const RENDERS_FOLDER = '_renders';
+
+function toPublicUrl(absPath) {
+  const publicDir = path.join(__dirname, '..', 'public');
+  return `/${path.relative(publicDir, absPath).replace(/\\/g, '/')}`;
+}
+
 function findImages(folderPath) {
+  const rendersDir = path.join(folderPath, RENDERS_FOLDER);
+  const searchDir = fs.existsSync(rendersDir) ? rendersDir : folderPath;
+
   const imageExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
   let files = [];
-  
+
   try {
-    files = fs.readdirSync(folderPath);
+    files = fs.readdirSync(searchDir);
   } catch (error) {
-    console.warn(`Error reading directory ${folderPath}:`, error);
-    return { main: 'render-01.jpg', gallery: [] };
+    console.warn(`Error reading directory ${searchDir}:`, error);
+    return { main: 'render-01.jpg', gallery: [], mediaDir: searchDir };
   }
-  
+
   const images = files
     .filter(file => {
       const ext = path.extname(file).toLowerCase();
@@ -362,7 +446,8 @@ function findImages(folderPath) {
 
   return {
     main: mainImage,
-    gallery: galleryImages
+    gallery: galleryImages,
+    mediaDir: searchDir
   };
 }
 
@@ -503,7 +588,23 @@ function scanProjectsFolder(existingMap = {}) {
     .filter(dirent => dirent.isDirectory() && !dirent.name.startsWith('.') && !dirent.name.startsWith('_') && dirent.name !== 'node_modules')
     .map(dirent => dirent.name);
 
-  let projectId = 1;
+  // Slug generator — produces clean, URL-safe IDs from project titles
+  const toSlug = (title) => title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  // Track used slugs to handle any collisions
+  const usedSlugs = new Set();
+
+  const uniqueSlug = (base) => {
+    if (!usedSlugs.has(base)) { usedSlugs.add(base); return base; }
+    let i = 2;
+    while (usedSlugs.has(`${base}-${i}`)) i++;
+    const s = `${base}-${i}`; usedSlugs.add(s); return s;
+  };
+
+  let projectId = 1; // fallback counter (should never be used after migration)
 
   // Scan each category folder
   for (const categoryFolder of categoryFolders) {
@@ -518,9 +619,14 @@ function scanProjectsFolder(existingMap = {}) {
     for (const entry of projectEntries) {
       const { folderName, storagePath, isCategoryHero } = entry;
       const projectPath = path.join(categoryPath, storagePath);
-      const { main, gallery } = findImages(projectPath);
+      const { main, gallery, mediaDir } = findImages(projectPath);
       const { description, year, location, credit: mdCredit } = readDescriptionFile(projectPath);
-      const { isSignature, signatureOrder, categoryOrder: configCategoryOrder } = readProjectConfig(projectPath);
+      const { isSignature, signatureOrder, categoryOrder: configCategoryOrder, facts, additionalCategories } = readProjectConfig(projectPath);
+      const { media: constructionMediaRaw, note: constructionNote } = findConstructionMedia(projectPath);
+      const constructionMedia = constructionMediaRaw.map((m) => ({
+        type: m.type,
+        url: `/images/projects/${categoryFolder}/${storagePath}/${CONSTRUCTION_FOLDER}/${m.file}`,
+      }));
       const { categoryOrder: orderFromFolder, displayTitle } = parseFolderNameMeta(folderName);
       // Priority: _hero/ folder (0) → "N. " folder prefix → project.json categoryOrder
       let categoryOrder = null;
@@ -577,24 +683,31 @@ function scanProjectsFolder(existingMap = {}) {
         projectLocation = existing.location;
       }
 
-      // --- ID --- preserve existing id so links/routes don't break
-      const projectIdStr = (existing && existing.id) ? existing.id : `p${projectId++}`;
+      // --- ID --- use slug; preserve existing only if it's already a slug (not an auto p{n})
+      const isAutoId = !existing?.id || /^p\d+$/.test(existing.id);
+      const projectIdStr = isAutoId ? uniqueSlug(toSlug(displayTitle)) : existing.id;
 
       // Create project data (title = display only; folder may still use "0. Name" for filesystem ordering)
       const project = {
         id: projectIdStr,
         title: displayTitle,
         category: categoryInfo.category,
+        categories: Array.from(new Set([categoryInfo.category, ...additionalCategories])),
         year: projectYear,
         location: projectLocation,
         description: projectDescription,
-        imageUrl: `/images/projects/${categoryFolder}/${storagePath}/${main}`,
-        gallery: gallery.map(img => `/images/projects/${categoryFolder}/${storagePath}/${img}`),
+        imageUrl: toPublicUrl(path.join(mediaDir, main)),
+        gallery: gallery.map(img => toPublicUrl(path.join(mediaDir, img))),
         isSignature: isSignature,
         signatureOrder: signatureOrder,
         categoryOrder: categoryOrder,
         // Credit: description.md wins, then existing curated, then nothing
         ...(mdCredit ? { credit: mdCredit } : existing && existing.credit ? { credit: existing.credit } : {}),
+        // Structured facts: project.json is the single source of truth — never inherited/guessed
+        ...facts,
+        // Construction progress: only present when a `_construction/` folder has media in it
+        ...(constructionMedia.length > 0 ? { constructionMedia } : {}),
+        ...(constructionNote ? { constructionNote } : {}),
       };
 
       projects.push(project);
@@ -859,10 +972,35 @@ export const TEAM_IMAGES: string[] = ${JSON.stringify(teamImageUrls, null, 2)};
   fs.writeFileSync(servicesPath, servicesTs, 'utf-8');
   fs.writeFileSync(path.join(outputDir, 'site-hero.ts'), siteHeroTs, 'utf-8');
 
+  // ── Sitemap ──────────────────────────────────────────────────────────────
+  const SITE_URL = 'https://www.mukherjiarchitects.com';
+  const today = new Date().toISOString().split('T')[0];
+
+  const staticRoutes = [
+    { path: '/',                                    priority: '1.0', changefreq: 'weekly'  },
+    { path: '/portfolio',                           priority: '0.9', changefreq: 'weekly'  },
+    { path: '/the-studio/people',                   priority: '0.8', changefreq: 'monthly' },
+    { path: '/shaunak-mukherji',                    priority: '0.8', changefreq: 'monthly' },
+    { path: '/bobby-mukherji',                      priority: '0.7', changefreq: 'monthly' },
+    { path: '/architecture-artificial-intelligence',priority: '0.7', changefreq: 'monthly' },
+    { path: '/about',                               priority: '0.7', changefreq: 'monthly' },
+  ];
+
+  const urlTags = [
+    ...staticRoutes.map(r => `  <url>\n    <loc>${SITE_URL}${r.path}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${r.changefreq}</changefreq>\n    <priority>${r.priority}</priority>\n  </url>`),
+    ...projects.map(p => `  <url>\n    <loc>${SITE_URL}/project/${p.id}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>`),
+  ].join('\n');
+
+  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urlTags}\n</urlset>\n`;
+  const sitemapPath = path.join(__dirname, '..', 'public', 'sitemap.xml');
+  fs.writeFileSync(sitemapPath, sitemapXml, 'utf-8');
+  // ─────────────────────────────────────────────────────────────────────────
+
   console.log(`📝 Generated ${projectsPath}`);
   console.log(`📝 Generated ${servicesPath}`);
   console.log(`📝 Generated ${teamImagesPath} (${teamImageUrls.length} team image(s))`);
   console.log(`📝 Generated ${path.join(outputDir, 'site-hero.ts')}${siteHeroUrl ? ` → ${siteHeroUrl}` : ' (no hero set)'}`);
+  console.log(`📝 Generated ${sitemapPath} (${projects.length} project URLs + ${staticRoutes.length} static)`);
   generateAboutImageVersions();
   console.log('✨ Done!');
   

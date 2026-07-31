@@ -1,3 +1,9 @@
 {
-  "categoryOrder": 2
+  "categoryOrder": 2,
+  "additionalCategories": ["Master Planning"],
+  "client": "Atmosphere Core",
+  "status": "Under Construction",
+  "siteArea": "275 acres",
+  "builtUpArea": "200,000 sq ft",
+  "scope": "Full Design Scope"
 }

@@ -9,6 +9,7 @@ const ArchitectureAI: React.FC = () => {
   useEffect(() => applySEO({
     title: 'Architecture and Artificial Intelligence | Mukherji Architects Milano',
     description: 'How Mukherji Architects Milano uses AI in architectural work — the case for quality of thinking over the tool itself, written by Shaunak Mukherji from Milan.',
+    canonicalPath: '/architecture-artificial-intelligence',
     schemas: [breadcrumb('Architecture and Artificial Intelligence', '/architecture-artificial-intelligence')],
   }), []);
 

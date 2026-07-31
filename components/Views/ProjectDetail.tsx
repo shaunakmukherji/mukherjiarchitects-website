@@ -3,10 +3,11 @@ import { useNavigation } from '../../contexts/NavigationContext';
 import { PROJECTS } from '../../constants';
 import Button from '../ui/Button';
 import OptimizedImage from '../ui/OptimizedImage';
+import ProjectFacts from '../ui/ProjectFacts';
 import { ArrowLeft, ArrowRight, X } from 'lucide-react';
 
 const ProjectDetail: React.FC = () => {
-  const { selectedId, navigateToContact, navigateBack, backLabel, navigateToCreativeDirector } = useNavigation();
+  const { selectedId, navigateToContact, navigateBack, backLabel, navigateToCreativeDirector, navigateToProjectConstruction } = useNavigation();
   const project = PROJECTS.find(p => p.id === selectedId);
 
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -55,41 +56,50 @@ const ProjectDetail: React.FC = () => {
     if (!project) return;
     const originalTitle = document.title;
     const originalDescription = document.querySelector('meta[name="description"]')?.getAttribute('content');
-    const originalOGTitle = document.querySelector('meta[property="og:title"]')?.getAttribute('content');
-    const originalOGDescription = document.querySelector('meta[property="og:description"]')?.getAttribute('content');
-    const originalTwitterTitle = document.querySelector('meta[name="twitter:title"]')?.getAttribute('content');
-    const originalTwitterDescription = document.querySelector('meta[name="twitter:description"]')?.getAttribute('content');
-
-    const pageTitle = `${project.title} - ${project.category} Project | Mukherji Architects Milano`;
-    document.title = pageTitle;
+    const SITE = 'https://www.mukherjiarchitects.com';
+    const pageTitle = `${project.title} — ${project.category} | Mukherji Architects Milano`;
     const metaDescriptionText = project.description
       ? `${project.description.substring(0, 150)}${project.description.length > 150 ? '...' : ''}`
-      : `${project.title} - ${project.category} architecture project by Mukherji Architects Milano. Located in ${project.location}, completed in ${project.year}.`;
+      : `${project.title} — ${project.category} project by Mukherji Architects Milano${project.location ? ` in ${project.location}` : ''}.`;
+    const absoluteImage = project.imageUrl ? `${SITE}${project.imageUrl}` : null;
+    const canonicalUrl = `${SITE}/project/${selectedId}`;
 
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) metaDescription.setAttribute('content', metaDescriptionText);
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) ogTitle.setAttribute('content', pageTitle);
-    const ogDescription = document.querySelector('meta[property="og:description"]');
-    if (ogDescription) ogDescription.setAttribute('content', metaDescriptionText);
-    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
-    if (twitterTitle) twitterTitle.setAttribute('content', pageTitle);
-    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
-    if (twitterDescription) twitterDescription.setAttribute('content', metaDescriptionText);
-
-    const projectSchema: any = {
-      "@context": "https://schema.org",
-      "@type": "CreativeWork",
-      "@id": `https://www.mukherjiarchitects.com/projects/${selectedId}`,
-      "name": project.title,
-      "description": project.description || `${project.title} - ${project.category} architecture project by Mukherji Architects Milano.`,
-      "creator": { "@type": "Organization", "name": "Mukherji Architects Milano", "url": "https://www.mukherjiarchitects.com" },
-      "about": { "@type": "Thing", "name": project.category },
-      "keywords": `${project.category}, architecture, ${project.location || ''}`
+    const prev: Record<string, string | null> = {};
+    const setMeta = (sel: string, val: string) => {
+      const el = document.querySelector(sel);
+      if (el) { prev[sel] = el.getAttribute('content'); el.setAttribute('content', val); }
     };
-    if (project.year) projectSchema.dateCreated = `${project.year}`;
-    if (project.location) projectSchema.locationCreated = { "@type": "Place", "name": project.location };
-    if (project.imageUrl) projectSchema.image = `https://www.mukherjiarchitects.com${project.imageUrl}`;
+
+    document.title = pageTitle;
+    setMeta('meta[name="description"]',          metaDescriptionText);
+    setMeta('meta[property="og:title"]',         pageTitle);
+    setMeta('meta[property="og:description"]',   metaDescriptionText);
+    setMeta('meta[name="twitter:title"]',        pageTitle);
+    setMeta('meta[name="twitter:description"]',  metaDescriptionText);
+    if (absoluteImage) {
+      setMeta('meta[property="og:image"]',  absoluteImage);
+      setMeta('meta[name="twitter:image"]', absoluteImage);
+    }
+
+    const canonical = document.createElement('link');
+    canonical.rel = 'canonical';
+    canonical.href = canonicalUrl;
+    canonical.id = 'project-canonical';
+    document.head.appendChild(canonical);
+
+    const projectSchema: Record<string, unknown> = {
+      '@context': 'https://schema.org',
+      '@type': 'CreativeWork',
+      '@id': canonicalUrl,
+      name: project.title,
+      description: metaDescriptionText,
+      creator: { '@type': 'Organization', name: 'Mukherji Architects Milano', url: SITE },
+      about: { '@type': 'Thing', name: project.category },
+      keywords: `${project.category}, architecture${project.location ? `, ${project.location}` : ''}`,
+    };
+    if (project.year) projectSchema.dateCreated = String(project.year);
+    if (project.location) projectSchema.locationCreated = { '@type': 'Place', name: project.location };
+    if (absoluteImage) projectSchema.image = absoluteImage;
 
     const projectScript = document.createElement('script');
     projectScript.type = 'application/ld+json';
@@ -99,11 +109,10 @@ const ProjectDetail: React.FC = () => {
 
     return () => {
       document.title = originalTitle;
-      if (metaDescription && originalDescription) metaDescription.setAttribute('content', originalDescription);
-      if (ogTitle && originalOGTitle) ogTitle.setAttribute('content', originalOGTitle);
-      if (ogDescription && originalOGDescription) ogDescription.setAttribute('content', originalOGDescription);
-      if (twitterTitle && originalTwitterTitle) twitterTitle.setAttribute('content', originalTwitterTitle);
-      if (twitterDescription && originalTwitterDescription) twitterDescription.setAttribute('content', originalTwitterDescription);
+      Object.entries(prev).forEach(([sel, val]) => {
+        if (val !== null) document.querySelector(sel)?.setAttribute('content', val);
+      });
+      document.getElementById('project-canonical')?.remove();
       document.getElementById('project-structured-data')?.remove();
     };
   }, [project, selectedId]);
@@ -174,6 +183,14 @@ const ProjectDetail: React.FC = () => {
             {/* Right: sticky project info */}
             <div className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start space-y-8 order-1 lg:order-2">
               <div>
+                <div className="flex flex-wrap gap-x-3 gap-y-1 mb-3">
+                  {(project.categories ?? [project.category]).map((cat, i) => (
+                    <span key={cat} className="text-xs uppercase tracking-widest text-zinc-500 flex items-center gap-3">
+                      {i > 0 && <span className="text-zinc-700">·</span>}
+                      {cat}
+                    </span>
+                  ))}
+                </div>
                 <h1 className="font-display text-3xl md:text-4xl font-bold text-white mb-5 leading-[1.0]">
                   {project.title}
                 </h1>
@@ -202,18 +219,14 @@ const ProjectDetail: React.FC = () => {
                 )}
               </div>
 
-              <div className="border-t border-zinc-800 pt-6">
-                <span className="block text-xs uppercase tracking-widest text-zinc-500 mb-1">Location</span>
-                <span className="text-base text-white">{project.location}</span>
-              </div>
-              <div className="border-t border-zinc-800 pt-6">
-                <span className="block text-xs uppercase tracking-widest text-zinc-500 mb-1">Year</span>
-                <span className="text-base text-white">{project.year}</span>
-              </div>
-              <div className="border-t border-zinc-800 pt-6">
-                <span className="block text-xs uppercase tracking-widest text-zinc-500 mb-1">Category</span>
-                <span className="text-base text-white">{project.category}</span>
-              </div>
+              <ProjectFacts
+                project={project}
+                onViewConstructionProgress={
+                  project.constructionMedia && project.constructionMedia.length > 0
+                    ? () => navigateToProjectConstruction(project.id)
+                    : undefined
+                }
+              />
               <div className="pt-2">
                 <Button variant="outline" className="w-full" onClick={navigateToContact}>
                   Inquire About This Project

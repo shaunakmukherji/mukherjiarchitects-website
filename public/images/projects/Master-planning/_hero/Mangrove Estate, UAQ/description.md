@@ -5,7 +5,7 @@ A masterplan proposal presented directly to the Sheikh of Umm al-Quwain for the 
 
 ## Technical Details
 - **Location:** Umm Al Quwain, UAE
-- **Year:** 2025
+- **Year:** 2024
 - **Category:** Master Planning
 
 ## Credit

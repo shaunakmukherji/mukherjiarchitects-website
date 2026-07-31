@@ -13,7 +13,7 @@ export function getCategoryHeroProject(
   category: string
 ): Project | undefined {
   const best = [...projects]
-    .filter((p) => p.category === category)
+    .filter((p) => (p.categories ?? [p.category]).includes(category))
     .sort(compareProjectsByCategoryOrder)[0];
   // Only return the project if it was explicitly placed in _hero/ (categoryOrder === 0)
   return best?.categoryOrder === 0 ? best : undefined;

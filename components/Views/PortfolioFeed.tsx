@@ -17,6 +17,7 @@ const PortfolioFeed: React.FC = () => {
   useEffect(() => applySEO({
     title: 'All Projects | Mukherji Architects Milano',
     description: 'Complete portfolio of Mukherji Architects Milano — commercial, hospitality, master planning, mixed-use, residential, and research projects from our studio in Milan, Italy.',
+    canonicalPath: '/portfolio',
     schemas: [breadcrumb('Portfolio', '/portfolio')],
   }), []);
 
@@ -25,7 +26,7 @@ const PortfolioFeed: React.FC = () => {
 
   const projects = active === ALL
     ? PROJECTS
-    : PROJECTS.filter((p) => p.category === active);
+    : PROJECTS.filter((p) => (p.categories ?? [p.category]).includes(active));
 
   return (
     <div className="min-h-screen bg-black text-white pt-[4.75rem]">

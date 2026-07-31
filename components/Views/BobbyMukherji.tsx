@@ -10,6 +10,8 @@ const BobbyMukherji: React.FC = () => {
   useEffect(() => applySEO({
     title: 'Bobby Mukherji — Principal | Mukherji Architects Milano',
     description: 'Bobby Mukherji is founder of Bobby Mukherji Architects and the institutional backbone of Mukherji Architects Milano — 30+ years of experience across hospitality, commercial, and mixed-use projects worldwide.',
+    image: '/images/about/bobby-mukherji.png',
+    canonicalPath: '/bobby-mukherji',
     schemas: [
       breadcrumb('Bobby Mukherji', '/bobby-mukherji'),
       {

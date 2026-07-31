@@ -10,6 +10,8 @@ const CreativeDirector: React.FC = () => {
   useEffect(() => applySEO({
     title: 'Shaunak Mukherji — Creative Director | Mukherji Architects Milano',
     description: 'Shaunak Mukherji is Creative Director of Mukherji Architects Milano, a high-performance architecture studio in Milan, Italy. AI-first approach, Politecnico di Milano graduate.',
+    image: '/images/about/creative-director.png',
+    canonicalPath: '/shaunak-mukherji',
     schemas: [
       breadcrumb('Shaunak Mukherji', '/shaunak-mukherji'),
       {

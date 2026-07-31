@@ -11,6 +11,7 @@ import ScrollWheelIndicator from './components/ui/ScrollWheelIndicator';
 import CustomCursor from './components/ui/CustomCursor';
 import { NavigationProvider, useNavigation } from './contexts/NavigationContext';
 import ProjectDetail from './components/Views/ProjectDetail';
+import ProjectConstruction from './components/Views/ProjectConstruction';
 import CategoryListing from './components/Views/CategoryListing';
 import CreativeDirector from './components/Views/CreativeDirector';
 import BobbyMukherji from './components/Views/BobbyMukherji';
@@ -29,7 +30,7 @@ import Team from './components/Views/Team';
 // Floating "Work" shortcut — hidden when already in portfolio views
 const FloatingWorkButton: React.FC = () => {
   const { currentView, navigateToPortfolioFeed } = useNavigation();
-  const hidden = currentView === 'PORTFOLIO_FEED' || currentView === 'PROJECT_DETAIL';
+  const hidden = currentView === 'PORTFOLIO_FEED' || currentView === 'PROJECT_DETAIL' || currentView === 'PROJECT_CONSTRUCTION';
   if (hidden) return null;
   return (
     <button
@@ -83,6 +84,10 @@ const MainContent = () => {
 
   if (currentView === 'PROJECT_DETAIL') {
     return <ProjectDetail />;
+  }
+
+  if (currentView === 'PROJECT_CONSTRUCTION') {
+    return <ProjectConstruction />;
   }
 
   if (currentView === 'CATEGORY_LISTING') {

@@ -4,11 +4,17 @@ export interface ProjectCredit {
   institution?: string;          // e.g. "Politecnico di Milano"
 }
 
+export interface ConstructionMediaItem {
+  type: 'image' | 'video';
+  url: string;
+}
+
 export interface Project {
   id: string;
   title: string;
-  category: string; // Should match Service titles loosely or be mapped
-  year: string;
+  category: string; // Primary category — used for breadcrumbs, meta tags, and the canonical folder location
+  categories: string[]; // All categories this project should be listed under (always includes `category`)
+  year: string; // Design Year — when the design/project started, not completion
   location: string;
   imageUrl: string;
   description: string;
@@ -17,6 +23,16 @@ export interface Project {
   signatureOrder?: number | null; // Order for signature projects (lower = first)
   categoryOrder?: number | null; // Within category: 0 = hero/cover. Set by `_hero/` folder, folder prefix "0. Name", or project.json.
   credit?: ProjectCredit;        // Optional individual authorship credit
+  // Structured project facts — sourced from project.json, shown by the shared facts component.
+  // Each is optional and independent; omit rather than inventing a value.
+  client?: string;
+  status?: string;      // Displayed as "Status" (maps from Notion's "Public Status")
+  siteArea?: string;    // Exact units/wording preserved as recorded
+  builtUpArea?: string; // Exact units/wording preserved as recorded
+  scope?: string;
+  // Construction progress — populated only when a project has a `_construction/` media folder.
+  constructionMedia?: ConstructionMediaItem[];
+  constructionNote?: string; // Short intro text shown at the top of the progress gallery
 }
 
 export interface Service {
@@ -41,7 +57,7 @@ export interface AboutContent {
   philosophy: string;
 }
 
-export type ViewState = 'HOME' | 'PROJECT_DETAIL' | 'CATEGORY_LISTING' | 'CREATIVE_DIRECTOR' | 'BOBBY_MUKHERJI' | 'ARCHITECTURE_AI' | 'ABOUT_STUDIO' | 'BEST_FIT_COMMERCIAL' | 'BEST_FIT_HOSPITALITY' | 'BEST_FIT_INSTITUTIONAL' | 'BEST_FIT_MASTER_PLANNING' | 'BEST_FIT_MIXED_USE' | 'BEST_FIT_RESEARCH' | 'BEST_FIT_RESIDENTIAL' | 'PORTFOLIO_FEED' | 'TEAM';
+export type ViewState = 'HOME' | 'PROJECT_DETAIL' | 'PROJECT_CONSTRUCTION' | 'CATEGORY_LISTING' | 'CREATIVE_DIRECTOR' | 'BOBBY_MUKHERJI' | 'ARCHITECTURE_AI' | 'ABOUT_STUDIO' | 'BEST_FIT_COMMERCIAL' | 'BEST_FIT_HOSPITALITY' | 'BEST_FIT_INSTITUTIONAL' | 'BEST_FIT_MASTER_PLANNING' | 'BEST_FIT_MIXED_USE' | 'BEST_FIT_RESEARCH' | 'BEST_FIT_RESIDENTIAL' | 'PORTFOLIO_FEED' | 'TEAM';
 
 export interface NavigationContextType {
   currentView: ViewState;
@@ -53,6 +69,7 @@ export interface NavigationContextType {
   navigateBack: () => void;
   navigateToHome: () => void;
   navigateToProject: (id: string) => void;
+  navigateToProjectConstruction: (id: string) => void;
   navigateToCategory: (categoryId: string) => void;
   navigateToCreativeDirector: () => void;
   navigateToBobbyMukherji: () => void;
