@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { NavigationContextType, ViewState } from '../types';
 import { PROJECT_REDIRECTS } from '../lib/projectRedirects';
+import { CATEGORY_NAME_TO_SLUG, CATEGORY_SLUG_TO_NAME, slugify } from '../lib/categorySlug';
 
 const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
 
@@ -12,7 +13,7 @@ const updateURL = (view: ViewState, id: string | null) => {
   } else if (view === 'PROJECT_CONSTRUCTION' && id) {
     url = `/project/${encodeURIComponent(id)}/construction`;
   } else if (view === 'CATEGORY_LISTING' && id) {
-    url = `/category/${encodeURIComponent(id)}`;
+    url = `/category/${CATEGORY_NAME_TO_SLUG[id] ?? slugify(id)}`;
   } else if (view === 'CREATIVE_DIRECTOR') {
     url = '/shaunak-mukherji';
   } else if (view === 'BOBBY_MUKHERJI') {
@@ -62,7 +63,15 @@ const parseURL = (): { view: ViewState; id: string | null } => {
     }
     return { view, id };
   } else if (path.startsWith('/category/')) {
-    const id = decodeURIComponent(path.split('/category/')[1]);
+    const segment = decodeURIComponent(path.split('/category/')[1] || '');
+    // New clean-slug URLs (e.g. "commercial-design") resolve directly.
+    // Old raw-name URLs (e.g. "Commercial Design", %20-encoded) still work but
+    // get redirected to the canonical slug URL, same pattern as PROJECT_REDIRECTS.
+    let id = CATEGORY_SLUG_TO_NAME[segment] ?? segment;
+    const canonicalSlug = CATEGORY_NAME_TO_SLUG[id];
+    if (canonicalSlug && canonicalSlug !== segment) {
+      window.history.replaceState({ view: 'CATEGORY_LISTING', id }, '', `/category/${canonicalSlug}`);
+    }
     return { view: 'CATEGORY_LISTING', id };
   } else if (path === '/shaunak-mukherji' || path === '/creative-director') {
     // Redirect old URL to new URL
@@ -144,7 +153,7 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
       } else if (initialState.view === 'PROJECT_CONSTRUCTION' && initialState.id) {
         url = `/project/${encodeURIComponent(initialState.id)}/construction`;
       } else if (initialState.view === 'CATEGORY_LISTING' && initialState.id) {
-        url = `/category/${encodeURIComponent(initialState.id)}`;
+        url = `/category/${CATEGORY_NAME_TO_SLUG[initialState.id] ?? slugify(initialState.id)}`;
       } else if (initialState.view === 'CREATIVE_DIRECTOR') {
         url = '/shaunak-mukherji';
       } else if (initialState.view === 'BOBBY_MUKHERJI') {

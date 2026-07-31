@@ -1050,6 +1050,9 @@ export const TEAM_MEMBERS: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)
   const SITE_URL = 'https://www.mukherjiarchitects.com';
   const today = new Date().toISOString().split('T')[0];
 
+  // Same slug rule as lib/categorySlug.ts on the client — keep both in sync.
+  const slugifyCategory = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
   const staticRoutes = [
     { path: '/',                                    priority: '1.0', changefreq: 'weekly'  },
     { path: '/portfolio',                           priority: '0.9', changefreq: 'weekly'  },
@@ -1063,6 +1066,7 @@ export const TEAM_MEMBERS: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)
   const urlTags = [
     ...staticRoutes.map(r => `  <url>\n    <loc>${SITE_URL}${r.path}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${r.changefreq}</changefreq>\n    <priority>${r.priority}</priority>\n  </url>`),
     ...projects.map(p => `  <url>\n    <loc>${SITE_URL}/project/${p.id}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>`),
+    ...mergedServices.map(s => `  <url>\n    <loc>${SITE_URL}/category/${slugifyCategory(s.categoryFilter)}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`),
   ].join('\n');
 
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urlTags}\n</urlset>\n`;
@@ -1075,7 +1079,10 @@ export const TEAM_MEMBERS: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)
   // JS, so the client-side applySEO() calls are invisible to them. This manifest lets
   // the post-build prerender step bake correct <title>/og:image/description into a
   // real static index.html per route, so link previews are correct without SSR.
-  const LOGO_IMAGE = `${SITE_URL}/images/logo/logo.png`;
+  // Not the navbar logo — that's white artwork on a transparent background, which goes
+  // invisible when platforms flatten it onto a white card. This is a solid black card
+  // with the logo composited in, sized to the standard 1200x630 social preview ratio.
+  const LOGO_IMAGE = `${SITE_URL}/images/og-default.png`;
   // Encode each path segment so spaces/commas/em-dashes in folder names survive as a URL
   const encodeImagePath = (url) => url.split('/').map((seg) => (seg ? encodeURIComponent(seg) : '')).join('/');
   const absoluteUrl = (url) => (url ? (url.startsWith('http') ? url : `${SITE_URL}${encodeImagePath(url)}`) : LOGO_IMAGE);
@@ -1177,7 +1184,7 @@ export const TEAM_MEMBERS: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)
   const categorySeoRoutes = mergedServices.map((s) => {
     const projectCount = projects.filter((p) => (p.categories ?? [p.category]).includes(s.categoryFilter)).length;
     return {
-      path: `/category/${s.categoryFilter}`,
+      path: `/category/${slugifyCategory(s.categoryFilter)}`,
       title: `${s.categoryFilter} Architecture Projects | Mukherji Architects Milano`,
       description: `Explore ${projectCount} ${s.categoryFilter.toLowerCase()} architecture projects by Mukherji Architects Milano. View our portfolio of ${s.categoryFilter.toLowerCase()} design work, including commercial, residential, and institutional projects.`,
       image: absoluteUrl(s.imageUrl),
