@@ -8,8 +8,8 @@ const CreativeDirector: React.FC = () => {
   const { navigateBack, backLabel, navigateToBobbyMukherji } = useNavigation();
 
   useEffect(() => applySEO({
-    title: 'Shaunak Mukherji — Creative Director | Mukherji Architects Milano',
-    description: 'Shaunak Mukherji is Creative Director of Mukherji Architects Milano, a high-performance architecture studio in Milan, Italy. AI-first approach, Politecnico di Milano graduate.',
+    title: 'Shaunak Mukherji — Founder & Creative Director | Mukherji Architects Milano',
+    description: 'Shaunak Mukherji is Founder & Creative Director of Mukherji Architects Milano, a high-performance architecture studio in Milan, Italy. AI-first approach, Politecnico di Milano graduate.',
     image: '/images/about/creative-director.png',
     canonicalPath: '/shaunak-mukherji',
     schemas: [
@@ -64,7 +64,7 @@ const CreativeDirector: React.FC = () => {
 
               {/* Subtitle */}
               <p className="text-zinc-400 text-lg uppercase tracking-wide mb-8">
-                Creative Director
+                Founder & Creative Director
               </p>
               
               {/* Body Text - Constrained reading width */}

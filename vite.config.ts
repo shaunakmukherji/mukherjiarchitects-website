@@ -1,6 +1,7 @@
 import path from 'path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import { webpPlugin } from './vite-plugin-webp';
 
 export default defineConfig({
@@ -11,7 +12,7 @@ export default defineConfig({
       ignored: ['!**/generated/**'],
     },
   },
-  plugins: [react(), webpPlugin()],
+  plugins: [react(), tailwindcss(), webpPlugin()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '.'),

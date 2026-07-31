@@ -7,7 +7,7 @@ import OptimizedImage from '../ui/OptimizedImage';
 
 const About: React.FC = () => {
   const { navigateToCreativeDirector, navigateToBobbyMukherji, navigateToArchitectureAI, navigateToAboutStudio, navigateToTeam } = useNavigation();
-  const { ref: imageRef, isInCenter } = useInViewportCenter();
+  const { ref: imageRef } = useInViewportCenter();
 
   return (
     <section id="about" className="relative py-16 md:py-24 border-b border-zinc-900 bg-pure-grey text-black">
@@ -42,13 +42,7 @@ const About: React.FC = () => {
                         src={ABOUT_CONTENT.imageUrl}
                         alt={ABOUT_CONTENT.imageAlt}
                         lazy={true}
-                        className={
-                          `w-full h-full object-contain object-center transition-[transform,opacity] duration-700 ` +
-                          (isInCenter
-                            ? 'scale-105 opacity-100 '
-                            : 'opacity-70 ') +
-                          'group-hover:scale-110 group-hover:opacity-100'
-                        }
+                        className="w-full h-full object-contain object-center transition-transform duration-700 opacity-100 scale-100 group-hover:scale-105"
                     />
                  </div>
                  {/* Decorative Overlay */}

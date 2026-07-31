@@ -250,11 +250,9 @@ const CategoryListing: React.FC = () => {
               priority={true}
               lazy={false}
               className={
-                `w-full h-full object-cover transition-[transform,opacity,filter] duration-700 ` +
-                (inViewStates[0]
-                  ? 'scale-105 opacity-100 '
-                  : 'opacity-60 ') +
-                'group-hover:scale-110 group-hover:opacity-100'
+                'w-full h-full object-cover transition-transform duration-700 opacity-100 ' +
+                (inViewStates[0] ? 'scale-105 ' : 'scale-100 ') +
+                'group-hover:scale-110'
               }
               onError={(e) => {
                 console.error('Failed to load cover image:', filteredProjects[0].imageUrl);
@@ -298,11 +296,9 @@ const CategoryListing: React.FC = () => {
                             alt={project.title}
                             lazy={true}
                             className={
-                              `w-full h-full object-cover transition-[transform,opacity,filter] duration-700 ` +
-                              (inViewStates[projectIndex]
-                                ? 'scale-105 opacity-100 '
-                                : 'opacity-60 ') +
-                              'group-hover:scale-110 group-hover:opacity-100'
+                              'w-full h-full object-cover transition-transform duration-700 opacity-100 ' +
+                              (inViewStates[projectIndex] ? 'scale-105 ' : 'scale-100 ') +
+                              'group-hover:scale-110'
                             }
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;

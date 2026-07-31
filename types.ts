@@ -35,6 +35,15 @@ export interface Project {
   constructionNote?: string; // Short intro text shown at the top of the progress gallery
 }
 
+export interface TeamMember {
+  name: string;
+  role: string;
+  order: number;
+  linkTo?: string; // ViewState key of an existing subpage, e.g. 'CREATIVE_DIRECTOR'
+  headshotUrl?: string;
+  description?: string;
+}
+
 export interface Service {
   id: string;
   title: string;
