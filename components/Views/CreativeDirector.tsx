@@ -70,10 +70,7 @@ const CreativeDirector: React.FC = () => {
               {/* Body Text - Constrained reading width */}
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Shaunak Mukherji is an architect focused on finding the best way to solve problems. He believes architecture must continuously evolve to remain efficient, relevant, and precise.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  His work sits in continuity with his father,{' '}
+                  Shaunak Mukherji is the Founder and Creative Director of Mukherji Architects, leading the architectural direction of the practice. His work builds on the architectural lineage of his father,{' '}
                   <button
                     type="button"
                     onClick={navigateToBobbyMukherji}
@@ -84,10 +81,7 @@ const CreativeDirector: React.FC = () => {
                   , Principal of Bobby Mukherji Architects.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  His approach is AI-first and system-driven, centered on building workflows that prioritize speed, clarity, and efficiency. He is interested in how strong systems scale and survive over time.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Shaunak studied architecture at Politecnico di Milano, and works at the intersection of architecture, technology, and artificial intelligence.
+                  He treats architecture as a discipline that must continually evolve, testing better ways to solve complex problems and keeping the studio at the forefront of innovation. He believes architectural excellence begins with genuine architectural intelligence, amplified by emerging technology. His work combines systems thinking with an AI-first approach, applying the most capable tools available to improve the architectural workflow.
                 </p>
               </div>
             </div>
