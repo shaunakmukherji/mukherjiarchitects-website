@@ -858,6 +858,11 @@ export const ABOUT_IMAGE_VERSIONS: Record<string, number> = ${JSON.stringify(ver
 }
 
 // Main execution
+// Shared slug rule for categories and team member names — mirrored on the client in lib/categorySlug.ts.
+function slugifyName(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
 function generateProjectsData() {
   console.log('🔍 Scanning projects folder structure...');
 
@@ -1016,6 +1021,7 @@ export const SITE_HERO_IMAGE_URL: string | null = ${JSON.stringify(siteHeroUrl)}
 
       teamMembers.push({
         name: folder.name,
+        slug: slugifyName(folder.name),
         role,
         order,
         ...(linkTo ? { linkTo } : {}),
@@ -1050,9 +1056,6 @@ export const TEAM_MEMBERS: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)
   const SITE_URL = 'https://www.mukherjiarchitects.com';
   const today = new Date().toISOString().split('T')[0];
 
-  // Same slug rule as lib/categorySlug.ts on the client — keep both in sync.
-  const slugifyCategory = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-
   const staticRoutes = [
     { path: '/',                                    priority: '1.0', changefreq: 'weekly'  },
     { path: '/portfolio',                           priority: '0.9', changefreq: 'weekly'  },
@@ -1066,7 +1069,8 @@ export const TEAM_MEMBERS: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)
   const urlTags = [
     ...staticRoutes.map(r => `  <url>\n    <loc>${SITE_URL}${r.path}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${r.changefreq}</changefreq>\n    <priority>${r.priority}</priority>\n  </url>`),
     ...projects.map(p => `  <url>\n    <loc>${SITE_URL}/project/${p.id}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>`),
-    ...mergedServices.map(s => `  <url>\n    <loc>${SITE_URL}/category/${slugifyCategory(s.categoryFilter)}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`),
+    ...mergedServices.map(s => `  <url>\n    <loc>${SITE_URL}/category/${slugifyName(s.categoryFilter)}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`),
+    ...teamMembers.filter(m => m.description && !m.linkTo).map(m => `  <url>\n    <loc>${SITE_URL}/the-studio/people/${m.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`),
   ].join('\n');
 
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urlTags}\n</urlset>\n`;
@@ -1184,14 +1188,25 @@ export const TEAM_MEMBERS: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)
   const categorySeoRoutes = mergedServices.map((s) => {
     const projectCount = projects.filter((p) => (p.categories ?? [p.category]).includes(s.categoryFilter)).length;
     return {
-      path: `/category/${slugifyCategory(s.categoryFilter)}`,
+      path: `/category/${slugifyName(s.categoryFilter)}`,
       title: `${s.categoryFilter} Architecture Projects | Mukherji Architects Milano`,
       description: `Explore ${projectCount} ${s.categoryFilter.toLowerCase()} architecture projects by Mukherji Architects Milano. View our portfolio of ${s.categoryFilter.toLowerCase()} design work, including commercial, residential, and institutional projects.`,
       image: absoluteUrl(s.imageUrl),
     };
   });
 
-  const seoManifest = [...staticSeoRoutes, ...projectSeoRoutes, ...categorySeoRoutes];
+  // Generic team-member subpages — only for members with a description and no bespoke
+  // page (Shaunak/Bobby's bespoke pages already have their own entries in staticSeoRoutes).
+  const teamMemberSeoRoutes = teamMembers
+    .filter((m) => m.description && !m.linkTo)
+    .map((m) => ({
+      path: `/the-studio/people/${m.slug}`,
+      title: `${m.name} — ${m.role} | Mukherji Architects Milano`,
+      description: m.description.length > 150 ? `${m.description.slice(0, 150)}...` : m.description,
+      image: m.headshotUrl ? absoluteUrl(m.headshotUrl) : LOGO_IMAGE,
+    }));
+
+  const seoManifest = [...staticSeoRoutes, ...projectSeoRoutes, ...categorySeoRoutes, ...teamMemberSeoRoutes];
   const seoManifestPath = path.join(outputDir, 'seo-manifest.json');
   fs.writeFileSync(seoManifestPath, JSON.stringify(seoManifest, null, 2), 'utf-8');
 

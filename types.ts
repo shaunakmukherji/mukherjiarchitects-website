@@ -37,9 +37,10 @@ export interface Project {
 
 export interface TeamMember {
   name: string;
+  slug: string; // URL slug for the generic /the-studio/people/<slug> subpage
   role: string;
   order: number;
-  linkTo?: string; // ViewState key of an existing subpage, e.g. 'CREATIVE_DIRECTOR'
+  linkTo?: string; // ViewState key of an existing BESPOKE subpage, e.g. 'CREATIVE_DIRECTOR' — takes priority over the generic page
   headshotUrl?: string;
   description?: string;
 }
@@ -66,7 +67,7 @@ export interface AboutContent {
   philosophy: string;
 }
 
-export type ViewState = 'HOME' | 'PROJECT_DETAIL' | 'PROJECT_CONSTRUCTION' | 'CATEGORY_LISTING' | 'CREATIVE_DIRECTOR' | 'BOBBY_MUKHERJI' | 'ARCHITECTURE_AI' | 'ABOUT_STUDIO' | 'BEST_FIT_COMMERCIAL' | 'BEST_FIT_HOSPITALITY' | 'BEST_FIT_INSTITUTIONAL' | 'BEST_FIT_MASTER_PLANNING' | 'BEST_FIT_MIXED_USE' | 'BEST_FIT_RESEARCH' | 'BEST_FIT_RESIDENTIAL' | 'PORTFOLIO_FEED' | 'TEAM';
+export type ViewState = 'HOME' | 'PROJECT_DETAIL' | 'PROJECT_CONSTRUCTION' | 'CATEGORY_LISTING' | 'CREATIVE_DIRECTOR' | 'BOBBY_MUKHERJI' | 'ARCHITECTURE_AI' | 'ABOUT_STUDIO' | 'BEST_FIT_COMMERCIAL' | 'BEST_FIT_HOSPITALITY' | 'BEST_FIT_INSTITUTIONAL' | 'BEST_FIT_MASTER_PLANNING' | 'BEST_FIT_MIXED_USE' | 'BEST_FIT_RESEARCH' | 'BEST_FIT_RESIDENTIAL' | 'PORTFOLIO_FEED' | 'TEAM' | 'TEAM_MEMBER_DETAIL';
 
 export interface NavigationContextType {
   currentView: ViewState;
@@ -94,4 +95,5 @@ export interface NavigationContextType {
   navigateToBestFitResidential: () => void;
   navigateToPortfolioFeed: () => void;
   navigateToTeam: () => void;
+  navigateToTeamMember: (slug: string) => void;
 }

@@ -40,6 +40,8 @@ const updateURL = (view: ViewState, id: string | null) => {
     url = '/portfolio';
   } else if (view === 'TEAM') {
     url = '/the-studio/people';
+  } else if (view === 'TEAM_MEMBER_DETAIL' && id) {
+    url = `/the-studio/people/${id}`;
   }
 
   window.history.pushState({ view, id }, '', url);
@@ -73,6 +75,9 @@ const parseURL = (): { view: ViewState; id: string | null } => {
       window.history.replaceState({ view: 'CATEGORY_LISTING', id }, '', `/category/${canonicalSlug}`);
     }
     return { view: 'CATEGORY_LISTING', id };
+  } else if (path.startsWith('/the-studio/people/')) {
+    const slug = decodeURIComponent(path.split('/the-studio/people/')[1] || '');
+    return { view: 'TEAM_MEMBER_DETAIL', id: slug };
   } else if (path === '/shaunak-mukherji' || path === '/creative-director') {
     // Redirect old URL to new URL
     if (path === '/creative-director') {
@@ -180,6 +185,8 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
         url = '/portfolio';
       } else if (initialState.view === 'TEAM') {
         url = '/the-studio/people';
+      } else if (initialState.view === 'TEAM_MEMBER_DETAIL' && initialState.id) {
+        url = `/the-studio/people/${initialState.id}`;
       }
       window.history.replaceState({ view: initialState.view, id: initialState.id }, '', url);
     }
@@ -366,6 +373,14 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
     window.scrollTo(0, 0);
   };
 
+  const navigateToTeamMember = (slug: string) => {
+    pushCurrent();
+    setSelectedId(slug);
+    setCurrentView('TEAM_MEMBER_DETAIL');
+    updateURL('TEAM_MEMBER_DETAIL', slug);
+    window.scrollTo(0, 0);
+  };
+
   return (
     <NavigationContext.Provider value={{
       currentView,
@@ -392,7 +407,8 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
       navigateToBestFitResearch,
       navigateToBestFitResidential,
       navigateToPortfolioFeed,
-      navigateToTeam
+      navigateToTeam,
+      navigateToTeamMember
     }}>
       {children}
     </NavigationContext.Provider>

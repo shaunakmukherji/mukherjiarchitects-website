@@ -9,7 +9,7 @@ import { applySEO, breadcrumb } from '../../lib/seo';
 const GALLERY_GRID = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3';
 
 const Team: React.FC = () => {
-  const { navigateBack, backLabel, navigateToCreativeDirector, navigateToBobbyMukherji } = useNavigation();
+  const { navigateBack, backLabel, navigateToCreativeDirector, navigateToBobbyMukherji, navigateToTeamMember } = useNavigation();
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const linkHandlers: Record<string, () => void> = {
@@ -68,7 +68,13 @@ const Team: React.FC = () => {
           <p className="text-zinc-600 text-xs uppercase tracking-[0.2em] mb-6">Core Team</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {TEAM_MEMBERS.map((member) => {
-              const onClick = member.linkTo ? linkHandlers[member.linkTo] : undefined;
+              // A bespoke subpage (linkTo) takes priority; otherwise, having a description.md
+              // is enough to auto-activate the generic /the-studio/people/<slug> page.
+              const onClick = member.linkTo
+                ? linkHandlers[member.linkTo]
+                : member.description
+                ? () => navigateToTeamMember(member.slug)
+                : undefined;
               const Wrapper = onClick ? 'button' : 'div';
               return (
                 <Wrapper
@@ -119,7 +125,7 @@ const Team: React.FC = () => {
           <p className="text-zinc-500 text-xs uppercase tracking-[0.2em] mb-6">The Studio</p>
           <div className={GALLERY_GRID}>
             {TEAM_VIDEO_URL && (
-              <div className="aspect-[9/14.4] overflow-hidden bg-zinc-900 border border-zinc-800">
+              <div className="aspect-[9/14.4] overflow-hidden bg-zinc-900 border-[3px] border-white">
                 <video
                   ref={videoRef}
                   autoPlay

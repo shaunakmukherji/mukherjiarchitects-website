@@ -26,6 +26,7 @@ import BestFitResearch from './components/Views/BestFitResearch';
 import BestFitResidential from './components/Views/BestFitResidential';
 import PortfolioFeed from './components/Views/PortfolioFeed';
 import Team from './components/Views/Team';
+import TeamMemberDetail from './components/Views/TeamMemberDetail';
 
 // Floating "Work" shortcut — hidden when already in portfolio views
 const FloatingWorkButton: React.FC = () => {
@@ -144,6 +145,10 @@ const MainContent = () => {
 
   if (currentView === 'TEAM') {
     return <Team />;
+  }
+
+  if (currentView === 'TEAM_MEMBER_DETAIL') {
+    return <TeamMemberDetail />;
   }
 
   return (
