@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { SERVICES, PROJECTS } from '../../constants';
 import { ArrowRight } from 'lucide-react';
-import { useNavigation } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
+import NavLink from '../ui/NavLink';
 import { encodeImageUrl } from '../../lib/imageUrl';
 import { getCategoryHeroProject } from '../../lib/projectSort';
 import OptimizedImage from '../ui/OptimizedImage';
@@ -99,10 +100,11 @@ const Services: React.FC = () => {
             <div className="absolute inset-y-0 left-2/3 w-px bg-zinc-900 hidden md:block"></div>
 
             {SERVICES.map((service, index) => (
-                <div 
-                    key={service.id} 
-                    onClick={() => navigateToCategory(service.categoryFilter)}
-                    className="group relative p-6 md:p-8 transition-all duration-300 hover:bg-zinc-900/30 border border-zinc-900 md:border-none cursor-pointer"
+                <NavLink
+                    key={service.id}
+                    href={getPathForView('CATEGORY_LISTING', service.categoryFilter)}
+                    onNavigate={() => navigateToCategory(service.categoryFilter)}
+                    className="group relative block p-6 md:p-8 transition-all duration-300 hover:bg-zinc-900/30 border border-zinc-900 md:border-none cursor-pointer"
                 >
                     {/* Hover Top Border Beam - RED ACCENT */}
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
@@ -157,7 +159,7 @@ const Services: React.FC = () => {
                     >
                         View Projects <ArrowRight className="w-3 h-3" />
                     </div>
-                </div>
+                </NavLink>
             ))}
         </div>
       </div>

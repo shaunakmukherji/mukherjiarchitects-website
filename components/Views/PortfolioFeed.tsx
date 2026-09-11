@@ -5,6 +5,8 @@ import { PROJECTS, SERVICES } from '../../constants';
 import { encodeImageUrl } from '../../lib/imageUrl';
 import OptimizedImage from '../ui/OptimizedImage';
 import { applySEO, breadcrumb } from '../../lib/seo';
+import { getPathForView } from '../../contexts/NavigationContext';
+import NavLink from '../ui/NavLink';
 
 const ALL = 'All';
 
@@ -73,10 +75,11 @@ const PortfolioFeed: React.FC = () => {
           const secondImage = project.gallery[0] ?? null;
 
           return (
-            <div
+            <NavLink
               key={project.id}
-              className="border-t border-zinc-900 cursor-pointer group"
-              onClick={() => navigateToProject(project.id)}
+              href={getPathForView('PROJECT_DETAIL', project.id)}
+              onNavigate={() => navigateToProject(project.id)}
+              className="block border-t border-zinc-900 cursor-pointer group"
             >
               {/* Caption — above images so title clearly belongs to what follows */}
               <div className="flex items-baseline justify-between px-6 md:px-10 pt-6 pb-3">
@@ -122,7 +125,7 @@ const PortfolioFeed: React.FC = () => {
                   </div>
                 )}
               </div>
-            </div>
+            </NavLink>
           );
         })}
       </div>

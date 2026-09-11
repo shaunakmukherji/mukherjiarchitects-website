@@ -4,6 +4,9 @@ import { PROJECTS, SERVICES } from '../../constants';
 import { compareProjectsByCategoryOrder } from '../../lib/projectSort';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import OptimizedImage from '../ui/OptimizedImage';
+import NavLink from '../ui/NavLink';
+import { getPathForView } from '../../contexts/NavigationContext';
+import { applyNoIndex } from '../../lib/seo';
 
 const CategoryListing: React.FC = () => {
   const { 
@@ -24,6 +27,13 @@ const CategoryListing: React.FC = () => {
     .filter((p) => (p.categories ?? [p.category]).includes(selectedId ?? ''))
     .sort(compareProjectsByCategoryOrder);
   const categoryDescription = SERVICES.find((s) => s.categoryFilter === selectedId)?.description ?? '';
+  const isValidCategory = SERVICES.some((s) => s.categoryFilter === selectedId);
+
+  // Invalid category slug — noindex it (see applyNoIndex for why, same as ProjectDetail).
+  useEffect(() => {
+    if (isValidCategory) return;
+    return applyNoIndex();
+  }, [isValidCategory]);
 
   // Update page title and meta tags for SEO
   useEffect(() => {
@@ -92,7 +102,7 @@ const CategoryListing: React.FC = () => {
   }, [selectedId, filteredProjects.length]);
 
   // Track which projects are in the viewport center for scroll highlight effect
-  const imageContainersRef = useRef<(HTMLDivElement | null)[]>([]);
+  const imageContainersRef = useRef<(HTMLDivElement | HTMLAnchorElement | null)[]>([]);
   const [inViewStates, setInViewStates] = useState<boolean[]>(() => 
     new Array(filteredProjects.length).fill(false)
   );
@@ -236,9 +246,10 @@ const CategoryListing: React.FC = () => {
 
         {/* Featured/Cover Project (First Project) */}
         {filteredProjects.length > 0 && (
-          <div 
-            className="mb-16 group cursor-pointer relative overflow-hidden bg-zinc-900 border border-zinc-800 aspect-square"
-            onClick={() => navigateToProject(filteredProjects[0].id)}
+          <NavLink
+            className="mb-16 group cursor-pointer relative overflow-hidden bg-zinc-900 border border-zinc-800 aspect-square block"
+            href={getPathForView('PROJECT_DETAIL', filteredProjects[0].id)}
+            onNavigate={() => navigateToProject(filteredProjects[0].id)}
             ref={(el) => {
               imageContainersRef.current[0] = el;
             }}
@@ -271,7 +282,7 @@ const CategoryListing: React.FC = () => {
                 {filteredProjects[0].title}
               </h2>
             </div>
-          </div>
+          </NavLink>
         )}
 
         {/* Other Projects Grid */}
@@ -279,10 +290,11 @@ const CategoryListing: React.FC = () => {
             {filteredProjects.slice(1).map((project, index) => {
               const projectIndex = index + 1; // +1 because index 0 is the featured project
               return (
-                <div 
-                    key={project.id} 
-                    onClick={() => navigateToProject(project.id)}
-                    className="group cursor-pointer relative"
+                <NavLink
+                    key={project.id}
+                    href={getPathForView('PROJECT_DETAIL', project.id)}
+                    onNavigate={() => navigateToProject(project.id)}
+                    className="group cursor-pointer relative block"
                 >
                     <div 
                       className="aspect-square w-full bg-zinc-900 mb-6 overflow-hidden border border-zinc-800 group-hover:border-accent transition-colors duration-300"
@@ -325,7 +337,7 @@ const CategoryListing: React.FC = () => {
                             </span>
                         </div>
                     </div>
-                </div>
+                </NavLink>
               );
             })}
             

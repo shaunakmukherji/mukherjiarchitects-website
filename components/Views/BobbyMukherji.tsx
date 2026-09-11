@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { useNavigation } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import { ArrowLeft } from 'lucide-react';
 import OptimizedImage from '../ui/OptimizedImage';
+import NavLink from '../ui/NavLink';
 import { applySEO, breadcrumb } from '../../lib/seo';
 
 const BobbyMukherji: React.FC = () => {
@@ -82,13 +83,13 @@ const BobbyMukherji: React.FC = () => {
                     Bobby Mukherji Architects
                   </a>{' '}
                   and father of{' '}
-                  <button
-                    type="button"
-                    onClick={navigateToCreativeDirector}
+                  <NavLink
+                    href={getPathForView('CREATIVE_DIRECTOR', null)}
+                    onNavigate={navigateToCreativeDirector}
                     className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors font-medium text-left"
                   >
                     Shaunak Mukherji
-                  </button>
+                  </NavLink>
                   , his connection to Mukherji Architects Milano brings both legacy and practical strength to the studio.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">

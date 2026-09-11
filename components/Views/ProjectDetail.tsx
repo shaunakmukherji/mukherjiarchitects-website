@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useNavigation } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import { PROJECTS } from '../../constants';
 import Button from '../ui/Button';
 import OptimizedImage from '../ui/OptimizedImage';
 import ProjectFacts from '../ui/ProjectFacts';
+import NavLink from '../ui/NavLink';
+import { applyNoIndex } from '../../lib/seo';
 import { ArrowLeft, ArrowRight, X } from 'lucide-react';
 
 const ProjectDetail: React.FC = () => {
@@ -50,6 +52,14 @@ const ProjectDetail: React.FC = () => {
     }
     return () => { document.body.style.overflow = ''; };
   }, [lightboxIndex]);
+
+  // Invalid slug — this is a static SPA so the server still returns 200 for any path;
+  // noindex tells Google not to treat it as real content (Google's own recommended
+  // workaround when a JS app can't return a true 404 status).
+  useEffect(() => {
+    if (project) return;
+    return applyNoIndex();
+  }, [project]);
 
   // SEO
   useEffect(() => {
@@ -203,12 +213,13 @@ const ProjectDetail: React.FC = () => {
                   <p className="text-zinc-600 text-xs flex items-center gap-1 flex-wrap mt-3">
                     <span>Project by</span>
                     {project.credit.linkTo === 'CREATIVE_DIRECTOR' ? (
-                      <button
-                        onClick={navigateToCreativeDirector}
+                      <NavLink
+                        href={getPathForView('CREATIVE_DIRECTOR', null)}
+                        onNavigate={navigateToCreativeDirector}
                         className="text-zinc-500 hover:text-white transition-colors underline underline-offset-2 decoration-zinc-700 hover:decoration-zinc-400"
                       >
                         {project.credit.name}
-                      </button>
+                      </NavLink>
                     ) : (
                       <span className="text-zinc-500">{project.credit.name}</span>
                     )}

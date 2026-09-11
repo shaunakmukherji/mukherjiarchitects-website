@@ -81,6 +81,22 @@ export function applySEO({
   };
 }
 
+/**
+ * Marks the current page noindex — for "not found" states (invalid project/person slug, etc).
+ * This is a static SPA with no server, so an invalid URL still returns HTTP 200 (a "soft 404"
+ * Google actively distrusts). We can't change the status code from client JS, but Google's own
+ * guidance for exactly this situation is to noindex the page instead. Call from useEffect,
+ * pass the returned function to its cleanup so the tag reverts when a real page mounts next.
+ */
+export function applyNoIndex(): () => void {
+  const el = document.querySelector('meta[name="robots"]');
+  const orig = el?.getAttribute('content') ?? null;
+  el?.setAttribute('content', 'noindex, follow');
+  return () => {
+    if (orig !== null) el?.setAttribute('content', orig);
+  };
+}
+
 /** Standard BreadcrumbList schema for a single-level subpage. */
 export function breadcrumb(pageName: string, pageUrl: string) {
   return {

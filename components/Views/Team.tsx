@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
-import { useNavigation } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import { TEAM_IMAGES, TEAM_VIDEO_URL, TEAM_MEMBERS } from '../../generated/teamImages';
 import OptimizedImage from '../ui/OptimizedImage';
+import NavLink from '../ui/NavLink';
 import { applySEO, breadcrumb } from '../../lib/seo';
 
 // Same grid class for every row of the gallery so columns stay pixel-perfect aligned
@@ -15,6 +16,10 @@ const Team: React.FC = () => {
   const linkHandlers: Record<string, () => void> = {
     CREATIVE_DIRECTOR: navigateToCreativeDirector,
     BOBBY_MUKHERJI: navigateToBobbyMukherji,
+  };
+  const linkPaths: Record<string, string> = {
+    CREATIVE_DIRECTOR: getPathForView('CREATIVE_DIRECTOR', null),
+    BOBBY_MUKHERJI: getPathForView('BOBBY_MUKHERJI', null),
   };
 
   useEffect(() => applySEO({
@@ -70,18 +75,19 @@ const Team: React.FC = () => {
             {TEAM_MEMBERS.map((member) => {
               // A bespoke subpage (linkTo) takes priority; otherwise, having a description.md
               // is enough to auto-activate the generic /the-studio/people/<slug> page.
-              const onClick = member.linkTo
+              const onNavigate = member.linkTo
                 ? linkHandlers[member.linkTo]
                 : member.description
                 ? () => navigateToTeamMember(member.slug)
                 : undefined;
-              const Wrapper = onClick ? 'button' : 'div';
-              return (
-                <Wrapper
-                  key={member.name}
-                  {...(onClick ? { onClick } : {})}
-                  className={onClick ? 'group text-left cursor-pointer' : 'text-left'}
-                >
+              const href = member.linkTo
+                ? linkPaths[member.linkTo]
+                : member.description
+                ? getPathForView('TEAM_MEMBER_DETAIL', member.slug)
+                : undefined;
+
+              const cardBody = (
+                <>
                   <div className="aspect-[3/4] w-full overflow-hidden bg-pure-grey-medium mb-4">
                     {member.headshotUrl ? (
                       <OptimizedImage
@@ -90,7 +96,7 @@ const Team: React.FC = () => {
                         lazy={false}
                         priority
                         className={
-                          onClick
+                          onNavigate
                             ? 'w-full h-full object-cover transition-transform duration-700 group-hover:scale-105'
                             : 'w-full h-full object-cover'
                         }
@@ -98,10 +104,10 @@ const Team: React.FC = () => {
                     ) : null}
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <h3 className={`font-display text-lg md:text-xl font-bold text-black ${onClick ? 'group-hover:text-accent transition-colors' : ''}`}>
+                    <h3 className={`font-display text-lg md:text-xl font-bold text-black ${onNavigate ? 'group-hover:text-accent transition-colors' : ''}`}>
                       {member.name}
                     </h3>
-                    {onClick && (
+                    {onNavigate && (
                       <ArrowUpRight
                         size={16}
                         className="text-zinc-500 opacity-0 group-hover:opacity-100 group-hover:text-accent transition-all"
@@ -111,7 +117,26 @@ const Team: React.FC = () => {
                   <p className="text-zinc-600 text-xs md:text-sm mt-1">
                     {member.role}
                   </p>
-                </Wrapper>
+                </>
+              );
+
+              if (onNavigate && href) {
+                return (
+                  <NavLink
+                    key={member.name}
+                    href={href}
+                    onNavigate={onNavigate}
+                    className="group text-left cursor-pointer block"
+                  >
+                    {cardBody}
+                  </NavLink>
+                );
+              }
+
+              return (
+                <div key={member.name} className="text-left">
+                  {cardBody}
+                </div>
               );
             })}
           </div>

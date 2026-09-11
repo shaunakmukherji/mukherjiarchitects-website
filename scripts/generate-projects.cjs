@@ -1210,12 +1210,48 @@ export const TEAM_MEMBERS: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)
   const seoManifestPath = path.join(outputDir, 'seo-manifest.json');
   fs.writeFileSync(seoManifestPath, JSON.stringify(seoManifest, null, 2), 'utf-8');
 
+  // ── vercel.json — real HTTP 301s for known old URLs ─────────────────────────
+  // The site has no server, so these previously only redirected client-side (via
+  // history.replaceState after JS loaded) — that still worked, but a real 301 is
+  // what search engines actually expect for "this moved permanently," and it works
+  // even for a crawler or bot that never runs JS. Keep in sync with lib/projectRedirects.ts.
+  const PROJECT_REDIRECTS = {
+    'five-star-hotel-new-delhi': 'aurika-new-delhi',
+    'ansari-bungalow-mumbai': 'ansari-residence-tower-mumbai',
+    'kelavali-villas-development': 'kelavali-villas-development-25-estates',
+    'six-six-island-resort-maldives-2': 'six-six-island-resort-maldives',
+  };
+
+  const redirects = [
+    ...Object.entries(PROJECT_REDIRECTS).map(([oldId, newId]) => ({
+      source: `/project/${oldId}`,
+      destination: `/project/${newId}`,
+      permanent: true,
+    })),
+    // Old category URLs used the raw category name (e.g. "/category/Commercial%20Design");
+    // current ones use a clean slug (e.g. "/category/commercial-design"). Percent-encoded
+    // because that's the literal form a browser sends over the wire for a path with spaces.
+    ...mergedServices.map((s) => ({
+      source: `/category/${encodeURIComponent(s.categoryFilter)}`,
+      destination: `/category/${slugifyName(s.categoryFilter)}`,
+      permanent: true,
+    })),
+  ];
+
+  const vercelConfigPath = path.join(__dirname, '..', 'vercel.json');
+  const vercelConfig = {
+    redirects,
+    rewrites: [{ source: '/(.*)', destination: '/index.html' }],
+  };
+  fs.writeFileSync(vercelConfigPath, JSON.stringify(vercelConfig, null, 2) + '\n', 'utf-8');
+
   console.log(`📝 Generated ${projectsPath}`);
   console.log(`📝 Generated ${servicesPath}`);
   console.log(`📝 Generated ${teamImagesPath} (${teamImageUrls.length} team image(s))`);
   console.log(`📝 Generated ${path.join(outputDir, 'site-hero.ts')}${siteHeroUrl ? ` → ${siteHeroUrl}` : ' (no hero set)'}`);
   console.log(`📝 Generated ${sitemapPath} (${projects.length} project URLs + ${staticRoutes.length} static)`);
   console.log(`📝 Generated ${seoManifestPath} (${seoManifest.length} routes)`);
+  console.log(`📝 Generated ${vercelConfigPath} (${redirects.length} redirects)`);
   generateAboutImageVersions();
   console.log('✨ Done!');
 

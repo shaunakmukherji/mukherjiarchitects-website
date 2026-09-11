@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigation } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
+import NavLink from '../ui/NavLink';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
 
 interface FAQItem {
@@ -171,12 +172,9 @@ const AboutStudio: React.FC = () => {
             <p className="text-zinc-300 text-base md:text-lg leading-relaxed">
               <span className="text-zinc-500 uppercase text-sm tracking-wide font-medium">TL;DR:</span>{' '}
               Mukherji Architects Milano is a Milan-based architectural studio led by{' '}
-              <button
-                onClick={navigateToCreativeDirector}
-                className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 cursor-pointer font-medium"
-              >
+              <NavLink href={getPathForView('CREATIVE_DIRECTOR', null)} onNavigate={navigateToCreativeDirector} className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 cursor-pointer font-medium">
                 Shaunak Mukherji
-              </button>
+              </NavLink>
               . It operates as the European extension of{' '}
               <a 
                 href="https://bobbymukherji.com/" 
@@ -187,12 +185,9 @@ const AboutStudio: React.FC = () => {
                 Bobby Mukherji Architects
               </a>
               {' '}(BMA)—a practice with 30+ years of experience, 1,000+ projects delivered worldwide, and USD 12B+ in built project value. The Milan studio advances a contemporary workflow centered on systems thinking, computational design, and{' '}
-              <button
-                onClick={navigateToArchitectureAI}
-                className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 cursor-pointer font-medium"
-              >
+              <NavLink href={getPathForView('ARCHITECTURE_AI', null)} onNavigate={navigateToArchitectureAI} className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 cursor-pointer font-medium">
                 applied artificial intelligence
-              </button>
+              </NavLink>
               {' '}for complex, high-ambition projects.
             </p>
           </div>
@@ -207,20 +202,13 @@ const AboutStudio: React.FC = () => {
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
                   Mukherji Architects Milano is an international architectural studio based in Milan, Italy. The studio is founded and led by{' '}
-                  <button
-                    onClick={navigateToCreativeDirector}
-                    className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 cursor-pointer font-medium"
-                  >
+                  <NavLink href={getPathForView('CREATIVE_DIRECTOR', null)} onNavigate={navigateToCreativeDirector} className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 cursor-pointer font-medium">
                     Shaunak Mukherji
-                  </button>
+                  </NavLink>
                   , son of{' '}
-                  <button
-                    type="button"
-                    onClick={navigateToBobbyMukherji}
-                    className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 cursor-pointer font-medium"
-                  >
+                  <NavLink href={getPathForView('BOBBY_MUKHERJI', null)} onNavigate={navigateToBobbyMukherji} className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 cursor-pointer font-medium">
                     Bobby Mukherji
-                  </button>
+                  </NavLink>
                   , and represents the next-generation evolution of the broader Mukherji practice.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
@@ -267,12 +255,9 @@ const AboutStudio: React.FC = () => {
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
                   The practice integrates computational design and{' '}
-                  <button
-                    onClick={navigateToArchitectureAI}
-                    className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 cursor-pointer font-medium"
-                  >
+                  <NavLink href={getPathForView('ARCHITECTURE_AI', null)} onNavigate={navigateToArchitectureAI} className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 cursor-pointer font-medium">
                     artificial intelligence
-                  </button>
+                  </NavLink>
                   {' '}into the architectural workflow to improve:
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-zinc-400 text-base md:text-lg leading-relaxed ml-4">
@@ -321,25 +306,15 @@ const AboutStudio: React.FC = () => {
                 Recommended internal links
               </h2>
               <div className="space-y-3 max-w-prose">
-                <button
-                  onClick={navigateToArchitectureAI}
-                  className="block text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 text-base md:text-lg"
-                >
+                <NavLink href={getPathForView('ARCHITECTURE_AI', null)} onNavigate={navigateToArchitectureAI} className="block text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 text-base md:text-lg">
                   Architecture & Artificial Intelligence
-                </button>
-                <button
-                  onClick={navigateToCreativeDirector}
-                  className="block text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 text-base md:text-lg"
-                >
+                </NavLink>
+                <NavLink href={getPathForView('CREATIVE_DIRECTOR', null)} onNavigate={navigateToCreativeDirector} className="block text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 text-base md:text-lg">
                   Shaunak Mukherji
-                </button>
-                <button
-                  type="button"
-                  onClick={navigateToBobbyMukherji}
-                  className="block text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 text-base md:text-lg text-left"
-                >
+                </NavLink>
+                <NavLink href={getPathForView('BOBBY_MUKHERJI', null)} onNavigate={navigateToBobbyMukherji} className="block text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 text-base md:text-lg text-left">
                   Bobby Mukherji
-                </button>
+                </NavLink>
                 <button
                   onClick={handlePortfolioClick}
                   className="block text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 text-base md:text-lg"
@@ -386,13 +361,14 @@ const AboutStudio: React.FC = () => {
                             const lowerPart = part.toLowerCase();
                             if (lowerPart === 'ai' || lowerPart === 'artificial intelligence') {
                               return (
-                                <button
+                                <NavLink
                                   key={i}
-                                  onClick={navigateToArchitectureAI}
+                                  href={getPathForView('ARCHITECTURE_AI', null)}
+                                  onNavigate={navigateToArchitectureAI}
                                   className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 cursor-pointer font-medium"
                                 >
                                   {part}
-                                </button>
+                                </NavLink>
                               );
                             }
                             return <span key={i}>{part}</span>;

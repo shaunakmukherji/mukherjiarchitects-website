@@ -9,7 +9,8 @@ import Contact from './components/Sections/Contact';
 import SpotlightBackground from './components/ui/SpotlightBackground';
 import ScrollWheelIndicator from './components/ui/ScrollWheelIndicator';
 import CustomCursor from './components/ui/CustomCursor';
-import { NavigationProvider, useNavigation } from './contexts/NavigationContext';
+import { NavigationProvider, useNavigation, getPathForView } from './contexts/NavigationContext';
+import NavLink from './components/ui/NavLink';
 import ProjectDetail from './components/Views/ProjectDetail';
 import ProjectConstruction from './components/Views/ProjectConstruction';
 import CategoryListing from './components/Views/CategoryListing';
@@ -34,13 +35,14 @@ const FloatingWorkButton: React.FC = () => {
   const hidden = currentView === 'PORTFOLIO_FEED' || currentView === 'PROJECT_DETAIL' || currentView === 'PROJECT_CONSTRUCTION';
   if (hidden) return null;
   return (
-    <button
-      onClick={navigateToPortfolioFeed}
+    <NavLink
+      href={getPathForView('PORTFOLIO_FEED', null)}
+      onNavigate={navigateToPortfolioFeed}
       className="fixed bottom-6 right-6 z-40 flex items-center gap-3 px-5 py-2.5 rounded-full bg-zinc-900/80 backdrop-blur-md border border-zinc-700 hover:border-zinc-400 text-white text-xs uppercase tracking-[0.15em] transition-all duration-300 hover:bg-zinc-800/80"
     >
       <span className="w-1.5 h-1.5 rounded-full bg-white opacity-70" />
       Work
-    </button>
+    </NavLink>
   );
 };
 

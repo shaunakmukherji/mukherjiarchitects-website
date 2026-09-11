@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { useNavigation } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import { ArrowLeft } from 'lucide-react';
 import OptimizedImage from '../ui/OptimizedImage';
+import NavLink from '../ui/NavLink';
 import { applySEO, breadcrumb } from '../../lib/seo';
 
 const CreativeDirector: React.FC = () => {
@@ -71,13 +72,13 @@ const CreativeDirector: React.FC = () => {
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
                   Shaunak Mukherji is the Founder and Creative Director of Mukherji Architects, leading the architectural direction of the practice. His work builds on the architectural lineage of his father,{' '}
-                  <button
-                    type="button"
-                    onClick={navigateToBobbyMukherji}
+                  <NavLink
+                    href={getPathForView('BOBBY_MUKHERJI', null)}
+                    onNavigate={navigateToBobbyMukherji}
                     className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors font-medium"
                   >
                     Bobby Mukherji
-                  </button>
+                  </NavLink>
                   , Principal of Bobby Mukherji Architects.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">

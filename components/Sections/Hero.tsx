@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Button from '../ui/Button';
 import { HERO_IMAGE_URL } from '../../constants';
-import { useNavigation } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 
 const Hero: React.FC = () => {
   const { navigateToPortfolioFeed } = useNavigation();
@@ -92,7 +92,7 @@ const Hero: React.FC = () => {
           </p>
 
           <div className="pt-4 md:pt-8 flex flex-wrap gap-4">
-             <Button variant="primary" icon onClick={navigateToPortfolioFeed}>
+             <Button variant="primary" icon href={getPathForView('PORTFOLIO_FEED', null)} onClick={navigateToPortfolioFeed}>
                EXPLORE OUR WORK
              </Button>
           </div>

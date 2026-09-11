@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
 import { PROJECTS } from '../../constants';
 import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useNavigation } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
+import NavLink from '../ui/NavLink';
 import OptimizedImage from '../ui/OptimizedImage';
 import { encodeImageUrl } from '../../lib/imageUrl';
 
@@ -175,12 +176,13 @@ const Portfolio: React.FC = () => {
   const renderProjectCard = (project: (typeof PROJECTS)[0], loopIndex: number, indexInLoop: number) => {
     const globalIndex = PROJECTS.findIndex((p) => p.id === project.id);
     return (
-      <div
+      <NavLink
         key={`${loopIndex}-${project.id}`}
         data-portfolio-card
         {...(indexInLoop === 0 ? { 'data-loop-start': String(loopIndex) } : {})}
-        onClick={() => navigateToProject(project.id)}
-        className="group aspect-square cursor-pointer relative overflow-hidden bg-pure-grey-light border border-pure-grey-medium flex-shrink-0 w-[min(85vw,22rem)] sm:w-[min(80vw,24rem)] md:w-[min(48vw,20rem)] lg:w-[min(40vw,22rem)] xl:w-[min(34vw,24rem)]"
+        href={getPathForView('PROJECT_DETAIL', project.id)}
+        onNavigate={() => navigateToProject(project.id)}
+        className="group aspect-square cursor-pointer relative overflow-hidden bg-pure-grey-light border border-pure-grey-medium flex-shrink-0 w-[min(85vw,22rem)] sm:w-[min(80vw,24rem)] md:w-[min(48vw,20rem)] lg:w-[min(40vw,22rem)] xl:w-[min(34vw,24rem)] block"
         data-portfolio-index={globalIndex}
       >
         <OptimizedImage
@@ -221,7 +223,7 @@ const Portfolio: React.FC = () => {
         <div className="absolute top-6 right-6 text-xs font-mono text-zinc-400">
           {String(globalIndex + 1).padStart(2, '0')}
         </div>
-      </div>
+      </NavLink>
     );
   };
 
@@ -236,12 +238,13 @@ const Portfolio: React.FC = () => {
             Selected Works
           </h2>
           <div className="flex items-center gap-6 shrink-0">
-            <button
-              onClick={navigateToPortfolioFeed}
+            <NavLink
+              href={getPathForView('PORTFOLIO_FEED', null)}
+              onNavigate={navigateToPortfolioFeed}
               className="text-zinc-700 hover:text-black text-xs uppercase tracking-widest transition-colors flex items-center gap-1 group"
             >
               View All <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </button>
+            </NavLink>
             <span className="text-zinc-700 font-mono text-xs">(03) Portfolio</span>
           </div>
         </div>

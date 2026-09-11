@@ -1,5 +1,60 @@
 {
+  "redirects": [
+    {
+      "source": "/project/five-star-hotel-new-delhi",
+      "destination": "/project/aurika-new-delhi",
+      "permanent": true
+    },
+    {
+      "source": "/project/ansari-bungalow-mumbai",
+      "destination": "/project/ansari-residence-tower-mumbai",
+      "permanent": true
+    },
+    {
+      "source": "/project/kelavali-villas-development",
+      "destination": "/project/kelavali-villas-development-25-estates",
+      "permanent": true
+    },
+    {
+      "source": "/project/six-six-island-resort-maldives-2",
+      "destination": "/project/six-six-island-resort-maldives",
+      "permanent": true
+    },
+    {
+      "source": "/category/Commercial%20Design",
+      "destination": "/category/commercial-design",
+      "permanent": true
+    },
+    {
+      "source": "/category/Hospitality%20Design",
+      "destination": "/category/hospitality-design",
+      "permanent": true
+    },
+    {
+      "source": "/category/Master%20Planning",
+      "destination": "/category/master-planning",
+      "permanent": true
+    },
+    {
+      "source": "/category/Mixed-use%20Design",
+      "destination": "/category/mixed-use-design",
+      "permanent": true
+    },
+    {
+      "source": "/category/Research%20%26%20Exploration",
+      "destination": "/category/research-exploration",
+      "permanent": true
+    },
+    {
+      "source": "/category/Residential%20Design",
+      "destination": "/category/residential-design",
+      "permanent": true
+    }
+  ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }

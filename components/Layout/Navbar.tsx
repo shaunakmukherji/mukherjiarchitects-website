@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { NAV_ITEMS, LOGO_URL } from '../../constants';
-import { useNavigation } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
+import NavLink from '../ui/NavLink';
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -61,26 +62,27 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center relative">
 
         {/* Logo */}
-        <button onClick={navigateToHome} className="relative z-50 group flex-shrink-0">
+        <NavLink href={getPathForView('HOME', null)} onNavigate={navigateToHome} className="relative z-50 group flex-shrink-0">
           <img
             src={LOGO_URL}
             alt="Mukherji Architects Milano"
             className="h-10 md:h-12 w-auto opacity-90 group-hover:opacity-100 transition-opacity"
           />
-        </button>
+        </NavLink>
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
           {NAV_ITEMS.map((item) =>
             item.label === 'Portfolio' ? (
-              <button
+              <NavLink
                 key={item.label}
-                onClick={navigateToPortfolioFeed}
+                href={getPathForView('PORTFOLIO_FEED', null)}
+                onNavigate={navigateToPortfolioFeed}
                 className="text-sm font-medium text-zinc-400 hover:text-white transition-colors relative group"
               >
                 {item.label}
                 <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-accent transition-all duration-300 group-hover:w-full" />
-              </button>
+              </NavLink>
             ) : (
               <a
                 key={item.label}
@@ -95,13 +97,14 @@ const Navbar: React.FC = () => {
           )}
 
           {/* People */}
-          <button
-            onClick={navigateToTeam}
+          <NavLink
+            href={getPathForView('TEAM', null)}
+            onNavigate={navigateToTeam}
             className="text-sm font-medium text-zinc-400 hover:text-white transition-colors relative group"
           >
             People
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-accent transition-all duration-300 group-hover:w-full" />
-          </button>
+          </NavLink>
 
           <a
             href="#contact"
@@ -140,13 +143,14 @@ const Navbar: React.FC = () => {
         <div className="flex flex-col items-center justify-center h-full w-full gap-8 px-6">
           {NAV_ITEMS.map((item) =>
             item.label === 'Portfolio' ? (
-              <button
+              <NavLink
                 key={item.label}
-                onClick={() => { navigateToPortfolioFeed(); setIsMobileMenuOpen(false); }}
+                href={getPathForView('PORTFOLIO_FEED', null)}
+                onNavigate={() => { navigateToPortfolioFeed(); setIsMobileMenuOpen(false); }}
                 className="text-2xl font-display font-bold text-white hover:text-zinc-400 transition-colors py-2"
               >
                 {item.label}
-              </button>
+              </NavLink>
             ) : (
               <a
                 key={item.label}
@@ -159,12 +163,13 @@ const Navbar: React.FC = () => {
             )
           )}
 
-          <button
-            onClick={() => { navigateToTeam(); setIsMobileMenuOpen(false); }}
+          <NavLink
+            href={getPathForView('TEAM', null)}
+            onNavigate={() => { navigateToTeam(); setIsMobileMenuOpen(false); }}
             className="text-2xl font-display font-bold text-white hover:text-zinc-400 transition-colors py-2"
           >
             People
-          </button>
+          </NavLink>
 
           <a
             href="#contact"

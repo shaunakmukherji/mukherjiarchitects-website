@@ -5,45 +5,53 @@ import { CATEGORY_NAME_TO_SLUG, CATEGORY_SLUG_TO_NAME, slugify } from '../lib/ca
 
 const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
 
+/**
+ * Single source of truth for view+id → URL. Exported so any component can compute a
+ * real, crawlable href for an internal link (see components/ui/NavLink.tsx) instead of
+ * only having click-only navigation with no <a href> for search engines to discover.
+ */
+export const getPathForView = (view: ViewState, id: string | null): string => {
+  if (view === 'PROJECT_DETAIL' && id) {
+    return `/project/${encodeURIComponent(id)}`;
+  } else if (view === 'PROJECT_CONSTRUCTION' && id) {
+    return `/project/${encodeURIComponent(id)}/construction`;
+  } else if (view === 'CATEGORY_LISTING' && id) {
+    return `/category/${CATEGORY_NAME_TO_SLUG[id] ?? slugify(id)}`;
+  } else if (view === 'CREATIVE_DIRECTOR') {
+    return '/shaunak-mukherji';
+  } else if (view === 'BOBBY_MUKHERJI') {
+    return '/bobby-mukherji';
+  } else if (view === 'ARCHITECTURE_AI') {
+    return '/architecture-artificial-intelligence';
+  } else if (view === 'ABOUT_STUDIO') {
+    return '/about-mukherji-architects-milano';
+  } else if (view === 'BEST_FIT_COMMERCIAL') {
+    return '/best-fit/commercial-design';
+  } else if (view === 'BEST_FIT_HOSPITALITY') {
+    return '/best-fit/hospitality-design';
+  } else if (view === 'BEST_FIT_INSTITUTIONAL') {
+    return '/best-fit/institutional-design';
+  } else if (view === 'BEST_FIT_MASTER_PLANNING') {
+    return '/best-fit/master-planning';
+  } else if (view === 'BEST_FIT_MIXED_USE') {
+    return '/best-fit/mixed-use-design';
+  } else if (view === 'BEST_FIT_RESEARCH') {
+    return '/best-fit/research-exploration';
+  } else if (view === 'BEST_FIT_RESIDENTIAL') {
+    return '/best-fit/residential-design';
+  } else if (view === 'PORTFOLIO_FEED') {
+    return '/portfolio';
+  } else if (view === 'TEAM') {
+    return '/the-studio/people';
+  } else if (view === 'TEAM_MEMBER_DETAIL' && id) {
+    return `/the-studio/people/${id}`;
+  }
+  return '/';
+};
+
 // Helper function to update URL without triggering navigation
 const updateURL = (view: ViewState, id: string | null) => {
-  let url = '/';
-  if (view === 'PROJECT_DETAIL' && id) {
-    url = `/project/${encodeURIComponent(id)}`;
-  } else if (view === 'PROJECT_CONSTRUCTION' && id) {
-    url = `/project/${encodeURIComponent(id)}/construction`;
-  } else if (view === 'CATEGORY_LISTING' && id) {
-    url = `/category/${CATEGORY_NAME_TO_SLUG[id] ?? slugify(id)}`;
-  } else if (view === 'CREATIVE_DIRECTOR') {
-    url = '/shaunak-mukherji';
-  } else if (view === 'BOBBY_MUKHERJI') {
-    url = '/bobby-mukherji';
-  } else if (view === 'ARCHITECTURE_AI') {
-    url = '/architecture-artificial-intelligence';
-  } else if (view === 'ABOUT_STUDIO') {
-    url = '/about-mukherji-architects-milano';
-  } else if (view === 'BEST_FIT_COMMERCIAL') {
-    url = '/best-fit/commercial-design';
-  } else if (view === 'BEST_FIT_HOSPITALITY') {
-    url = '/best-fit/hospitality-design';
-  } else if (view === 'BEST_FIT_INSTITUTIONAL') {
-    url = '/best-fit/institutional-design';
-  } else if (view === 'BEST_FIT_MASTER_PLANNING') {
-    url = '/best-fit/master-planning';
-  } else if (view === 'BEST_FIT_MIXED_USE') {
-    url = '/best-fit/mixed-use-design';
-  } else if (view === 'BEST_FIT_RESEARCH') {
-    url = '/best-fit/research-exploration';
-  } else if (view === 'BEST_FIT_RESIDENTIAL') {
-    url = '/best-fit/residential-design';
-  } else if (view === 'PORTFOLIO_FEED') {
-    url = '/portfolio';
-  } else if (view === 'TEAM') {
-    url = '/the-studio/people';
-  } else if (view === 'TEAM_MEMBER_DETAIL' && id) {
-    url = `/the-studio/people/${id}`;
-  }
-
+  const url = getPathForView(view, id);
   window.history.pushState({ view, id }, '', url);
 };
 
@@ -152,42 +160,7 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
     // Initialize URL on first load if we're not on the home page
     // Replace state instead of push to avoid adding an extra history entry
     if (initialState.view !== 'HOME' || initialState.id !== null) {
-      let url = '/';
-      if (initialState.view === 'PROJECT_DETAIL' && initialState.id) {
-        url = `/project/${encodeURIComponent(initialState.id)}`;
-      } else if (initialState.view === 'PROJECT_CONSTRUCTION' && initialState.id) {
-        url = `/project/${encodeURIComponent(initialState.id)}/construction`;
-      } else if (initialState.view === 'CATEGORY_LISTING' && initialState.id) {
-        url = `/category/${CATEGORY_NAME_TO_SLUG[initialState.id] ?? slugify(initialState.id)}`;
-      } else if (initialState.view === 'CREATIVE_DIRECTOR') {
-        url = '/shaunak-mukherji';
-      } else if (initialState.view === 'BOBBY_MUKHERJI') {
-        url = '/bobby-mukherji';
-      } else if (initialState.view === 'ARCHITECTURE_AI') {
-        url = '/architecture-artificial-intelligence';
-      } else if (initialState.view === 'ABOUT_STUDIO') {
-        url = '/about-mukherji-architects-milano';
-      } else if (initialState.view === 'BEST_FIT_COMMERCIAL') {
-        url = '/best-fit/commercial-design';
-      } else if (initialState.view === 'BEST_FIT_HOSPITALITY') {
-        url = '/best-fit/hospitality-design';
-      } else if (initialState.view === 'BEST_FIT_INSTITUTIONAL') {
-        url = '/best-fit/institutional-design';
-      } else if (initialState.view === 'BEST_FIT_MASTER_PLANNING') {
-        url = '/best-fit/master-planning';
-      } else if (initialState.view === 'BEST_FIT_MIXED_USE') {
-        url = '/best-fit/mixed-use-design';
-      } else if (initialState.view === 'BEST_FIT_RESEARCH') {
-        url = '/best-fit/research-exploration';
-      } else if (initialState.view === 'BEST_FIT_RESIDENTIAL') {
-        url = '/best-fit/residential-design';
-      } else if (initialState.view === 'PORTFOLIO_FEED') {
-        url = '/portfolio';
-      } else if (initialState.view === 'TEAM') {
-        url = '/the-studio/people';
-      } else if (initialState.view === 'TEAM_MEMBER_DETAIL' && initialState.id) {
-        url = `/the-studio/people/${initialState.id}`;
-      }
+      const url = getPathForView(initialState.view, initialState.id);
       window.history.replaceState({ view: initialState.view, id: initialState.id }, '', url);
     }
 

@@ -1,9 +1,10 @@
 import React from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { ABOUT_CONTENT } from '../../constants';
-import { useNavigation } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import { useInViewportCenter } from '../../hooks/useInViewportCenter';
 import OptimizedImage from '../ui/OptimizedImage';
+import NavLink from '../ui/NavLink';
 
 const About: React.FC = () => {
   const { navigateToCreativeDirector, navigateToBobbyMukherji, navigateToArchitectureAI, navigateToAboutStudio, navigateToTeam } = useNavigation();
@@ -31,10 +32,11 @@ const About: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 lg:gap-12 items-start">
 
             {/* Image */}
-            <button
-              onClick={navigateToTeam}
-              className="md:col-span-5 relative group overflow-hidden md:sticky md:top-32 order-2 md:order-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-pure-grey"
-              ref={imageRef as React.RefObject<HTMLButtonElement>}
+            <NavLink
+              href={getPathForView('TEAM', null)}
+              onNavigate={navigateToTeam}
+              className="md:col-span-5 relative group overflow-hidden md:sticky md:top-32 order-2 md:order-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-pure-grey block"
+              ref={imageRef as React.RefObject<HTMLAnchorElement>}
               aria-label="Learn more about Mukherji Architects Milano"
             >
                  <div className="aspect-square w-full overflow-hidden bg-pure-grey-light">
@@ -49,19 +51,20 @@ const About: React.FC = () => {
                  <div className="absolute top-4 left-4 p-2 bg-black/50 backdrop-blur-sm border border-white/10 group-hover:border-accent/50 transition-colors">
                      <ArrowUpRight className="text-white w-4 h-4" />
                  </div>
-            </button>
+            </NavLink>
 
             {/* Text & Philosophy */}
             <div className="md:col-span-7 flex flex-col md:pl-8 lg:pl-12 order-1 md:order-2">
                 <div className="space-y-10 md:space-y-14 flex-1">
                     <p className="text-base md:text-lg text-zinc-900 leading-[1.7] md:leading-[1.75] font-normal tracking-tight">
-                        <button
-                            onClick={navigateToTeam}
+                        <NavLink
+                            href={getPathForView('TEAM', null)}
+                            onNavigate={navigateToTeam}
                             className="text-black underline underline-offset-4 decoration-zinc-600 hover:decoration-black transition-colors duration-300 cursor-pointer font-medium"
                             aria-label="Learn more about Mukherji Architects Milano"
                         >
                             Mukherji Architects Milano
-                        </button>
+                        </NavLink>
                         {' '}is the international extension of{' '}
                         <a
                             href="https://bobbymukherji.com/"
@@ -82,31 +85,32 @@ const About: React.FC = () => {
                     <div className="h-px w-full bg-pure-grey-medium" />
                     <p className="text-zinc-700 text-base md:text-lg leading-[1.7] md:leading-[1.75] font-normal tracking-tight max-w-2xl">
                         Founded and led by{' '}
-                        <button
-                            onClick={navigateToCreativeDirector}
+                        <NavLink
+                            href={getPathForView('CREATIVE_DIRECTOR', null)}
+                            onNavigate={navigateToCreativeDirector}
                             className="text-black underline underline-offset-4 decoration-zinc-600 hover:decoration-black transition-colors duration-300 cursor-pointer font-medium"
                             aria-label="Learn more about Shaunak Mukherji, Creative Director"
                         >
                             Shaunak Mukherji
-                        </button>
+                        </NavLink>
                         , son of{' '}
-                        <button
-                            type="button"
-                            onClick={navigateToBobbyMukherji}
+                        <NavLink
+                            href={getPathForView('BOBBY_MUKHERJI', null)}
+                            onNavigate={navigateToBobbyMukherji}
                             className="text-black underline underline-offset-4 decoration-zinc-600 hover:decoration-black transition-colors duration-300 cursor-pointer font-medium"
                             aria-label="Learn more about Bobby Mukherji"
                         >
                             Bobby Mukherji
-                        </button>
+                        </NavLink>
                         , the Milan studio — and its{' '}
-                        <button
-                            type="button"
-                            onClick={navigateToTeam}
+                        <NavLink
+                            href={getPathForView('TEAM', null)}
+                            onNavigate={navigateToTeam}
                             className="text-black underline underline-offset-4 decoration-zinc-600 hover:decoration-black transition-colors duration-300 cursor-pointer font-medium"
                             aria-label="Meet the team"
                         >
                             team
-                        </button>
+                        </NavLink>
                         {' '}— build on this legacy while advancing a contemporary design approach driven by computational design,{' '}
                         <a
                             href="/architecture-artificial-intelligence"

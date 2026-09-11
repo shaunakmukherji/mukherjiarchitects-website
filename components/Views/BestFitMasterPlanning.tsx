@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { useNavigation } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
+import NavLink from '../ui/NavLink';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 
 const BestFitMasterPlanning: React.FC = () => {
@@ -183,12 +184,9 @@ const BestFitMasterPlanning: React.FC = () => {
               >
                 Contact <ArrowUpRight size={16} />
               </button>
-              <button
-                onClick={() => navigateToCategory('Master Planning')}
-                className="flex items-center gap-2 text-accent hover:text-white transition-colors text-base"
-              >
+              <NavLink href={getPathForView('CATEGORY_LISTING', 'Master Planning')} onNavigate={() => navigateToCategory('Master Planning')} className="flex items-center gap-2 text-accent hover:text-white transition-colors text-base">
                 Selected Works <ArrowUpRight size={16} />
-              </button>
+              </NavLink>
             </div>
           </section>
 

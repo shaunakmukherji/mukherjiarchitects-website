@@ -1,7 +1,8 @@
 import React from 'react';
 import { Home, LayoutGrid } from 'lucide-react';
-import { useNavigation } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import { ViewState } from '../../types';
+import NavLink from './NavLink';
 
 const WORK_VIEWS: ViewState[] = ['PORTFOLIO_FEED', 'PROJECT_DETAIL'];
 
@@ -18,8 +19,9 @@ const BottomTabBar: React.FC = () => {
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
         {/* Studio tab */}
-        <button
-          onClick={navigateToHome}
+        <NavLink
+          href={getPathForView('HOME', null)}
+          onNavigate={navigateToHome}
           className={`flex-1 flex flex-col items-center justify-center gap-1.5 py-3 transition-colors relative ${
             isStudio ? 'text-white' : 'text-zinc-600'
           }`}
@@ -29,14 +31,15 @@ const BottomTabBar: React.FC = () => {
           )}
           <Home size={20} strokeWidth={isStudio ? 2 : 1.5} />
           <span className="text-[9px] uppercase tracking-[0.15em]">Studio</span>
-        </button>
+        </NavLink>
 
         {/* Divider */}
         <div className="w-px bg-zinc-800 my-3" />
 
         {/* Work tab */}
-        <button
-          onClick={navigateToPortfolioFeed}
+        <NavLink
+          href={getPathForView('PORTFOLIO_FEED', null)}
+          onNavigate={navigateToPortfolioFeed}
           className={`flex-1 flex flex-col items-center justify-center gap-1.5 py-3 transition-colors relative ${
             isWork ? 'text-white' : 'text-zinc-600'
           }`}
@@ -46,7 +49,7 @@ const BottomTabBar: React.FC = () => {
           )}
           <LayoutGrid size={20} strokeWidth={isWork ? 2 : 1.5} />
           <span className="text-[9px] uppercase tracking-[0.15em]">Work</span>
-        </button>
+        </NavLink>
       </div>
     </div>
   );

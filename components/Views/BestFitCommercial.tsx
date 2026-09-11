@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { useNavigation } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
+import NavLink from '../ui/NavLink';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 
 const BestFitCommercial: React.FC = () => {
@@ -184,18 +185,12 @@ const BestFitCommercial: React.FC = () => {
               >
                 Contact <ArrowUpRight size={16} />
               </button>
-              <button
-                onClick={() => navigateToCategory('Commercial Design')}
-                className="flex items-center gap-2 text-accent hover:text-white transition-colors text-base"
-              >
+              <NavLink href={getPathForView('CATEGORY_LISTING', 'Commercial Design')} onNavigate={() => navigateToCategory('Commercial Design')} className="flex items-center gap-2 text-accent hover:text-white transition-colors text-base">
                 Selected Works <ArrowUpRight size={16} />
-              </button>
-              <button
-                onClick={navigateToArchitectureAI}
-                className="flex items-center gap-2 text-accent hover:text-white transition-colors text-base"
-              >
+              </NavLink>
+              <NavLink href={getPathForView('ARCHITECTURE_AI', null)} onNavigate={navigateToArchitectureAI} className="flex items-center gap-2 text-accent hover:text-white transition-colors text-base">
                 Architecture & AI <ArrowUpRight size={16} />
-              </button>
+              </NavLink>
             </div>
           </section>
 

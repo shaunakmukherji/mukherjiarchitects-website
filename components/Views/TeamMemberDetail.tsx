@@ -4,11 +4,17 @@ import { TEAM_MEMBERS } from '../../generated/teamImages';
 import { ArrowLeft } from 'lucide-react';
 import OptimizedImage from '../ui/OptimizedImage';
 import { encodeImageUrl } from '../../lib/imageUrl';
-import { applySEO, breadcrumb } from '../../lib/seo';
+import { applySEO, applyNoIndex, breadcrumb } from '../../lib/seo';
 
 const TeamMemberDetail: React.FC = () => {
   const { selectedId, navigateBack, backLabel } = useNavigation();
   const member = TEAM_MEMBERS.find((m) => m.slug === selectedId);
+
+  // Invalid slug — noindex it (see applyNoIndex for why, same as ProjectDetail).
+  useEffect(() => {
+    if (member) return;
+    return applyNoIndex();
+  }, [member]);
 
   useEffect(() => {
     if (!member) return;

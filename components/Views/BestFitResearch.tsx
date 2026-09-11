@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { useNavigation } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
+import NavLink from '../ui/NavLink';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 
 const BestFitResearch: React.FC = () => {
@@ -176,12 +177,9 @@ const BestFitResearch: React.FC = () => {
               If you want architecture delivered with smart systems and measurable efficiency:
             </p>
             <div className="flex flex-wrap gap-4">
-              <button
-                onClick={navigateToArchitectureAI}
-                className="flex items-center gap-2 text-accent hover:text-white transition-colors text-base"
-              >
+              <NavLink href={getPathForView('ARCHITECTURE_AI', null)} onNavigate={navigateToArchitectureAI} className="flex items-center gap-2 text-accent hover:text-white transition-colors text-base">
                 Architecture & AI <ArrowUpRight size={16} />
-              </button>
+              </NavLink>
               <button
                 onClick={navigateToContact}
                 className="flex items-center gap-2 text-accent hover:text-white transition-colors text-base"
