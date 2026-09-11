@@ -19,14 +19,6 @@ import { mimeTypeForPath, resolvePublicImagePath } from './lib/resolveImageFile'
 const HERO_IMAGE_PATH = '/images/hero/hero-cover.jpg.jpeg';
 const ABOUT_IMAGE_PREFIX = '/images/about/';
 
-function isCacheFresh(sourcePath: string, cachePath: string): boolean {
-  if (!existsSync(cachePath)) return false;
-  if (!existsSync(sourcePath)) return false; // source deleted — cache is stale
-  const sourceMtime = statSync(sourcePath).mtimeMs;
-  const cacheMtime = statSync(cachePath).mtimeMs;
-  return cacheMtime >= sourceMtime;
-}
-
 function clearAboutWebpCache(cacheDir: string) {
   if (!existsSync(cacheDir)) return;
 
@@ -113,23 +105,29 @@ async function serveWebP(
           req.headers['user-agent'] as string
         ));
 
+    // Key on the RESOLVED file (actual path + extension + mtime on disk), not the
+    // requested URL's extension-stripped base. Two different source files (e.g. an
+    // old render-01.png swapped for a new render-01.jpg) must never share a cache
+    // slot — if they did, whichever gets written last "wins" regardless of which
+    // file was actually requested. Including mtime also makes the cache
+    // self-invalidating: editing a file in place naturally orphans its old entry
+    // instead of relying solely on a freshness comparison.
     const cacheBase = stripImageExtension(baseUrl) ?? baseUrl;
+    const sourceMtime = Math.floor(statSync(resolvedPath).mtimeMs);
+    const resolvedExt = resolvedPath.slice(resolvedPath.lastIndexOf('.') + 1).toLowerCase();
     const cacheKey =
       cacheBase.replace(/[^a-zA-Z0-9]/g, '_') +
+      `_${resolvedExt}_${sourceMtime}` +
       (isMobile ? '_mobile' : '_desktop') +
       '.webp';
     const cachePath = join(cacheDir, cacheKey);
 
-    if (isCacheFresh(resolvedPath, cachePath)) {
+    if (existsSync(cachePath)) {
       const cachedWebP = readFileSync(cachePath);
       res.setHeader('Content-Type', 'image/webp');
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('X-Image-Format', 'webp-cached');
       return res.end(cachedWebP);
-    }
-
-    if (existsSync(cachePath)) {
-      unlinkSync(cachePath);
     }
 
     const originalBuffer = readFileSync(resolvedPath);
