@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { loadInsights, articleBodyHtml, listingBodyHtml, INSIGHTS_DIR } = require('./insights.cjs');
 
 // Map folder names to display names and categories
 // Each folder gets its own unique category name for proper filtering
@@ -1056,6 +1057,10 @@ export const TEAM_MEMBERS: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)
   const SITE_URL = 'https://www.mukherjiarchitects.com';
   const today = new Date().toISOString().split('T')[0];
 
+  // Insights articles (content/insights/<slug>/article.md) — also emitted as generated/insights.ts below
+  const insights = loadInsights(SITE_URL, `${SITE_URL}/images/og-default.png`);
+  const insightsLastmod = insights.length ? insights.map((a) => a.updated || a.date).sort().pop() : today;
+
   const staticRoutes = [
     { path: '/',                                    priority: '1.0', changefreq: 'weekly'  },
     { path: '/portfolio',                           priority: '0.9', changefreq: 'weekly'  },
@@ -1068,15 +1073,26 @@ export const TEAM_MEMBERS: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)
 
   const urlTags = [
     ...staticRoutes.map(r => `  <url>\n    <loc>${SITE_URL}${r.path}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${r.changefreq}</changefreq>\n    <priority>${r.priority}</priority>\n  </url>`),
+    `  <url>\n    <loc>${SITE_URL}/insights</loc>\n    <lastmod>${insightsLastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`,
+    ...insights.map(a => `  <url>\n    <loc>${SITE_URL}${a.path}</loc>\n    <lastmod>${a.updated || a.date}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n${a.sitemapImages.map(u => `    <image:image>\n      <image:loc>${u}</image:loc>\n    </image:image>\n`).join('')}  </url>`),
     ...projects.map(p => `  <url>\n    <loc>${SITE_URL}/project/${p.id}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>`),
     ...mergedServices.map(s => `  <url>\n    <loc>${SITE_URL}/category/${slugifyName(s.categoryFilter)}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`),
     ...teamMembers.filter(m => m.description && !m.linkTo).map(m => `  <url>\n    <loc>${SITE_URL}/the-studio/people/${m.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`),
   ].join('\n');
 
-  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urlTags}\n</urlset>\n`;
+  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urlTags}\n</urlset>\n`;
   const sitemapPath = path.join(__dirname, '..', 'public', 'sitemap.xml');
   fs.writeFileSync(sitemapPath, sitemapXml, 'utf-8');
   // ─────────────────────────────────────────────────────────────────────────
+
+  const insightsTs = `// Auto-generated from content/insights/<slug>/article.md. DO NOT EDIT — edit the article files instead.
+
+import { Insight } from '../types';
+
+export const INSIGHTS: Insight[] = ${JSON.stringify(insights.map(({ imageMeta, preload, sitemapImages, ...clientData }) => clientData), null, 2)};
+`;
+  const insightsPath = path.join(outputDir, 'insights.ts');
+  fs.writeFileSync(insightsPath, insightsTs, 'utf-8');
 
   // ── SEO manifest — one entry per route, consumed by scripts/prerender-seo.cjs ──
   // Crawlers (Facebook, Twitter/X, WhatsApp, Slack, iMessage) never run this site's
@@ -1206,7 +1222,32 @@ export const TEAM_MEMBERS: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)
       image: m.headshotUrl ? absoluteUrl(m.headshotUrl) : LOGO_IMAGE,
     }));
 
-  const seoManifest = [...staticSeoRoutes, ...projectSeoRoutes, ...categorySeoRoutes, ...teamMemberSeoRoutes];
+  // Insights: listing + one route per article. These also carry the crawler-readable body,
+  // a canonical URL and Article JSON-LD, which prerender-seo.cjs bakes into the static HTML.
+  const insightSeoRoutes = [
+    {
+      path: '/insights',
+      title: 'Insights | Mukherji Architects Milano',
+      description: 'Articles on architecture and design from Mukherji Architects Milano, with sources and links to the projects they draw on.',
+      image: LOGO_IMAGE,
+      canonical: `${SITE_URL}/insights`,
+      bodyHtml: listingBodyHtml(insights),
+    },
+    ...insights.map((a) => ({
+      path: a.path,
+      title: a.seoTitle,
+      description: a.description,
+      image: a.image,
+      canonical: `${SITE_URL}${a.path}`,
+      ogType: 'article',
+      imageMeta: a.imageMeta,
+      preload: a.preload,
+      jsonLd: a.jsonLd,
+      bodyHtml: articleBodyHtml(a),
+    })),
+  ];
+
+  const seoManifest = [...staticSeoRoutes, ...projectSeoRoutes, ...categorySeoRoutes, ...teamMemberSeoRoutes, ...insightSeoRoutes];
   const seoManifestPath = path.join(outputDir, 'seo-manifest.json');
   fs.writeFileSync(seoManifestPath, JSON.stringify(seoManifest, null, 2), 'utf-8');
 
@@ -1241,6 +1282,10 @@ export const TEAM_MEMBERS: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)
   const vercelConfigPath = path.join(__dirname, '..', 'vercel.json');
   const vercelConfig = {
     redirects,
+    // Insights images have a content hash in their file names, so they can be cached forever
+    headers: [
+      { source: '/images/insights/(.*)', headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }] },
+    ],
     rewrites: [{ source: '/(.*)', destination: '/index.html' }],
   };
   fs.writeFileSync(vercelConfigPath, JSON.stringify(vercelConfig, null, 2) + '\n', 'utf-8');
@@ -1250,6 +1295,7 @@ export const TEAM_MEMBERS: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)
   console.log(`📝 Generated ${teamImagesPath} (${teamImageUrls.length} team image(s))`);
   console.log(`📝 Generated ${path.join(outputDir, 'site-hero.ts')}${siteHeroUrl ? ` → ${siteHeroUrl}` : ' (no hero set)'}`);
   console.log(`📝 Generated ${sitemapPath} (${projects.length} project URLs + ${staticRoutes.length} static)`);
+  console.log(`📝 Generated ${insightsPath} (${insights.length} article(s))`);
   console.log(`📝 Generated ${seoManifestPath} (${seoManifest.length} routes)`);
   console.log(`📝 Generated ${vercelConfigPath} (${redirects.length} redirects)`);
   generateAboutImageVersions();
@@ -1268,6 +1314,19 @@ function watchProjects() {
   
   // Initial generation
   generateProjectsData();
+
+  // Regenerate on article edits without crashing the watcher over a front matter mistake
+  let insightsTimer = null;
+  if (fs.existsSync(INSIGHTS_DIR)) {
+    fs.watch(INSIGHTS_DIR, { recursive: true }, (eventType, filename) => {
+      if (!filename) return;
+      if (insightsTimer) clearTimeout(insightsTimer);
+      insightsTimer = setTimeout(() => {
+        console.log(`\n🔄 Detected insights change: ${filename} (${eventType})`);
+        try { generateProjectsData(); } catch (err) { console.error(`❌ ${err.message}`); }
+      }, 500);
+    });
+  }
   
   // Debounce timer to avoid multiple rapid regenerations
   let projectsTimer = null;

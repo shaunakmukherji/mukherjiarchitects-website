@@ -59,3 +59,150 @@ body {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+/* ── Insights ───────────────────────────────────────────────────────────────
+   Article body HTML is rendered from markdown at build time (scripts/insights.cjs).
+   One text column (--article-col); wide figures and galleries break out of it. */
+:root {
+  --article-col: 42rem;
+  --article-wide: 66rem;
+}
+
+.article-col {
+  max-width: var(--article-col);
+  margin-inline: auto;
+}
+
+.article-prose {
+  color: #d4d4d8;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  overflow-wrap: break-word;
+}
+.article-prose > * {
+  max-width: var(--article-col);
+  margin-inline: auto;
+}
+.article-prose > * + * {
+  margin-top: 1.5rem;
+}
+.article-prose h2 {
+  margin-top: 4.5rem;
+  color: #ffffff;
+  font-family: Montserrat, Inter, sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  scroll-margin-top: 6rem;
+}
+.article-prose h2 + * {
+  margin-top: 1.25rem;
+}
+.article-prose strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Numbered sections (front matter: numberedSections: true) */
+.article-prose.numbered {
+  counter-reset: section;
+}
+.article-prose.numbered h2 {
+  counter-increment: section;
+  padding-top: 2rem;
+  border-top: 1px solid #27272a;
+}
+.article-prose.numbered h2::before {
+  content: counter(section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 0.75rem;
+  color: #a1a1aa;
+  font-family: Inter, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+}
+
+.article-prose a,
+.article-intro a,
+.article-prose figcaption a {
+  color: #ffffff;
+  text-decoration: underline;
+  text-decoration-color: #71717a;
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s;
+}
+.article-prose a:hover,
+.article-intro a:hover,
+.article-prose figcaption a:hover {
+  text-decoration-color: #ffffff;
+}
+
+/* Figures: stable size (width/height are on the <img>), caption and credits underneath */
+.fig {
+  margin: 0;
+}
+.fig img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #18181b;
+}
+.fig figcaption {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.fig .fig-caption {
+  display: block;
+  color: #d4d4d8;
+}
+.fig .fig-credit {
+  display: block;
+  margin-top: 0.125rem;
+  color: #a1a1aa;
+  font-size: 0.8125rem;
+}
+.article-prose > .fig,
+.article-prose > .fig-gallery {
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+.article-prose > .fig-wide,
+.article-prose > .fig-gallery {
+  max-width: var(--article-wide);
+}
+.fig-cover {
+  max-width: 68rem;
+  margin-inline: auto;
+}
+.fig-gallery {
+  display: grid;
+  gap: 2rem 1rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 720px) {
+  .fig-gallery-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .fig-gallery-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .article-prose h2 {
+    font-size: 2rem;
+  }
+}
+@media (max-width: 719px) {
+  .article-prose {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+  }
+  .article-prose h2 {
+    margin-top: 3.5rem;
+    font-size: 1.5rem;
+  }
+}

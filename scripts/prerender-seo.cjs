@@ -52,6 +52,33 @@ for (const route of routes) {
   html = setContent(html, /(<meta name="twitter:description" content=")[^"]*(")/, route.description);
   html = setContent(html, /(<meta name="twitter:image" content=")[^"]*(")/, route.image);
 
+  // Insights pages: canonical, article type, structured data and the full body text,
+  // so crawlers that don't run JS can read the article. React replaces #root's contents
+  // when the app mounts; the data-prerender tags are removed then (see App.tsx) because
+  // the app re-adds its own canonical and JSON-LD.
+  if (route.ogType) html = setContent(html, /(<meta property="og:type" content=")[^"]*(")/, route.ogType);
+  const headExtras = [];
+  if (route.imageMeta) {
+    const { width, height, alt } = route.imageMeta;
+    headExtras.push(
+      `<meta property="og:image:width" content="${width}" data-prerender />`,
+      `<meta property="og:image:height" content="${height}" data-prerender />`,
+      `<meta property="og:image:alt" content="${escapeHtml(alt)}" data-prerender />`,
+      `<meta name="twitter:image:alt" content="${escapeHtml(alt)}" data-prerender />`,
+    );
+  }
+  // Start fetching the cover image before the JS bundle has even loaded (it is the LCP element)
+  if (route.preload) {
+    headExtras.push(`<link rel="preload" as="image" href="${escapeHtml(route.preload.href)}" imagesrcset="${escapeHtml(route.preload.srcSet)}" imagesizes="${escapeHtml(route.preload.sizes)}" fetchpriority="high" data-prerender />`);
+  }
+  if (route.canonical) headExtras.push(`<link rel="canonical" href="${escapeHtml(route.canonical)}" data-prerender />`);
+  for (const ld of route.jsonLd ?? []) {
+    // "<" is escaped so article text can never close the script tag early
+    headExtras.push(`<script type="application/ld+json" data-prerender>${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>`);
+  }
+  if (headExtras.length) html = html.replace('</head>', () => `    ${headExtras.join('\n    ')}\n  </head>`);
+  if (route.bodyHtml) html = html.replace('<div id="root"></div>', () => `<div id="root">${route.bodyHtml}</div>`);
+
   // Write both a directory form (dist/project/x/index.html) and a flat-file form
   // (dist/project/x.html) — different static hosts resolve clean URLs differently,
   // and this covers both without needing to know which one the host picks.

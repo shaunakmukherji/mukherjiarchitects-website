@@ -31,3 +31,6 @@ generated/
 
 # Archive folders — local only, never deploy
 **/archived/
+
+# Insights images are rebuilt from content/insights/<slug>/images on every build
+public/images/insights/

@@ -67,7 +67,39 @@ export interface AboutContent {
   philosophy: string;
 }
 
-export type ViewState = 'HOME' | 'PROJECT_DETAIL' | 'PROJECT_CONSTRUCTION' | 'CATEGORY_LISTING' | 'CREATIVE_DIRECTOR' | 'BOBBY_MUKHERJI' | 'ARCHITECTURE_AI' | 'ABOUT_STUDIO' | 'BEST_FIT_COMMERCIAL' | 'BEST_FIT_HOSPITALITY' | 'BEST_FIT_INSTITUTIONAL' | 'BEST_FIT_MASTER_PLANNING' | 'BEST_FIT_MIXED_USE' | 'BEST_FIT_RESEARCH' | 'BEST_FIT_RESIDENTIAL' | 'PORTFOLIO_FEED' | 'TEAM' | 'TEAM_MEMBER_DETAIL';
+// Insights article — generated from content/insights/<slug>/article.md (see scripts/insights.cjs)
+export interface InsightCover {
+  alt: string;
+  src: string;      // mid-size variant, for cards
+  srcSet: string;   // responsive WebP variants
+  width: number;    // intrinsic size of the largest variant (stable layout, no shift)
+  height: number;
+}
+
+export interface Insight {
+  slug: string;
+  path: string;
+  title: string;
+  seoTitle: string;
+  description: string;
+  author: string;
+  authorType: 'Person' | 'Organization';
+  date: string;      // YYYY-MM-DD, publication date
+  updated?: string;  // YYYY-MM-DD, only set after a substantive change
+  tag?: string;
+  disclosure?: string;
+  numberedSections: boolean;
+  image: string;     // absolute URL for social previews
+  cover: InsightCover | null;
+  coverHtml: string; // cover <figure> with caption and credits
+  readingMinutes: number;
+  introHtml: string; // first paragraph, shown in the page header
+  headings: { id: string; text: string }[]; // ## sections, for the contents list
+  html: string;      // article body, rendered from markdown at build time
+  jsonLd: object[];  // Article + BreadcrumbList structured data
+}
+
+export type ViewState = 'HOME' | 'INSIGHTS' | 'INSIGHT_DETAIL' |'PROJECT_DETAIL' | 'PROJECT_CONSTRUCTION' | 'CATEGORY_LISTING' | 'CREATIVE_DIRECTOR' | 'BOBBY_MUKHERJI' | 'ARCHITECTURE_AI' | 'ABOUT_STUDIO' | 'BEST_FIT_COMMERCIAL' | 'BEST_FIT_HOSPITALITY' | 'BEST_FIT_INSTITUTIONAL' | 'BEST_FIT_MASTER_PLANNING' | 'BEST_FIT_MIXED_USE' | 'BEST_FIT_RESEARCH' | 'BEST_FIT_RESIDENTIAL' | 'PORTFOLIO_FEED' | 'TEAM' | 'TEAM_MEMBER_DETAIL';
 
 export interface NavigationContextType {
   currentView: ViewState;
@@ -96,4 +128,7 @@ export interface NavigationContextType {
   navigateToPortfolioFeed: () => void;
   navigateToTeam: () => void;
   navigateToTeamMember: (slug: string) => void;
+  navigateToInsights: () => void;
+  navigateToInsight: (slug: string) => void;
+  navigateToPath: (path: string) => void; // any internal URL, e.g. a link inside article text
 }

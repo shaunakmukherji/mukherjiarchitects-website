@@ -45,6 +45,10 @@ export const getPathForView = (view: ViewState, id: string | null): string => {
     return '/the-studio/people';
   } else if (view === 'TEAM_MEMBER_DETAIL' && id) {
     return `/the-studio/people/${id}`;
+  } else if (view === 'INSIGHTS') {
+    return '/insights';
+  } else if (view === 'INSIGHT_DETAIL' && id) {
+    return `/insights/${encodeURIComponent(id)}`;
   }
   return '/';
 };
@@ -56,10 +60,20 @@ const updateURL = (view: ViewState, id: string | null) => {
 };
 
 // Helper function to parse URL and return view state
-const parseURL = (): { view: ViewState; id: string | null } => {
-  const path = window.location.pathname;
-  
-  if (path.startsWith('/project/')) {
+// With syncUrl=false (navigating to a link inside the app) nothing touches history here;
+// the caller pushes the canonical URL itself.
+const parsePath = (rawPath: string, syncUrl = true): { view: ViewState; id: string | null } => {
+  // "/insights/" and "/insights" are the same page
+  const path = rawPath.length > 1 ? rawPath.replace(/\/+$/, '') : rawPath;
+  const replaceState = (state: { view: ViewState; id: string | null }, url: string) => {
+    if (syncUrl) window.history.replaceState(state, '', url);
+  };
+
+  if (path === '/insights') {
+    return { view: 'INSIGHTS', id: null };
+  } else if (path.startsWith('/insights/')) {
+    return { view: 'INSIGHT_DETAIL', id: decodeURIComponent(path.split('/insights/')[1] || '') };
+  } else if (path.startsWith('/project/')) {
     let rest = decodeURIComponent(path.split('/project/')[1] || '');
     const isConstruction = rest.endsWith('/construction');
     let id = isConstruction ? rest.slice(0, -('/construction'.length)) : rest;
@@ -68,7 +82,7 @@ const parseURL = (): { view: ViewState; id: string | null } => {
     const canonical = PROJECT_REDIRECTS[id];
     if (canonical) {
       const canonicalPath = isConstruction ? `/project/${encodeURIComponent(canonical)}/construction` : `/project/${encodeURIComponent(canonical)}`;
-      window.history.replaceState({ view, id: canonical }, '', canonicalPath);
+      replaceState({ view, id: canonical }, canonicalPath);
       id = canonical;
     }
     return { view, id };
@@ -80,7 +94,7 @@ const parseURL = (): { view: ViewState; id: string | null } => {
     let id = CATEGORY_SLUG_TO_NAME[segment] ?? segment;
     const canonicalSlug = CATEGORY_NAME_TO_SLUG[id];
     if (canonicalSlug && canonicalSlug !== segment) {
-      window.history.replaceState({ view: 'CATEGORY_LISTING', id }, '', `/category/${canonicalSlug}`);
+      replaceState({ view: 'CATEGORY_LISTING', id }, `/category/${canonicalSlug}`);
     }
     return { view: 'CATEGORY_LISTING', id };
   } else if (path.startsWith('/the-studio/people/')) {
@@ -89,7 +103,7 @@ const parseURL = (): { view: ViewState; id: string | null } => {
   } else if (path === '/shaunak-mukherji' || path === '/creative-director') {
     // Redirect old URL to new URL
     if (path === '/creative-director') {
-      window.history.replaceState({ view: 'CREATIVE_DIRECTOR', id: null }, '', '/shaunak-mukherji');
+      replaceState({ view: 'CREATIVE_DIRECTOR', id: null }, '/shaunak-mukherji');
     }
     return { view: 'CREATIVE_DIRECTOR', id: null };
   } else if (path === '/bobby-mukherji') {
@@ -120,6 +134,8 @@ const parseURL = (): { view: ViewState; id: string | null } => {
 
   return { view: 'HOME', id: null };
 };
+
+const parseURL = () => parsePath(window.location.pathname);
 
 type HistoryEntry = { view: ViewState; id: string | null };
 
@@ -354,6 +370,38 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
     window.scrollTo(0, 0);
   };
 
+  const navigateToInsights = () => {
+    pushCurrent();
+    setSelectedId(null);
+    setCurrentView('INSIGHTS');
+    updateURL('INSIGHTS', null);
+    window.scrollTo(0, 0);
+  };
+
+  const navigateToInsight = (slug: string) => {
+    pushCurrent();
+    setSelectedId(slug);
+    setCurrentView('INSIGHT_DETAIL');
+    updateURL('INSIGHT_DETAIL', slug);
+    window.scrollTo(0, 0);
+  };
+
+  // For links written as plain paths (e.g. inside article text). Anything that isn't a
+  // known page falls back to a normal browser navigation instead of silently landing on HOME.
+  const navigateToPath = (rawPath: string) => {
+    const path = rawPath.split(/[?#]/)[0];
+    const { view, id } = parsePath(path, false);
+    if (view === 'HOME' && path !== '/') {
+      window.location.assign(rawPath);
+      return;
+    }
+    pushCurrent();
+    setSelectedId(id);
+    setCurrentView(view);
+    updateURL(view, id);
+    window.scrollTo(0, 0);
+  };
+
   return (
     <NavigationContext.Provider value={{
       currentView,
@@ -381,7 +429,10 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
       navigateToBestFitResidential,
       navigateToPortfolioFeed,
       navigateToTeam,
-      navigateToTeamMember
+      navigateToTeamMember,
+      navigateToInsights,
+      navigateToInsight,
+      navigateToPath
     }}>
       {children}
     </NavigationContext.Provider>

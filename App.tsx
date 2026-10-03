@@ -28,11 +28,13 @@ import BestFitResidential from './components/Views/BestFitResidential';
 import PortfolioFeed from './components/Views/PortfolioFeed';
 import Team from './components/Views/Team';
 import TeamMemberDetail from './components/Views/TeamMemberDetail';
+import Insights from './components/Views/Insights';
+import InsightDetail from './components/Views/InsightDetail';
 
 // Floating "Work" shortcut — hidden when already in portfolio views
 const FloatingWorkButton: React.FC = () => {
   const { currentView, navigateToPortfolioFeed } = useNavigation();
-  const hidden = currentView === 'PORTFOLIO_FEED' || currentView === 'PROJECT_DETAIL' || currentView === 'PROJECT_CONSTRUCTION';
+  const hidden = currentView === 'PORTFOLIO_FEED' || currentView === 'PROJECT_DETAIL' || currentView === 'PROJECT_CONSTRUCTION' || currentView === 'INSIGHT_DETAIL';
   if (hidden) return null;
   return (
     <NavLink
@@ -49,6 +51,13 @@ const FloatingWorkButton: React.FC = () => {
 // Separating the Main Content to handle view logic cleanly
 const MainContent = () => {
   const { currentView } = useNavigation();
+
+  // The static HTML for some routes (Insights) ships a canonical link and JSON-LD of its own
+  // for crawlers that don't run JS. The page component re-adds both via applySEO, so drop
+  // the static copies once the app has mounted to avoid duplicates. Child effects run first.
+  useEffect(() => {
+    document.querySelectorAll('[data-prerender]').forEach((el) => el.remove());
+  }, []);
 
   // Restore home page meta tags when on home view
   useEffect(() => {
@@ -151,6 +160,14 @@ const MainContent = () => {
 
   if (currentView === 'TEAM_MEMBER_DETAIL') {
     return <TeamMemberDetail />;
+  }
+
+  if (currentView === 'INSIGHTS') {
+    return <Insights />;
+  }
+
+  if (currentView === 'INSIGHT_DETAIL') {
+    return <InsightDetail />;
   }
 
   return (
