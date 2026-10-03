@@ -234,6 +234,18 @@ function loadInsights(siteUrl, defaultImage) {
       ...r.figs.map((_, i) => `${siteUrl}${images[`${slug}#fig${i}`].variants.slice(-1)[0].url}`),
     ];
 
+    // Pages on this site that the article links to (/project/<id>); each gets a "Featured in" link back
+    const projects = [...new Set([...(r.intro + r.text + (data.coverProject || '') + r.figs.map((x) => x.project || '').join(' ')).matchAll(/\/project\/([a-z0-9-]+)/g)].map((m) => m[1]))];
+    // Organisations covered (front matter "mentions: Name | url; Name | url"), for structured data
+    const mentions = (data.mentions || '').split(';').map((x) => x.trim()).filter(Boolean).map((x) => {
+      const [name, mentionUrl] = x.split('|').map((y) => y.trim());
+      return { '@type': 'Organization', name, ...(mentionUrl ? { url: mentionUrl } : {}) };
+    });
+    const keywords = (data.keywords || '').split(',').map((x) => x.trim()).filter(Boolean);
+    const published = `${data.date}T00:00:00Z`;
+    const modified = `${data.updated || data.date}T00:00:00Z`;
+    const readingMinutes = Math.max(1, Math.round(words / WORDS_PER_MINUTE));
+
     const article = {
       slug,
       path: `/insights/${slug}`,
@@ -253,7 +265,20 @@ function loadInsights(siteUrl, defaultImage) {
       coverHtml,
       preload,
       sitemapImages,
-      readingMinutes: Math.max(1, Math.round(words / WORDS_PER_MINUTE)),
+      readingMinutes,
+      projects,
+      // Extra <head> tags for the static HTML only (prerender-seo.cjs); not shipped to the client
+      headMeta: [
+        { attr: 'property', key: 'og:url', content: url },
+        { attr: 'property', key: 'og:site_name', content: SITE_NAME },
+        { attr: 'property', key: 'article:published_time', content: published },
+        { attr: 'property', key: 'article:modified_time', content: modified },
+        { attr: 'property', key: 'article:author', content: authorUrl || author },
+        ...(data.tag ? [{ attr: 'property', key: 'article:section', content: data.tag }] : []),
+        ...keywords.map((k) => ({ attr: 'property', key: 'article:tag', content: k })),
+        ...(keywords.length ? [{ attr: 'name', key: 'keywords', content: keywords.join(', ') }] : []),
+      ],
+      headLinks: [{ rel: 'alternate', type: 'application/rss+xml', title: `Insights | ${SITE_NAME}`, href: `${siteUrl}/insights/feed.xml` }],
       introHtml,
       headings,
       html,
@@ -267,11 +292,17 @@ function loadInsights(siteUrl, defaultImage) {
         description: data.description,
         image: ldImages,
         datePublished: data.date,
-        ...(data.updated ? { dateModified: data.updated } : {}),
-        author: { '@type': authorType, name: author, ...(authorUrl ? { url: authorUrl } : {}) },
-        publisher: { '@type': 'Organization', name: SITE_NAME, url: `${siteUrl}/`, logo: { '@type': 'ImageObject', url: `${siteUrl}/images/logo/logo.png` } },
+        dateModified: data.updated || data.date,
+        inLanguage: 'en',
+        isAccessibleForFree: true,
+        wordCount: words,
+        timeRequired: `PT${readingMinutes}M`,
+        author: { '@type': authorType, ...(authorType === 'Organization' && author === SITE_NAME ? { '@id': `${siteUrl}/#organization` } : {}), name: author, ...(authorUrl ? { url: authorUrl } : {}) },
+        publisher: { '@type': 'Organization', '@id': `${siteUrl}/#organization`, name: SITE_NAME, url: `${siteUrl}/`, logo: { '@type': 'ImageObject', url: `${siteUrl}/images/logo/logo.png` } },
         mainEntityOfPage: { '@type': 'WebPage', '@id': url },
         ...(data.tag ? { articleSection: data.tag } : {}),
+        ...(keywords.length ? { keywords: keywords.join(', ') } : {}),
+        ...(mentions.length ? { mentions } : {}),
       },
       {
         '@context': 'https://schema.org',
@@ -314,4 +345,64 @@ ${articles.map((a) => `<li>${a.cover ? `<a href="${a.path}"><img src="${a.cover.
 </section>`;
 }
 
-module.exports = { loadInsights, articleBodyHtml, listingBodyHtml, INSIGHTS_DIR };
+// CollectionPage + ItemList for the /insights listing
+function listingJsonLd(articles, siteUrl) {
+  return [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: `Insights | ${SITE_NAME}`,
+      description: 'Articles on architecture and design from Mukherji Architects Milano, with sources and links to the projects they draw on.',
+      url: `${siteUrl}/insights`,
+      isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: `${siteUrl}/` },
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: articles.map((a, i) => ({ '@type': 'ListItem', position: i + 1, url: `${siteUrl}${a.path}`, name: a.title })),
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: SITE_NAME, item: `${siteUrl}/` },
+        { '@type': 'ListItem', position: 2, name: 'Insights', item: `${siteUrl}/insights` },
+      ],
+    },
+  ];
+}
+
+// RSS 2.0 feed of every article, full text included, so readers, aggregators and AI crawlers can follow new posts
+function buildFeed(articles, siteUrl) {
+  // Make site-relative links and image URLs absolute, since feed readers have no base URL
+  const abs = (html) => html.replace(/(href|src|srcset)="\//g, `$1="${siteUrl}/`).replace(/(\s|,)\/images\/insights\//g, `$1${siteUrl}/images/insights/`);
+  const cdata = (html) => html.split(']]>').join(']]]]><![CDATA[>');
+  const items = articles.map((a) => [
+    '    <item>',
+    `      <title>${escapeHtml(a.title)}</title>`,
+    `      <link>${siteUrl}${a.path}</link>`,
+    `      <guid isPermaLink="true">${siteUrl}${a.path}</guid>`,
+    `      <pubDate>${new Date(`${a.date}T00:00:00Z`).toUTCString()}</pubDate>`,
+    `      <dc:creator>${escapeHtml(a.author)}</dc:creator>`,
+    ...(a.tag ? [`      <category>${escapeHtml(a.tag)}</category>`] : []),
+    `      <description>${escapeHtml(a.description)}</description>`,
+    `      <content:encoded><![CDATA[${cdata(abs(a.coverHtml + a.html))}]]></content:encoded>`,
+    '    </item>',
+  ].join('\n')).join('\n');
+  return [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">',
+    '  <channel>',
+    `    <title>Insights | ${SITE_NAME}</title>`,
+    `    <link>${siteUrl}/insights</link>`,
+    `    <atom:link href="${siteUrl}/insights/feed.xml" rel="self" type="application/rss+xml" />`,
+    `    <description>Articles on architecture and design from ${SITE_NAME}.</description>`,
+    '    <language>en</language>',
+    items,
+    '  </channel>',
+    '</rss>',
+    '',
+  ].join('\n');
+}
+
+
+module.exports = { loadInsights, articleBodyHtml, listingBodyHtml, listingJsonLd, buildFeed, INSIGHTS_DIR };

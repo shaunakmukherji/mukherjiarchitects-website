@@ -93,6 +93,7 @@ export interface Insight {
   cover: InsightCover | null;
   coverHtml: string; // cover <figure> with caption and credits
   readingMinutes: number;
+  projects: string[]; // ids of projects this article links to, for "Featured in" links on those pages
   introHtml: string; // first paragraph, shown in the page header
   headings: { id: string; text: string }[]; // ## sections, for the contents list
   html: string;      // article body, rendered from markdown at build time

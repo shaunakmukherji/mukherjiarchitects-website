@@ -67,6 +67,17 @@ for (const route of routes) {
       `<meta name="twitter:image:alt" content="${escapeHtml(alt)}" data-prerender />`,
     );
   }
+  for (const m of route.meta ?? []) {
+    // The page already has a generic keywords tag; replace it rather than add a second one
+    if (m.key === 'keywords') {
+      html = setContent(html, /(<meta name="keywords" content=")[^"]*(")/, m.content);
+      continue;
+    }
+    headExtras.push(`<meta ${m.attr}="${escapeHtml(m.key)}" content="${escapeHtml(m.content)}" data-prerender />`);
+  }
+  for (const l of route.links ?? []) {
+    headExtras.push(`<link rel="${escapeHtml(l.rel)}" type="${escapeHtml(l.type)}" title="${escapeHtml(l.title)}" href="${escapeHtml(l.href)}" data-prerender />`);
+  }
   // Start fetching the cover image before the JS bundle has even loaded (it is the LCP element)
   if (route.preload) {
     headExtras.push(`<link rel="preload" as="image" href="${escapeHtml(route.preload.href)}" imagesrcset="${escapeHtml(route.preload.srcSet)}" imagesizes="${escapeHtml(route.preload.sizes)}" fetchpriority="high" data-prerender />`);

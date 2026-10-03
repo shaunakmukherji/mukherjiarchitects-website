@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { loadInsights, articleBodyHtml, listingBodyHtml, INSIGHTS_DIR } = require('./insights.cjs');
+const { loadInsights, articleBodyHtml, listingBodyHtml, listingJsonLd, buildFeed, INSIGHTS_DIR } = require('./insights.cjs');
 
 // Map folder names to display names and categories
 // Each folder gets its own unique category name for proper filtering
@@ -1089,10 +1089,15 @@ export const TEAM_MEMBERS: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)
 
 import { Insight } from '../types';
 
-export const INSIGHTS: Insight[] = ${JSON.stringify(insights.map(({ imageMeta, preload, sitemapImages, ...clientData }) => clientData), null, 2)};
+export const INSIGHTS: Insight[] = ${JSON.stringify(insights.map(({ imageMeta, preload, sitemapImages, headMeta, headLinks, ...clientData }) => clientData), null, 2)};
+
+export const INSIGHTS_LISTING_JSONLD: object[] = ${JSON.stringify(listingJsonLd(insights, SITE_URL), null, 2)};
 `;
   const insightsPath = path.join(outputDir, 'insights.ts');
   fs.writeFileSync(insightsPath, insightsTs, 'utf-8');
+  // RSS feed, served at /insights/feed.xml
+  fs.mkdirSync(path.join(__dirname, '..', 'public', 'insights'), { recursive: true });
+  fs.writeFileSync(path.join(__dirname, '..', 'public', 'insights', 'feed.xml'), buildFeed(insights, SITE_URL), 'utf-8');
 
   // ── SEO manifest — one entry per route, consumed by scripts/prerender-seo.cjs ──
   // Crawlers (Facebook, Twitter/X, WhatsApp, Slack, iMessage) never run this site's
@@ -1231,6 +1236,12 @@ export const INSIGHTS: Insight[] = ${JSON.stringify(insights.map(({ imageMeta, p
       description: 'Articles on architecture and design from Mukherji Architects Milano, with sources and links to the projects they draw on.',
       image: LOGO_IMAGE,
       canonical: `${SITE_URL}/insights`,
+      jsonLd: listingJsonLd(insights, SITE_URL),
+      meta: [
+        { attr: 'property', key: 'og:url', content: `${SITE_URL}/insights` },
+        { attr: 'property', key: 'og:site_name', content: 'Mukherji Architects Milano' },
+      ],
+      links: [{ rel: 'alternate', type: 'application/rss+xml', title: 'Insights | Mukherji Architects Milano', href: `${SITE_URL}/insights/feed.xml` }],
       bodyHtml: listingBodyHtml(insights),
     },
     ...insights.map((a) => ({
@@ -1242,6 +1253,8 @@ export const INSIGHTS: Insight[] = ${JSON.stringify(insights.map(({ imageMeta, p
       ogType: 'article',
       imageMeta: a.imageMeta,
       preload: a.preload,
+      meta: a.headMeta,
+      links: a.headLinks,
       jsonLd: a.jsonLd,
       bodyHtml: articleBodyHtml(a),
     })),

@@ -5,6 +5,8 @@ description: Five architecture and design practices shaping hospitality in India
 author: Mukherji Architects Milano
 date: 2026-10-03
 tag: Hospitality
+keywords: hospitality architecture India, hotel architects India, hospitality design firms India, resort architecture, hotel interior design, Bobby Mukherji Architects, Mukherji Architects Milano, Design Forum International, HBA, Morphogenesis, Studio Lotus
+mentions: Bobby Mukherji Architects | https://bobbymukherji.com/; Mukherji Architects Milano | https://www.mukherjiarchitects.com/; Design Forum International | https://www.designforuminternational.com/; HBA | https://hba.com/; Morphogenesis | https://www.morphogenesis.org/; Studio Lotus | https://www.studiolotus.in/
 numberedSections: true
 disclosure: Mukherji Architects Milano is one of the practices featured in this article. The other entries are included on the strength of their published work, and each claim links to its source.
 cover: images/hilton-maldives-amingiri-beach-pool-villa.jpg

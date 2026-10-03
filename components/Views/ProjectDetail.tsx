@@ -5,6 +5,7 @@ import Button from '../ui/Button';
 import OptimizedImage from '../ui/OptimizedImage';
 import ProjectFacts from '../ui/ProjectFacts';
 import NavLink from '../ui/NavLink';
+import RelatedInsights from '../ui/RelatedInsights';
 import { applyNoIndex } from '../../lib/seo';
 import { ArrowLeft, ArrowRight, X } from 'lucide-react';
 
@@ -243,6 +244,7 @@ const ProjectDetail: React.FC = () => {
                   Inquire About This Project
                 </Button>
               </div>
+              <RelatedInsights projectId={project.id} className="pt-4" />
             </div>
           </div>
         </div>

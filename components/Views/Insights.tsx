@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
-import { INSIGHTS } from '../../generated/insights';
+import { INSIGHTS, INSIGHTS_LISTING_JSONLD } from '../../generated/insights';
 import { Insight } from '../../types';
 import NavLink from '../ui/NavLink';
-import { applySEO, breadcrumb } from '../../lib/seo';
+import { applySEO } from '../../lib/seo';
 import { formatDate } from '../../lib/formatDate';
 
 // Image-led card. `featured` is the large full-width treatment used for the newest article.
@@ -84,7 +84,7 @@ const Insights: React.FC = () => {
     description: 'Articles on architecture and design from Mukherji Architects Milano, with sources and links to the projects they draw on.',
     image: '/images/og-default.png',
     canonicalPath: '/insights',
-    schemas: [breadcrumb('Insights', '/insights')],
+    schemas: INSIGHTS_LISTING_JSONLD,
   }), []);
 
   const [featured, ...rest] = INSIGHTS;

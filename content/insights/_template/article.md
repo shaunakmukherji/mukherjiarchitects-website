@@ -58,6 +58,8 @@ HOW TO PUBLISH
 6. Other optional front matter:
    updated:           YYYY-MM-DD. Add only after a substantive change; it is then shown and sent to search engines.
    disclosure:        A short note under the byline, for example when the article features the studio itself.
+   keywords:          Comma-separated search terms, used in structured data and meta tags.
+   mentions:          Organisations the article covers: "Name | https://their-site; Name | https://..." (structured data).
    numberedSections:  true numbers the ## sections 01, 02, ... (good for "Top 5" style lists).
    authorType / authorUrl:  Person or Organization (default Organization), and a link for structured data.
    draft:             true keeps the article out of the site, listing and sitemap.

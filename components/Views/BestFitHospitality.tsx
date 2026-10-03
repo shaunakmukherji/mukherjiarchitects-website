@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import NavLink from '../ui/NavLink';
+import RelatedInsights from '../ui/RelatedInsights';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 
 const BestFitHospitality: React.FC = () => {
@@ -155,6 +156,8 @@ const BestFitHospitality: React.FC = () => {
               </NavLink>
             </div>
           </section>
+
+          <RelatedInsights tag="Hospitality" className="mb-16" />
 
           <section className="mb-16">
             <h3 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
