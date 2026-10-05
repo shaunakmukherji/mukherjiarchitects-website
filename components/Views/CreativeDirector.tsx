@@ -1,32 +1,23 @@
 import React, { useEffect } from 'react';
 import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import { ArrowLeft } from 'lucide-react';
-import OptimizedImage from '../ui/OptimizedImage';
+import ProfileImage from '../ui/ProfileImage';
 import NavLink from '../ui/NavLink';
-import { applySEO, breadcrumb } from '../../lib/seo';
+import { applySEO } from '../../lib/seo';
+import { PROFILE_PAGES } from '../../generated/people';
+
+// Title, description, portrait and structured data are built in scripts/people.cjs
+const profile = PROFILE_PAGES['shaunak-mukherji'];
 
 const CreativeDirector: React.FC = () => {
   const { navigateBack, backLabel, navigateToBobbyMukherji } = useNavigation();
 
   useEffect(() => applySEO({
-    title: 'Shaunak Mukherji — Founder & Creative Director | Mukherji Architects Milano',
-    description: 'Shaunak Mukherji is Founder & Creative Director of Mukherji Architects Milano, a high-performance architecture studio in Milan, Italy. AI-first approach, Politecnico di Milano graduate.',
-    image: '/images/about/creative-director.png',
+    title: profile.title,
+    description: profile.description,
+    image: profile.ogImage,
     canonicalPath: '/shaunak-mukherji',
-    schemas: [
-      breadcrumb('Shaunak Mukherji', '/shaunak-mukherji'),
-      {
-        '@context': 'https://schema.org',
-        '@type': 'Person',
-        name: 'Shaunak Mukherji',
-        jobTitle: 'Founder and Creative Director',
-        image: 'https://www.mukherjiarchitects.com/images/about/creative-director.png',
-        url: 'https://www.mukherjiarchitects.com/shaunak-mukherji',
-        worksFor: { '@type': 'Organization', name: 'Mukherji Architects Milano', url: 'https://www.mukherjiarchitects.com' },
-        affiliation: { '@type': 'Organization', name: 'Bobby Mukherji Architects', url: 'https://bobbymukherji.com/' },
-        alumniOf: { '@type': 'EducationalOrganization', name: 'Politecnico di Milano' },
-      },
-    ],
+    schemas: profile.jsonLd,
   }), []);
 
   return (
@@ -43,9 +34,10 @@ const CreativeDirector: React.FC = () => {
           {/* Left Column — image, below text on mobile */}
           <div className="md:col-span-5 space-y-6 order-2 md:order-1">
             <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-900">
-              <OptimizedImage
-                src="/images/about/creative-director.png"
-                alt="Shaunak Mukherji"
+              <ProfileImage
+                image={profile.image}
+                sizes="(min-width: 768px) 480px, calc(100vw - 48px)"
+                priority
                 className="w-full h-full object-cover"
               />
             </div>

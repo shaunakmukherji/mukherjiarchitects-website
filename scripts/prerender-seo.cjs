@@ -56,6 +56,7 @@ for (const route of routes) {
   // so crawlers that don't run JS can read the article. React replaces #root's contents
   // when the app mounts; the data-prerender tags are removed then (see App.tsx) because
   // the app re-adds its own canonical and JSON-LD.
+  if (route.twitterCard) html = setContent(html, /(<meta name="twitter:card" content=")[^"]*(")/, route.twitterCard);
   if (route.ogType) html = setContent(html, /(<meta property="og:type" content=")[^"]*(")/, route.ogType);
   const headExtras = [];
   if (route.imageMeta) {

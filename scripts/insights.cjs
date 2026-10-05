@@ -5,8 +5,8 @@
 // running JS). See content/insights/_template/article.md for the authoring format.
 const fs = require('fs');
 const path = require('path');
-const { execFileSync } = require('child_process');
 const { marked } = require('marked');
+const { processImagesSync } = require('./web-images.cjs');
 
 const ROOT = path.join(__dirname, '..');
 const INSIGHTS_DIR = path.join(ROOT, 'content', 'insights');
@@ -65,17 +65,6 @@ function parseAspect(value, fallback, where) {
   const m = value.match(/^(\d+(?:\.\d+)?):(\d+(?:\.\d+)?)$/);
   if (!m) throw new Error(`${where}: "aspect" must look like 16:9 or 4:3`);
   return Number(m[1]) / Number(m[2]);
-}
-
-// sharp is async, this generator is not: run the image worker as a child process.
-function processImagesSync(jobs) {
-  if (!jobs.length) return {};
-  const out = execFileSync(process.execPath, [path.join(__dirname, 'insight-images.cjs')], {
-    input: JSON.stringify(jobs),
-    maxBuffer: 64 * 1024 * 1024,
-    stdio: ['pipe', 'pipe', 'inherit'],
-  });
-  return JSON.parse(out.toString('utf-8'));
 }
 
 function imgTag(res, { alt, sizes, eager }) {

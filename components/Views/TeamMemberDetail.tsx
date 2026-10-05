@@ -1,14 +1,16 @@
 import React, { useEffect } from 'react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { TEAM_MEMBERS } from '../../generated/teamImages';
+import { PROFILE_PAGES } from '../../generated/people';
 import { ArrowLeft } from 'lucide-react';
-import OptimizedImage from '../ui/OptimizedImage';
-import { encodeImageUrl } from '../../lib/imageUrl';
-import { applySEO, applyNoIndex, breadcrumb } from '../../lib/seo';
+import ProfileImage from '../ui/ProfileImage';
+import { applySEO, applyNoIndex } from '../../lib/seo';
 
 const TeamMemberDetail: React.FC = () => {
   const { selectedId, navigateBack, backLabel } = useNavigation();
   const member = TEAM_MEMBERS.find((m) => m.slug === selectedId);
+  // Title, description, portrait and structured data are built in scripts/people.cjs
+  const profile = member ? PROFILE_PAGES[member.slug] : undefined;
 
   // Invalid slug — noindex it (see applyNoIndex for why, same as ProjectDetail).
   useEffect(() => {
@@ -17,19 +19,15 @@ const TeamMemberDetail: React.FC = () => {
   }, [member]);
 
   useEffect(() => {
-    if (!member) return;
-    const title = `${member.name} — ${member.role} | Mukherji Architects Milano`;
-    const description = member.description
-      ? `${member.description.slice(0, 150)}${member.description.length > 150 ? '...' : ''}`
-      : `${member.name}, ${member.role} at Mukherji Architects Milano.`;
+    if (!member || !profile) return;
     return applySEO({
-      title,
-      description,
-      image: member.headshotUrl,
+      title: profile.title,
+      description: profile.description,
+      image: profile.ogImage,
       canonicalPath: `/the-studio/people/${member.slug}`,
-      schemas: [breadcrumb(member.name, `/the-studio/people/${member.slug}`)],
+      schemas: profile.jsonLd,
     });
-  }, [member]);
+  }, [member, profile]);
 
   if (!member) {
     return (
@@ -61,12 +59,11 @@ const TeamMemberDetail: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16">
           <div className="md:col-span-5 order-2 md:order-1">
             <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-900">
-              {member.headshotUrl && (
-                <OptimizedImage
-                  src={encodeImageUrl(member.headshotUrl)}
-                  alt={member.name}
+              {member.image && (
+                <ProfileImage
+                  image={member.image}
+                  sizes="(min-width: 768px) 480px, calc(100vw - 48px)"
                   priority
-                  lazy={false}
                   className="w-full h-full object-cover"
                 />
               )}

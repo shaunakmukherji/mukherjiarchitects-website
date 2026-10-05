@@ -35,13 +35,25 @@ export interface Project {
   constructionNote?: string; // Short intro text shown at the top of the progress gallery
 }
 
+// A portrait as the site serves it: compressed responsive WebP with a descriptive file name (scripts/people.cjs)
+export interface ProfileImage {
+  alt: string;
+  src: string;      // mid-size variant, fallback for browsers without srcset
+  srcSet: string;   // responsive WebP variants
+  width: number;    // intrinsic size of the largest variant (stable layout, no shift)
+  height: number;
+}
+
 export interface TeamMember {
   name: string;
   slug: string; // URL slug for the generic /the-studio/people/<slug> subpage
   role: string;
   order: number;
   linkTo?: string; // ViewState key of an existing BESPOKE subpage, e.g. 'CREATIVE_DIRECTOR' — takes priority over the generic page
-  headshotUrl?: string;
+  headshotUrl?: string; // source file; pages use `image`
+  image?: ProfileImage;
+  sameAs?: string[];    // other profiles (LinkedIn, Instagram...), from person.json, for structured data
+  alumniOf?: string[];
   description?: string;
 }
 

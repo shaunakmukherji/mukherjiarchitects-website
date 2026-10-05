@@ -1,30 +1,23 @@
 import React, { useEffect } from 'react';
 import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import { ArrowLeft } from 'lucide-react';
-import OptimizedImage from '../ui/OptimizedImage';
+import ProfileImage from '../ui/ProfileImage';
 import NavLink from '../ui/NavLink';
-import { applySEO, breadcrumb } from '../../lib/seo';
+import { applySEO } from '../../lib/seo';
+import { PROFILE_PAGES } from '../../generated/people';
+
+// Title, description, portrait and structured data are built in scripts/people.cjs
+const profile = PROFILE_PAGES['bobby-mukherji'];
 
 const BobbyMukherji: React.FC = () => {
   const { navigateBack, backLabel, navigateToCreativeDirector } = useNavigation();
 
   useEffect(() => applySEO({
-    title: 'Bobby Mukherji — Principal | Mukherji Architects Milano',
-    description: 'Bobby Mukherji is founder of Bobby Mukherji Architects and the institutional backbone of Mukherji Architects Milano — 30+ years of experience across hospitality, commercial, and mixed-use projects worldwide.',
-    image: '/images/about/bobby-mukherji.png',
+    title: profile.title,
+    description: profile.description,
+    image: profile.ogImage,
     canonicalPath: '/bobby-mukherji',
-    schemas: [
-      breadcrumb('Bobby Mukherji', '/bobby-mukherji'),
-      {
-        '@context': 'https://schema.org',
-        '@type': 'Person',
-        name: 'Bobby Mukherji',
-        jobTitle: 'Principal',
-        image: 'https://www.mukherjiarchitects.com/images/about/bobby-mukherji.png',
-        url: 'https://www.mukherjiarchitects.com/bobby-mukherji',
-        worksFor: { '@type': 'Organization', name: 'Bobby Mukherji Architects', url: 'https://bobbymukherji.com/' },
-      },
-    ],
+    schemas: profile.jsonLd,
   }), []);
 
   return (
@@ -40,17 +33,11 @@ const BobbyMukherji: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16">
           <div className="md:col-span-5 space-y-6 order-2 md:order-1">
             <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-900">
-              <OptimizedImage
-                src="/images/about/bobby-mukherji.png"
-                alt="Bobby Mukherji"
-                skipOptimization
+              <ProfileImage
+                image={profile.image}
+                sizes="(min-width: 768px) 480px, calc(100vw - 48px)"
                 priority
-                lazy={false}
                 className="w-full h-full object-cover object-top"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.opacity = '0.4';
-                }}
               />
             </div>
             <p className="text-zinc-500 text-sm italic leading-relaxed">

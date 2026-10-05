@@ -3,8 +3,10 @@ import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import { TEAM_IMAGES, TEAM_VIDEO_URL, TEAM_MEMBERS } from '../../generated/teamImages';
 import OptimizedImage from '../ui/OptimizedImage';
+import ProfileImage from '../ui/ProfileImage';
 import NavLink from '../ui/NavLink';
-import { applySEO, breadcrumb } from '../../lib/seo';
+import { applySEO } from '../../lib/seo';
+import { PEOPLE_LISTING } from '../../generated/people';
 
 // Same grid class for every row of the gallery so columns stay pixel-perfect aligned
 const GALLERY_GRID = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3';
@@ -22,12 +24,13 @@ const Team: React.FC = () => {
     BOBBY_MUKHERJI: getPathForView('BOBBY_MUKHERJI', null),
   };
 
+  // Title, description and structured data are built in scripts/people.cjs
   useEffect(() => applySEO({
-    title: 'People | Mukherji Architects Milano',
-    description: "The team at Mukherji Architects Milano — architects and designers trained at Italy's leading institutions, working across international markets from our studio in Milan.",
+    title: PEOPLE_LISTING.title,
+    description: PEOPLE_LISTING.description,
     image: '/images/og-default.png',
     canonicalPath: '/the-studio/people',
-    schemas: [breadcrumb('People', '/the-studio/people')],
+    schemas: PEOPLE_LISTING.jsonLd,
   }), []);
 
   useEffect(() => {
@@ -89,11 +92,10 @@ const Team: React.FC = () => {
               const cardBody = (
                 <>
                   <div className="aspect-[3/4] w-full overflow-hidden bg-pure-grey-medium mb-4">
-                    {member.headshotUrl ? (
-                      <OptimizedImage
-                        src={member.headshotUrl}
-                        alt={member.name}
-                        lazy={false}
+                    {member.image ? (
+                      <ProfileImage
+                        image={member.image}
+                        sizes="(min-width: 1280px) 296px, (min-width: 768px) 24vw, 46vw"
                         priority
                         className={
                           onNavigate
