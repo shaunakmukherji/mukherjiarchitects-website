@@ -56,6 +56,7 @@ const BESPOKE = [
     description: 'Bobby Mukherji is founder of Bobby Mukherji Architects and the institutional backbone of Mukherji Architects Milano — 30+ years of experience across hospitality, commercial, and mixed-use projects worldwide.',
     portrait: '/images/about/bobby-mukherji.png',
     alt: 'Bobby Mukherji, Principal of Bobby Mukherji Architects',
+    sameAs: ['https://in.linkedin.com/in/bobby-mukherji-690557228'], // no team folder, so his profile links live here
     person: {
       worksFor: { '@type': 'Organization', name: 'Bobby Mukherji Architects', url: 'https://bobbymukherji.com/' },
     },
@@ -173,7 +174,7 @@ ${paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join('\n')}
   for (const b of BESPOKE) {
     const r = res[`page:${b.slug}`];
     const image = toImage(r, b.alt);
-    const jsonLd = profileJsonLd({ pagePath: b.path, title: b.title, name: b.name, jobTitle: b.jobTitle, description: b.description, r, alt: b.alt, person: b.person, sameAs: b.teamSlug ? sameAsFor(b.teamSlug) : [] });
+    const jsonLd = profileJsonLd({ pagePath: b.path, title: b.title, name: b.name, jobTitle: b.jobTitle, description: b.description, r, alt: b.alt, person: b.person, sameAs: [...(b.sameAs || []), ...(b.teamSlug ? sameAsFor(b.teamSlug) : [])] });
     pages[b.slug] = { title: b.title, description: b.description, image, ogImage: abs(r.r1x1.url), jsonLd };
     routes.push(route({ pagePath: b.path, title: b.title, description: b.description, name: b.name, roleLine: b.roleLine, r, alt: b.alt, image, paragraphs: [b.description], jsonLd }));
     sitemapImages[b.path] = [abs(r.variants[r.variants.length - 1].url)];
