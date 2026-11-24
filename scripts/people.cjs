@@ -25,25 +25,32 @@ const LISTING = {
   description: "The team at Mukherji Architects Milano — architects and designers trained at Italy's leading institutions, working across international markets from our studio in Milan.",
 };
 
+// Related companies. They are separate entities, so they are linked with worksFor / affiliation and never
+// with sameAs (sameAs means "this is the same entity" and would merge the companies in Google's eyes).
+const BMA = { '@type': 'Organization', name: 'Bobby Mukherji Architects', url: 'https://bobbymukherji.com/' };
+const MUKHERJI_GROUP = { '@type': 'Organization', name: 'Mukherji Group', url: 'https://mukherjigroup.com/' };
+
 // Hand-built pages (components/Views/CreativeDirector.tsx, BobbyMukherji.tsx). The page text stays in the
 // component; the facts every consumer needs (title, description, portrait, schema) live here once.
+// `person` receives { ma }, this site's Organization (same @id as the one in index.html).
 const BESPOKE = [
   {
     slug: 'shaunak-mukherji',
     path: '/shaunak-mukherji',
     name: 'Shaunak Mukherji',
     role: 'Founder & Creative Director',
-    jobTitle: 'Founder and Creative Director',
+    jobTitle: 'Founder & Creative Director',
     roleLine: `Founder & Creative Director, ${SITE_NAME}`,
     title: 'Shaunak Mukherji — Founder & Creative Director | Mukherji Architects Milano',
     description: 'Shaunak Mukherji is Founder & Creative Director of Mukherji Architects Milano, a high-performance architecture studio in Milan, Italy. AI-first approach, Politecnico di Milano graduate.',
     portrait: '/images/about/creative-director.jpg',
     alt: 'Shaunak Mukherji, Founder & Creative Director of Mukherji Architects Milano',
     teamSlug: 'shaunak-mukherji', // person.json in the team folder can add sameAs links
-    person: {
-      affiliation: { '@type': 'Organization', name: 'Bobby Mukherji Architects', url: 'https://bobbymukherji.com/' },
+    person: ({ ma }) => ({
+      worksFor: [ma, MUKHERJI_GROUP],
+      affiliation: BMA,
       alumniOf: { '@type': 'EducationalOrganization', name: 'Politecnico di Milano' },
-    },
+    }),
   },
   {
     slug: 'bobby-mukherji',
@@ -57,14 +64,15 @@ const BESPOKE = [
     portrait: '/images/about/bobby-mukherji.png',
     alt: 'Bobby Mukherji, Principal of Bobby Mukherji Architects',
     sameAs: ['https://in.linkedin.com/in/bobby-mukherji-690557228'], // no team folder, so his profile links live here
-    person: {
-      worksFor: { '@type': 'Organization', name: 'Bobby Mukherji Architects', url: 'https://bobbymukherji.com/' },
-    },
+    person: () => ({
+      worksFor: [BMA, MUKHERJI_GROUP],
+    }),
   },
 ];
 
 function buildPeople({ siteUrl, teamMembers }) {
   const orgId = `${siteUrl}/#organization`;
+  const maOrg = { '@type': 'Organization', '@id': orgId, name: SITE_NAME, url: `${siteUrl}/` };
   const abs = (u) => `${siteUrl}${u}`;
   const publicFile = (u) => path.join(ROOT, 'public', decodeURIComponent(u));
 
@@ -174,7 +182,7 @@ ${paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join('\n')}
   for (const b of BESPOKE) {
     const r = res[`page:${b.slug}`];
     const image = toImage(r, b.alt);
-    const jsonLd = profileJsonLd({ pagePath: b.path, title: b.title, name: b.name, jobTitle: b.jobTitle, description: b.description, r, alt: b.alt, person: b.person, sameAs: [...(b.sameAs || []), ...(b.teamSlug ? sameAsFor(b.teamSlug) : [])] });
+    const jsonLd = profileJsonLd({ pagePath: b.path, title: b.title, name: b.name, jobTitle: b.jobTitle, description: b.description, r, alt: b.alt, person: b.person({ ma: maOrg }), sameAs: [...(b.sameAs || []), ...(b.teamSlug ? sameAsFor(b.teamSlug) : [])] });
     pages[b.slug] = { title: b.title, description: b.description, image, ogImage: abs(r.r1x1.url), jsonLd };
     routes.push(route({ pagePath: b.path, title: b.title, description: b.description, name: b.name, roleLine: b.roleLine, r, alt: b.alt, image, paragraphs: [b.description], jsonLd }));
     sitemapImages[b.path] = [abs(r.variants[r.variants.length - 1].url)];

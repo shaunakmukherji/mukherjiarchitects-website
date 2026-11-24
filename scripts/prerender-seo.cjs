@@ -38,6 +38,16 @@ function setContent(html, selectorRegex, value) {
   return html; // tag not found in template — leave untouched rather than error
 }
 
+// A plain link to every page, placed in each page's static HTML. The app only renders its links with
+// JavaScript, so a crawler's first, HTML-only pass would otherwise find no internal links at all (the home
+// page's raw HTML is an empty <div>) and could only discover pages through the sitemap. The list is visually
+// hidden and React replaces it when the app mounts, so visitors never see it and the rendered page has none.
+const navLabel = (route) => route.title.split(/ [—|] /)[0];
+const navHtml = `<nav class="seo-nav" aria-label="All pages"><ul>${[
+  '<li><a href="/">Mukherji Architects Milano</a></li>',
+  ...routes.map((r) => `<li><a href="${escapeHtml(r.path)}">${escapeHtml(navLabel(r))}</a></li>`),
+].join('')}</ul></nav>`;
+
 let written = 0;
 for (const route of routes) {
   const title = `${route.title} `.trim();
@@ -89,7 +99,7 @@ for (const route of routes) {
     headExtras.push(`<script type="application/ld+json" data-prerender>${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>`);
   }
   if (headExtras.length) html = html.replace('</head>', () => `    ${headExtras.join('\n    ')}\n  </head>`);
-  if (route.bodyHtml) html = html.replace('<div id="root"></div>', () => `<div id="root">${route.bodyHtml}</div>`);
+  html = html.replace('<div id="root"></div>', () => `<div id="root">${route.bodyHtml ?? ''}${navHtml}</div>`);
 
   // Write both a directory form (dist/project/x/index.html) and a flat-file form
   // (dist/project/x.html) — different static hosts resolve clean URLs differently,
@@ -101,5 +111,8 @@ for (const route of routes) {
   fs.writeFileSync(path.join(distDir, `${relPath}.html`), html, 'utf-8');
   written++;
 }
+
+// The home page has no route entry of its own; give it the same crawlable links
+fs.writeFileSync(templatePath, template.replace('<div id="root"></div>', () => `<div id="root">${navHtml}</div>`), 'utf-8');
 
 console.log(`📝 prerender-seo: wrote ${written} route-specific index.html files into dist/`);

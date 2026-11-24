@@ -16,7 +16,7 @@ const ArchitectureAI: React.FC = () => {
   return (
     <div className="pt-32 pb-24 min-h-screen bg-black">
       <div className="max-w-7xl mx-auto px-6">
-        <button 
+        <button
           onClick={navigateBack}
           className="flex items-center gap-2 text-zinc-500 hover:text-white mb-16 transition-colors text-sm uppercase tracking-widest"
         >
@@ -26,84 +26,102 @@ const ArchitectureAI: React.FC = () => {
         <div className="max-w-4xl">
           {/* Main Title */}
           <p className="text-zinc-600 text-xs uppercase tracking-[0.2em] mb-3">Mukherji Architects Milano</p>
-          <h1 className="font-display text-5xl md:text-6xl font-bold text-white uppercase tracking-tight mb-4">
+          <h1 className="font-display text-4xl md:text-5xl font-semibold text-white tracking-tight mb-4">
             Architecture and Artificial Intelligence
           </h1>
           <h2 className="font-display text-xl md:text-2xl font-normal text-zinc-400 mb-16">
-            On amplification, input quality, and why the machine is only half the equation
+            How we use AI in our architectural work
           </h2>
 
           {/* Content Sections */}
           <div className="space-y-16">
 
-            {/* The machine is constant */}
+            {/* Why the input matters */}
             <section>
-              <h2 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
-                The machine is constant. The input is everything.
+              <h2 className="font-display text-xl md:text-2xl font-medium text-white mb-5">
+                Why the input matters
               </h2>
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  AI is a deterministic process. It takes an input and produces an output. The technology is the same for everyone who uses it.
+                  AI is a deterministic process. With the same input, the same model and the same settings, it gives the same result. What changes the result is the input.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  What varies — entirely — is the quality of what goes in.
+                  When the brief is spatially resolved and based on sound architectural judgement, we can test more options, work through more constraints and make decisions with more confidence.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  A spatially resolved, architecturally intelligent input produces something disproportionately better than the input itself: more options tested, more constraints resolved, more decisions made with precision. The return on a well-crafted input is not linear. It is multiplied.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  This is what amplification means in practice. The ceiling for strong input is far higher than any manual process could reach.
+                  A better input produces a disproportionately better result. That is why the quality of the thinking matters most.
                 </p>
               </div>
             </section>
 
-            {/* Creativity is the other input */}
+            {/* The tools and how we use them */}
             <section>
-              <h2 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
-                Creativity is the other input
+              <h2 className="font-display text-xl md:text-2xl font-medium text-white mb-5">
+                The tools and how we use them
               </h2>
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Technical intelligence is one kind of input. Creative intelligence is another — and it scales the same way.
+                  AI work in architecture ranges from simple to complex. Some workflows use a single off-the-shelf application. Others connect several specialist tools into a custom process. These take longer to learn but give much more control over the result.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  A designer with genuine artistic vision has always had that vision. What has changed is the ability to act on it at speed. To iterate on a spatial idea dozens of times in a session. To test a formal concept against material, light, proportion. To communicate what previously took far longer to communicate — clearly, precisely, and fast.
+                  We use the most advanced tools available and pay for the current state of the art. When something better appears, we move to it. Part of the team is always testing new methods, so each project uses the best approach we know at the time.
+                </p>
+              </div>
+            </section>
+
+            {/* Creativity */}
+            <section>
+              <h2 className="font-display text-xl md:text-2xl font-medium text-white mb-5">
+                Creativity
+              </h2>
+              <div className="space-y-5 max-w-prose">
+                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
+                  Creative judgement is a major part of the input. The ideas still come from the designer. What has changed is how quickly an idea can be developed, and how many ideas can be developed and tested in a short time.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  The creative act itself — the original idea, the spatial instinct, the compositional judgment — remains entirely human. What AI gives is the ability to pursue that idea further than was previously possible in the time available.
-                </p>
-                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  When real creativity meets that kind of iteration velocity, the compounding effect is significant. Each refined version becomes the input for the next. Each cycle produces something more resolved. Over a project, this accumulates into a quality of output that a slower process simply cannot reach.
+                  A spatial idea can now be revised dozens of times in one session and tested against material, light and proportion. It can also be shown to others clearly at a much earlier stage.
                 </p>
               </div>
             </section>
 
             {/* The compounding effect */}
             <section>
-              <h2 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
+              <h2 className="font-display text-xl md:text-2xl font-medium text-white mb-5">
                 The compounding effect
               </h2>
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  Using the most capable tool at every stage of a project means each decision creates a stronger foundation for the next. Better information at concept stage produces a better brief for design development. A better-resolved design produces fewer problems in technical coordination. Fewer problems in coordination produce fewer surprises in construction.
+                  Using the best available tool at each stage gives the next stage a better starting point. Better information at concept stage gives a better brief for design development. A better-resolved design causes fewer problems in technical coordination, and fewer coordination problems mean fewer surprises on site.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  The advantage at each step is modest. Across an entire project, it is substantial.
+                  The gain at each step can be modest. Across a whole project, it is substantial.
+                </p>
+                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
+                  The same approach drives{' '}
+                  <a
+                    href="https://mukherjigroup.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors font-medium"
+                  >
+                    Mukherji Group
+                  </a>
+                  , our real estate development company. Every important decision is based on data and analysis and weighed against the value it adds. Using the best AI and systems at every step has the same compounding effect there.
                 </p>
               </div>
             </section>
 
-            {/* Why the input quality here is different */}
+            {/* Our training */}
             <section>
-              <h2 className="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight mb-6">
-                Why the input quality here is different
+              <h2 className="font-display text-xl md:text-2xl font-medium text-white mb-5">
+                Our training
               </h2>
               <div className="space-y-5 max-w-prose">
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  The studio operates out of Milan. Our team are top graduates of Politecnico di Milano — the highest-ranked architecture and design university in Italy. Italy is the Mecca of design, and Milan sits at its centre. The design culture here, the standards, the spatial intelligence embedded in the training — this is the input.
+                  The studio is in Milan. Our architects trained at the Politecnico di Milano, Italy's highest-ranked university for architecture and design. Italy has one of the world's strongest design cultures, and Milan is one of Europe's strongest talent pools for architecture and design.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  The purest design thinking, applied through the most capable tools available, produces the strongest possible output. That is how the process works.
+                  This is the studio's philosophy: exceptional creative talent combined with state-of-the-art technology.
                 </p>
               </div>
             </section>
@@ -116,4 +134,3 @@ const ArchitectureAI: React.FC = () => {
 };
 
 export default ArchitectureAI;
-

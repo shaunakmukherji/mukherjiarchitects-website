@@ -80,6 +80,18 @@ const BobbyMukherji: React.FC = () => {
                   , his connection to Mukherji Architects Milano brings both legacy and practical strength to the studio.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
+                  He is also Chairman of{' '}
+                  <a
+                    href="https://mukherjigroup.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors font-medium"
+                  >
+                    Mukherji Group
+                  </a>
+                  , the family's real estate development company.
+                </p>
+                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
                   That connection gives the practice a clear competitive advantage: the agility and forward-thinking
                   approach of a new-generation studio, supported by proven judgment, deeper resources, and a wider
                   professional network built over time.

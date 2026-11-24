@@ -1,6 +1,6 @@
 ---
 title: Top 5 Hospitality Architecture and Design Firms in India
-seoTitle: Top 5 Hospitality Architecture and Design Firms in India
+seoTitle: Top 5 Hospitality Architecture & Design Firms in India (2026)
 description: Five architecture and design practices shaping hospitality in India, compared through their hotel and resort projects, scale and recognition, with sources.
 author: Mukherji Architects Milano
 date: 2026-10-03

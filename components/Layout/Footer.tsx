@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
     <footer className="py-8 border-t border-zinc-900 bg-black text-center md:text-left">
       <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-xs font-mono text-zinc-600">
         <p>&copy; 2023 Mukherji Architects. All Rights Reserved.</p>
-        <div className="flex gap-6 mt-4 md:mt-0">
+        <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 mt-4 md:mt-0">
             <NavLink
               href={getPathForView('INSIGHTS', null)}
               onNavigate={navigateToInsights}
@@ -16,6 +16,14 @@ const Footer: React.FC = () => {
             >
               Insights
             </NavLink>
+            <a
+              href="https://mukherjigroup.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              Mukherji Group
+            </a>
             <a
               href="https://www.instagram.com/mukherjiarchitects?igsh=MWhiOGdscHNvMHZtZg=="
               target="_blank"

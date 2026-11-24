@@ -76,6 +76,18 @@ const CreativeDirector: React.FC = () => {
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
                   He treats architecture as a discipline that must continually evolve, testing better ways to solve complex problems and keeping the studio at the forefront of innovation. He believes architectural excellence begins with genuine architectural intelligence, amplified by emerging technology. His work combines systems thinking with an AI-first approach, applying the most capable tools available to improve the architectural workflow.
                 </p>
+                <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
+                  He is also Managing Director of{' '}
+                  <a
+                    href="https://mukherjigroup.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors font-medium"
+                  >
+                    Mukherji Group
+                  </a>
+                  , where the same AI systems are used to find, test and deliver real estate developments.
+                </p>
               </div>
             </div>
           </div>
