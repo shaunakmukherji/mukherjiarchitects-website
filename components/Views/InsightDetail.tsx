@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
-import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView, scrollToSectionWhenReady } from '../../contexts/NavigationContext';
 import { INSIGHTS } from '../../generated/insights';
 import NavLink from '../ui/NavLink';
 import { usePageSEO } from '../../lib/usePageSEO';
@@ -51,7 +51,7 @@ const InsightDetail: React.FC = () => {
   const jumpTo = (e: React.MouseEvent, id: string) => {
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    scrollToSectionWhenReady(id);
   };
 
   return (

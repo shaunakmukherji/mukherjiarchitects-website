@@ -38,3 +38,4 @@ public/images/people/
 
 # Web-sized image copies are rebuilt from public/images/projects on every build
 public/images/web/
+public/images/web-video/

@@ -33,8 +33,15 @@ const Team: React.FC = () => {
     schemas: PEOPLE_LISTING.jsonLd,
   }, []);
 
+  // iPhone Safari only autoplays a video that is muted as an attribute, which React doesn't set
+  // when it creates the element; set it here, then start playback.
   useEffect(() => {
-    videoRef.current?.play().catch(() => {});
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = true;
+    v.defaultMuted = true;
+    v.setAttribute('muted', '');
+    v.play().catch(() => {});
   }, []);
 
   return (
@@ -162,7 +169,8 @@ const Team: React.FC = () => {
                   preload="auto"
                   className="w-full h-full object-cover"
                 >
-                  <source src={TEAM_VIDEO_URL} type="video/mp4" />
+                  {/* #t=0.001 makes phones show the first frame before playback starts */}
+                  <source src={`${TEAM_VIDEO_URL}#t=0.001`} type="video/mp4" />
                 </video>
               </div>
             )}

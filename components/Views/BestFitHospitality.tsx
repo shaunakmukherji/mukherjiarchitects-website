@@ -51,7 +51,7 @@ const BestFitHospitality: React.FC = () => {
         </button>
 
         <div className="max-w-4xl">
-          <h1 className="font-display text-5xl md:text-6xl font-bold text-white uppercase tracking-tight mb-4">
+          <h1 className="font-display max-[360px]:text-[8vw] text-5xl md:text-6xl font-bold text-white uppercase tracking-tight mb-4">
             Best-Fit Hospitality Design
           </h1>
           <h2 className="font-display text-xl md:text-2xl font-normal text-zinc-400 mb-16">

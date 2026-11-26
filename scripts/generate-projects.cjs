@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { buildPeople } = require('./people.cjs');
 const { buildProjectImages } = require('./project-images.cjs');
+const { webVideo } = require('./video-faststart.cjs');
 const { loadInsights, articleBodyHtml, listingBodyHtml, listingJsonLd, buildFeed, INSIGHTS_DIR } = require('./insights.cjs');
 
 // Map folder names to display names and categories
@@ -1061,7 +1062,7 @@ export const SITE_HERO_IMAGE_URL: string | null = ${JSON.stringify(siteHeroUrl)}
 import { TeamMember } from '../types';
 
 export const TEAM_IMAGES: string[] = ${JSON.stringify(teamImageUrls, null, 2)};
-export const TEAM_VIDEO_URL: string | null = ${JSON.stringify(teamVideoUrl)};
+export const TEAM_VIDEO_URL: string | null = ${JSON.stringify(webVideo(teamVideoUrl))};
 export const TEAM_MEMBERS: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)};
 `;
   const teamImagesPath = path.join(outputDir, 'teamImages.ts');
@@ -1408,6 +1409,7 @@ export const INSIGHTS_LISTING_JSONLD: object[] = ${JSON.stringify(listingJsonLd(
       // Content-hashed file names (Vite assets, web image copies, Insights and people images): cache forever
       { source: '/assets/(.*)', headers: IMMUTABLE },
       { source: '/images/web/(.*)', headers: IMMUTABLE },
+      { source: '/images/web-video/(.*)', headers: IMMUTABLE },
       { source: '/images/insights/(.*)', headers: IMMUTABLE },
       { source: '/images/people/(.*)', headers: IMMUTABLE },
       // Original images keep their names when replaced: cache a day, then check for a newer copy

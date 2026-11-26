@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { NAV_ITEMS, LOGO_URL } from '../../constants';
-import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView, scrollToSectionWhenReady } from '../../contexts/NavigationContext';
 import NavLink from '../ui/NavLink';
 
 const Navbar: React.FC = () => {
@@ -44,10 +44,7 @@ const Navbar: React.FC = () => {
     if (currentView !== 'HOME') {
       e.preventDefault();
       navigateToHome();
-      setTimeout(() => {
-        const element = document.querySelector(href);
-        element?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      setTimeout(() => scrollToSectionWhenReady(href.replace(/^#/, '')), 50);
     }
   };
 

@@ -77,6 +77,49 @@ const restoreScroll = (y: number) => {
   setTimeout(attempt, 0);
 };
 
+// Smooth scroll to a section that a newer click can always interrupt and retarget (the browser's
+// built-in smooth scroll sometimes ignores a second request made while the first is running).
+// Lands just below the fixed navbar (the page's scroll-padding-top). Instant for reduced motion.
+let sectionScrollFrame = 0;
+const scrollToSection = (id: string) => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  cancelAnimationFrame(sectionScrollFrame);
+  const padding = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+  const maxY = document.documentElement.scrollHeight - window.innerHeight;
+  const target = Math.max(0, Math.min(maxY, el.getBoundingClientRect().top + window.scrollY - padding));
+  const start = window.scrollY;
+  const distance = target - start;
+  const jump = (y: number) => window.scrollTo({ top: y, left: 0, behavior: 'instant' as ScrollBehavior });
+  if (Math.abs(distance) < 2 || document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    jump(target);
+    return;
+  }
+  const duration = Math.min(900, 350 + Math.abs(distance) * 0.15);
+  const t0 = performance.now();
+  const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const step = (now: number) => {
+    const t = Math.min(1, (now - t0) / duration);
+    jump(start + distance * ease(t));
+    if (t < 1) sectionScrollFrame = requestAnimationFrame(step);
+  };
+  sectionScrollFrame = requestAnimationFrame(step);
+};
+
+/** Scrolls to a section once it exists (after switching to the home page it renders a moment later). */
+export const scrollToSectionWhenReady = (id: string) => {
+  let tries = 0;
+  const attempt = () => {
+    if (document.getElementById(id)) {
+      // a moment more so the page has its full height before measuring
+      setTimeout(() => scrollToSection(id), 30);
+    } else if (tries++ < 40) {
+      setTimeout(attempt, 50);
+    }
+  };
+  attempt();
+};
+
 // Helper function to parse URL and return view state
 // With syncUrl=false (navigating to a link inside the app) nothing touches history here;
 // the caller pushes the canonical URL itself.
@@ -193,6 +236,25 @@ export const NavigationProvider: React.FC<{ children: ReactNode; initialPath?: s
 
     window.addEventListener('popstate', handlePopState);
 
+    // Links to a section of the current page (#about, #services, #contact…). The browser's own
+    // smooth jump drops a second click made while the first is still scrolling (About then Services
+    // ended up on About), so the app scrolls itself; a new click always retargets.
+    const handleSectionLink = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const anchor = (e.target as HTMLElement | null)?.closest?.('a[href^="#"]') as HTMLAnchorElement | null;
+      const id = anchor?.getAttribute('href')?.slice(1);
+      if (!id || !document.getElementById(id)) return;
+      e.preventDefault();
+      window.history.replaceState(window.history.state, '', `#${id}`);
+      // Wait a moment so a closing mobile menu has restored the page before scrolling
+      setTimeout(() => scrollToSection(id), 30);
+    };
+    document.addEventListener('click', handleSectionLink);
+    // The visitor scrolling by hand stops an automatic section scroll
+    const stopSectionScroll = () => cancelAnimationFrame(sectionScrollFrame);
+    window.addEventListener('wheel', stopSectionScroll, { passive: true });
+    window.addEventListener('touchstart', stopSectionScroll, { passive: true });
+
     // Initialize URL on first load if we're not on the home page
     // Replace state instead of push to avoid adding an extra history entry
     if (initialState.view !== 'NOT_FOUND' && (initialState.view !== 'HOME' || initialState.id !== null)) {
@@ -203,6 +265,9 @@ export const NavigationProvider: React.FC<{ children: ReactNode; initialPath?: s
 
     return () => {
       window.removeEventListener('popstate', handlePopState);
+      document.removeEventListener('click', handleSectionLink);
+      window.removeEventListener('wheel', stopSectionScroll);
+      window.removeEventListener('touchstart', stopSectionScroll);
     };
   }, []);
 
@@ -278,21 +343,7 @@ export const NavigationProvider: React.FC<{ children: ReactNode; initialPath?: s
       updateURL('HOME', null);
       window.scrollTo(0, 0);
     }
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        const contactElement = document.getElementById('contact');
-        if (contactElement) {
-          contactElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          setTimeout(() => {
-            const retryElement = document.getElementById('contact');
-            if (retryElement) {
-              retryElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          }, 300);
-        }
-      }, 150);
-    });
+    setTimeout(() => scrollToSectionWhenReady('contact'), 50);
   };
 
   const navigateToArchitectureAI = () => {

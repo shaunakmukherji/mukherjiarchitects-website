@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView, scrollToSectionWhenReady } from '../../contexts/NavigationContext';
 import NavLink from '../ui/NavLink';
 import { usePageSEO } from '../../lib/usePageSEO';
 import { breadcrumb, SITE } from '../../lib/seo';
@@ -11,7 +11,7 @@ interface FAQItem {
 }
 
 const AboutStudio: React.FC = () => {
-  const { navigateBack, backLabel, navigateToCreativeDirector, navigateToBobbyMukherji, navigateToArchitectureAI } = useNavigation();
+  const { navigateBack, navigateToHome, backLabel, navigateToCreativeDirector, navigateToBobbyMukherji, navigateToArchitectureAI } = useNavigation();
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
 
   const faqs: FAQItem[] = [
@@ -58,12 +58,10 @@ const AboutStudio: React.FC = () => {
     ],
   });
 
+  // "Selected Works": the projects row on the home page
   const handlePortfolioClick = () => {
-    navigateBack();
-    setTimeout(() => {
-      const portfolioElement = document.getElementById('portfolio');
-      portfolioElement?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
+    navigateToHome();
+    setTimeout(() => scrollToSectionWhenReady('portfolio'), 50);
   };
 
   return (
@@ -78,7 +76,7 @@ const AboutStudio: React.FC = () => {
 
         <div className="max-w-4xl">
           {/* Main Title */}
-          <h1 className="font-display text-5xl md:text-6xl font-bold text-white uppercase tracking-tight mb-4">
+          <h1 className="font-display max-[360px]:text-[8vw] text-5xl md:text-6xl font-bold text-white uppercase tracking-tight mb-4">
             About Mukherji Architects Milano
           </h1>
 

@@ -52,7 +52,7 @@ const BestFitInstitutional: React.FC = () => {
 
         <div className="max-w-4xl">
           {/* Main Title */}
-          <h1 className="font-display text-[2.6rem] leading-none sm:text-5xl md:text-6xl font-bold text-white uppercase tracking-tight mb-4">
+          <h1 className="font-display max-[360px]:text-[8vw] text-[2.6rem] leading-none sm:text-5xl md:text-6xl font-bold text-white uppercase tracking-tight mb-4">
             02 — Best-Fit Institutional Design
           </h1>
           <h2 className="font-display text-xl md:text-2xl font-normal text-zinc-400 mb-16">
