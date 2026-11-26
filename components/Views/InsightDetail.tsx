@@ -1,31 +1,22 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import { INSIGHTS } from '../../generated/insights';
 import NavLink from '../ui/NavLink';
-import { applySEO, applyNoIndex } from '../../lib/seo';
+import { usePageSEO } from '../../lib/usePageSEO';
 import { formatDate } from '../../lib/formatDate';
 
 const InsightDetail: React.FC = () => {
   const { selectedId, navigateToInsights, navigateToPortfolioFeed, navigateToPath } = useNavigation();
   const article = INSIGHTS.find((a) => a.slug === selectedId);
 
-  // Invalid slug — noindex it (see applyNoIndex for why, same as ProjectDetail).
-  useEffect(() => {
-    if (article) return;
-    return applyNoIndex();
-  }, [article]);
-
-  useEffect(() => {
-    if (!article) return;
-    return applySEO({
-      title: article.seoTitle,
-      description: article.description,
-      image: article.image,
-      canonicalPath: article.path,
-      schemas: article.jsonLd,
-    });
-  }, [article]);
+  // An unknown slug is noindexed (the host answers unknown URLs with a real 404; this covers the rest)
+  usePageSEO(
+    article
+      ? { title: article.seoTitle, description: article.description, image: article.image, canonicalPath: article.path, schemas: article.jsonLd }
+      : { title: 'Article not found | Mukherji Architects Milano', description: 'This article could not be found.', noindex: true },
+    [article]
+  );
 
   // Links written as plain paths in the markdown ("/project/...") navigate inside the app
   // like every other internal link; external links and modified clicks behave normally.

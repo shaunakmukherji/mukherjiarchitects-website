@@ -1,73 +1,69 @@
-// Runs after "vite build". Writes a real static index.html per route (from
-// generated/seo-manifest.json) into dist/, each with the correct <title>,
-// description, and og:image/twitter:image baked in — so social crawlers
-// (which never run this SPA's JS) see the right link-preview thumbnail
-// instead of the generic homepage one. The JS bundle reference is left
-// untouched, so real visitors still get the normal client-rendered app.
+// Runs after "vite build" and "vite build --ssr entry-server.tsx". Writes one real HTML file per page
+// into dist/, with the page fully rendered (text, links, images) and its own <title>, description,
+// canonical URL, share image and structured data in <head>. Search engines, AI assistants and
+// link previews read this directly; visitors' browsers attach the app to it (hydration).
+//
+//   /                 → dist/index.html
+//   /project/x        → dist/project/x.html   (vercel.json cleanUrls serves it at /project/x)
+//   unknown URLs      → dist/404.html         (served by the host with a real 404 status)
+//
+// Each page's SEO comes from the page itself (usePageSEO, collected during the render), so it always
+// matches what the app sets in the browser. generated/seo-manifest.json lists the pages and adds
+// extras some pages carry (Insights: image size, preload, RSS link; people: Person data).
 const fs = require('fs');
 const path = require('path');
+const { pathToFileURL } = require('url');
 
-const distDir = path.join(__dirname, '..', 'dist');
+const ROOT = path.join(__dirname, '..');
+const distDir = path.join(ROOT, 'dist');
 const templatePath = path.join(distDir, 'index.html');
-const manifestPath = path.join(__dirname, '..', 'generated', 'seo-manifest.json');
+const manifestPath = path.join(ROOT, 'generated', 'seo-manifest.json');
+const ssrEntry = path.join(ROOT, 'dist-ssr', 'entry-server.js');
+const SITE = 'https://www.mukherjiarchitects.com';
 
-if (!fs.existsSync(templatePath)) {
-  console.error(`prerender-seo: ${templatePath} not found — run "vite build" first.`);
-  process.exit(1);
-}
-if (!fs.existsSync(manifestPath)) {
-  console.error(`prerender-seo: ${manifestPath} not found — run "npm run generate" first.`);
-  process.exit(1);
+for (const [file, hint] of [[templatePath, 'run "vite build" first'], [manifestPath, 'run "npm run generate" first'], [ssrEntry, 'run "vite build --ssr entry-server.tsx --outDir dist-ssr" first']]) {
+  if (!fs.existsSync(file)) {
+    console.error(`prerender-seo: ${file} not found — ${hint}.`);
+    process.exit(1);
+  }
 }
 
 const template = fs.readFileSync(templatePath, 'utf-8');
 const routes = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
 
 function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
-
 function setContent(html, selectorRegex, value) {
-  if (selectorRegex.test(html)) {
-    return html.replace(selectorRegex, `$1${escapeHtml(value)}$2`);
-  }
-  return html; // tag not found in template — leave untouched rather than error
+  return selectorRegex.test(html) ? html.replace(selectorRegex, (_, a, b) => `${a}${escapeHtml(value)}${b}`) : html;
 }
+const encodePath = (url) => (/%[0-9A-F]{2}/i.test(url) ? url : url.split('/').map((s) => (s ? encodeURIComponent(s) : '')).join('/'));
+const absolute = (url) => (!url ? null : url.startsWith('http') ? url : `${SITE}${encodePath(url)}`);
 
-// A plain link to every page, placed in each page's static HTML. The app only renders its links with
-// JavaScript, so a crawler's first, HTML-only pass would otherwise find no internal links at all (the home
-// page's raw HTML is an empty <div>) and could only discover pages through the sitemap. The list is visually
-// hidden and React replaces it when the app mounts, so visitors never see it and the rendered page has none.
-const navLabel = (route) => route.title.split(/ [—|] /)[0];
-const navHtml = `<nav class="seo-nav" aria-label="All pages"><ul>${[
-  '<li><a href="/">Mukherji Architects Milano</a></li>',
-  ...routes.map((r) => `<li><a href="${escapeHtml(r.path)}">${escapeHtml(navLabel(r))}</a></li>`),
-].join('')}</ul></nav>`;
+function buildPage(route, rendered) {
+  const seo = rendered.seo || {};
+  const title = seo.title || route.title;
+  const description = seo.description || route.description;
+  const image = absolute(seo.image) || route.image;
+  const canonical = seo.canonicalPath !== undefined ? `${SITE}${seo.canonicalPath}` : route.canonical;
+  const jsonLd = seo.schemas && seo.schemas.length ? seo.schemas : route.jsonLd || [];
 
-let written = 0;
-for (const route of routes) {
-  const title = `${route.title} `.trim();
   let html = template;
-
-  html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(title)}</title>`);
-  html = setContent(html, /(<meta name="description" content=")[^"]*(")/, route.description);
+  html = html.replace(/<title>[\s\S]*?<\/title>/, () => `<title>${escapeHtml(title)}</title>`);
+  html = setContent(html, /(<meta name="description" content=")[^"]*(")/, description);
   html = setContent(html, /(<meta property="og:title" content=")[^"]*(")/, title);
-  html = setContent(html, /(<meta property="og:description" content=")[^"]*(")/, route.description);
-  html = setContent(html, /(<meta property="og:image" content=")[^"]*(")/, route.image);
+  html = setContent(html, /(<meta property="og:description" content=")[^"]*(")/, description);
   html = setContent(html, /(<meta name="twitter:title" content=")[^"]*(")/, title);
-  html = setContent(html, /(<meta name="twitter:description" content=")[^"]*(")/, route.description);
-  html = setContent(html, /(<meta name="twitter:image" content=")[^"]*(")/, route.image);
-
-  // Insights pages: canonical, article type, structured data and the full body text,
-  // so crawlers that don't run JS can read the article. React replaces #root's contents
-  // when the app mounts; the data-prerender tags are removed then (see App.tsx) because
-  // the app re-adds its own canonical and JSON-LD.
+  html = setContent(html, /(<meta name="twitter:description" content=")[^"]*(")/, description);
+  if (image) {
+    html = setContent(html, /(<meta property="og:image" content=")[^"]*(")/, image);
+    html = setContent(html, /(<meta name="twitter:image" content=")[^"]*(")/, image);
+  }
+  if (canonical) html = setContent(html, /(<meta property="og:url" content=")[^"]*(")/, canonical);
+  if (seo.noindex) html = setContent(html, /(<meta name="robots" content=")[^"]*(")/, 'noindex, follow');
   if (route.twitterCard) html = setContent(html, /(<meta name="twitter:card" content=")[^"]*(")/, route.twitterCard);
   if (route.ogType) html = setContent(html, /(<meta property="og:type" content=")[^"]*(")/, route.ogType);
+
   const headExtras = [];
   if (route.imageMeta) {
     const { width, height, alt } = route.imageMeta;
@@ -79,40 +75,96 @@ for (const route of routes) {
     );
   }
   for (const m of route.meta ?? []) {
-    // The page already has a generic keywords tag; replace it rather than add a second one
     if (m.key === 'keywords') {
       html = setContent(html, /(<meta name="keywords" content=")[^"]*(")/, m.content);
       continue;
     }
+    if (m.key === 'og:url' || m.key === 'og:site_name') continue; // already in the template
     headExtras.push(`<meta ${m.attr}="${escapeHtml(m.key)}" content="${escapeHtml(m.content)}" data-prerender />`);
   }
   for (const l of route.links ?? []) {
+    if (l.type === 'application/rss+xml') continue; // already in the template
     headExtras.push(`<link rel="${escapeHtml(l.rel)}" type="${escapeHtml(l.type)}" title="${escapeHtml(l.title)}" href="${escapeHtml(l.href)}" data-prerender />`);
   }
-  // Start fetching the cover image before the JS bundle has even loaded (it is the LCP element)
   if (route.preload) {
     headExtras.push(`<link rel="preload" as="image" href="${escapeHtml(route.preload.href)}" imagesrcset="${escapeHtml(route.preload.srcSet)}" imagesizes="${escapeHtml(route.preload.sizes)}" fetchpriority="high" data-prerender />`);
   }
-  if (route.canonical) headExtras.push(`<link rel="canonical" href="${escapeHtml(route.canonical)}" data-prerender />`);
-  for (const ld of route.jsonLd ?? []) {
-    // "<" is escaped so article text can never close the script tag early
+  if (canonical) headExtras.push(`<link rel="canonical" href="${escapeHtml(canonical)}" data-prerender />`);
+  for (const ld of jsonLd) {
+    // "<" is escaped so text can never close the script tag early
     headExtras.push(`<script type="application/ld+json" data-prerender>${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>`);
   }
   if (headExtras.length) html = html.replace('</head>', () => `    ${headExtras.join('\n    ')}\n  </head>`);
-  html = html.replace('<div id="root"></div>', () => `<div id="root">${route.bodyHtml ?? ''}${navHtml}</div>`);
-
-  // Write both a directory form (dist/project/x/index.html) and a flat-file form
-  // (dist/project/x.html) — different static hosts resolve clean URLs differently,
-  // and this covers both without needing to know which one the host picks.
-  const relPath = route.path.replace(/^\//, '');
-  const outDir = path.join(distDir, relPath);
-  fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(path.join(outDir, 'index.html'), html, 'utf-8');
-  fs.writeFileSync(path.join(distDir, `${relPath}.html`), html, 'utf-8');
-  written++;
+  html = html.replace('<div id="root"></div>', () => `<div id="root">${rendered.html}</div>`);
+  return html;
 }
 
-// The home page has no route entry of its own; give it the same crawlable links
-fs.writeFileSync(templatePath, template.replace('<div id="root"></div>', () => `<div id="root">${navHtml}</div>`), 'utf-8');
+function write(relFile, html) {
+  const out = path.join(distDir, relFile);
+  fs.mkdirSync(path.dirname(out), { recursive: true });
+  fs.writeFileSync(out, html, 'utf-8');
+}
 
-console.log(`📝 prerender-seo: wrote ${written} route-specific index.html files into dist/`);
+// Files in dist/images that no page uses: notes, READMEs, project.json, archived projects and images
+// that sit in project folders but aren't shown. Removed from the upload only; the source folders
+// in public/ are not touched.
+function pruneUnusedImages() {
+  const sources = [
+    ...['projects.ts', 'services.ts', 'site-hero.ts', 'web-images.ts', 'insights.ts', 'people.ts', 'teamImages.ts', 'seo-manifest.json'].map((f) => path.join(ROOT, 'generated', f)),
+    path.join(ROOT, 'constants.ts'),
+  ].filter((f) => fs.existsSync(f));
+  let text = sources.map((f) => fs.readFileSync(f, 'utf-8')).join('\n');
+  const contentDir = path.join(ROOT, 'content');
+  const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(dir, e.name)) : [path.join(dir, e.name)]));
+  if (fs.existsSync(contentDir)) text += walk(contentDir).filter((f) => f.endsWith('.md')).map((f) => fs.readFileSync(f, 'utf-8')).join('\n');
+  const used = new Set();
+  for (const m of text.matchAll(/\/images\/(?:projects|hero)\/[^"'\n)\]]+?\.(?:jpe?g|png|webp|gif|mp4|mov|webm)/gi)) {
+    try { used.add(decodeURIComponent(m[0])); } catch { used.add(m[0]); }
+  }
+  let removed = 0;
+  for (const group of ['projects', 'hero']) {
+    const dir = path.join(distDir, 'images', group);
+    if (!fs.existsSync(dir)) continue;
+    for (const file of walk(dir)) {
+      const site = '/' + path.relative(distDir, file).split(path.sep).join('/');
+      if (!used.has(site)) { fs.unlinkSync(file); removed++; }
+    }
+    // drop now-empty folders
+    const prune = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) if (e.isDirectory()) prune(path.join(d, e.name)); if (!fs.readdirSync(d).length) fs.rmdirSync(d); };
+    prune(dir);
+  }
+  // Notes anywhere else in the images folder
+  for (const file of walk(path.join(distDir, 'images'))) if (/\.md$/i.test(file)) { fs.unlinkSync(file); removed++; }
+  return { removed, used: used.size };
+}
+
+async function main() {
+  const { render, extraPaths } = await import(pathToFileURL(ssrEntry).href);
+
+  const pages = [
+    ...routes,
+    ...extraPaths().map((p) => ({ path: p })),
+  ];
+
+  let written = 0;
+  for (const route of pages) {
+    const rendered = render(route.path);
+    write(`${route.path.replace(/^\//, '')}.html`, buildPage(route, rendered));
+    written++;
+  }
+
+  // Home page and the 404 page
+  write('index.html', buildPage({ path: '/' }, render('/')));
+  write('404.html', buildPage({ path: '/404' }, render('/__not-found__')));
+
+  // The SSR bundle is only needed during the build
+  fs.rmSync(path.join(ROOT, 'dist-ssr'), { recursive: true, force: true });
+
+  const pruned = pruneUnusedImages();
+  console.log(`📝 prerender-seo: rendered ${written} pages + home + 404 into dist/ (${pruned.removed} unused files left out of the upload)`);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

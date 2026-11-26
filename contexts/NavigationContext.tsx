@@ -53,10 +53,28 @@ export const getPathForView = (view: ViewState, id: string | null): string => {
   return '/';
 };
 
-// Helper function to update URL without triggering navigation
+// Helper function to update URL without triggering navigation.
+// The page being left remembers its scroll position, so Back returns to the same spot.
 const updateURL = (view: ViewState, id: string | null) => {
   const url = getPathForView(view, id);
+  window.history.replaceState({ ...(window.history.state ?? {}), scrollY: window.scrollY }, '');
   window.history.pushState({ view, id }, '', url);
+  shownPathname = window.location.pathname;
+};
+
+// The path of the page currently shown. Links to a section of the same page (#services, #about)
+// also fire popstate; those are left entirely to the browser, which scrolls to the section.
+let shownPathname = '/';
+
+// Scrolls to y once the page is tall enough (content renders over a few frames). Jumps instantly,
+// ignoring the page's smooth-scroll setting, and retries briefly until the position is reachable.
+const restoreScroll = (y: number) => {
+  let tries = 0;
+  const attempt = () => {
+    window.scrollTo({ top: y, left: 0, behavior: 'instant' as ScrollBehavior });
+    if (Math.abs(window.scrollY - y) > 2 && tries++ < 30) setTimeout(attempt, 50);
+  };
+  setTimeout(attempt, 0);
 };
 
 // Helper function to parse URL and return view state
@@ -111,6 +129,7 @@ const parsePath = (rawPath: string, syncUrl = true): { view: ViewState; id: stri
   } else if (path === '/architecture-artificial-intelligence') {
     return { view: 'ARCHITECTURE_AI', id: null };
   } else if (path === '/about-mukherji-architects-milano' || path === '/about') {
+    if (path === '/about') replaceState({ view: 'ABOUT_STUDIO', id: null }, '/about-mukherji-architects-milano');
     return { view: 'ABOUT_STUDIO', id: null };
   } else if (path === '/best-fit/commercial-design') {
     return { view: 'BEST_FIT_COMMERCIAL', id: null };
@@ -130,18 +149,22 @@ const parsePath = (rawPath: string, syncUrl = true): { view: ViewState; id: stri
     return { view: 'PORTFOLIO_FEED', id: null };
   } else if (path === '/the-studio/people') {
     return { view: 'TEAM', id: null };
+  } else if (path === '/' || path === '' || path === '/index.html') {
+    return { view: 'HOME', id: null };
   }
 
-  return { view: 'HOME', id: null };
+  return { view: 'NOT_FOUND', id: null };
 };
 
-const parseURL = () => parsePath(window.location.pathname);
+// At build time (entry-server.tsx) there is no window: the page's path is passed in instead
+const parseURL = (ssrPath?: string) =>
+  typeof window === 'undefined' ? parsePath(ssrPath ?? '/', false) : parsePath(window.location.pathname);
 
 type HistoryEntry = { view: ViewState; id: string | null };
 
-export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // Initialize state from URL
-  const initialState = parseURL();
+export const NavigationProvider: React.FC<{ children: ReactNode; initialPath?: string }> = ({ children, initialPath }) => {
+  // Initialize state from URL (or, when rendering at build time, from the page's path)
+  const [initialState] = useState(() => parseURL(initialPath));
   const [currentView, setCurrentView] = useState<ViewState>(initialState.view);
   const [selectedId, setSelectedId] = useState<string | null>(initialState.id);
   // Internal stack for back-button awareness (separate from browser history)
@@ -156,17 +179,14 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
   // Handle browser back/forward buttons
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
-      if (event.state) {
-        setCurrentView(event.state.view);
-        setSelectedId(event.state.id);
-        window.scrollTo(0, 0);
-      } else {
-        // Fallback to parsing URL if state is not available
-        const { view, id } = parseURL();
-        setCurrentView(view);
-        setSelectedId(id);
-        window.scrollTo(0, 0);
-      }
+      // Same page, only the #section changed: nothing for the app to do
+      if (window.location.pathname === shownPathname) return;
+      shownPathname = window.location.pathname;
+      const state = event.state && event.state.view ? event.state : parseURL();
+      setCurrentView(state.view);
+      setSelectedId(state.id);
+      // Back/forward returns to where the visitor was on that page
+      restoreScroll(typeof event.state?.scrollY === 'number' ? event.state.scrollY : 0);
       // Pop internal stack when browser back is used
       setNavStack(prev => prev.slice(0, -1));
     };
@@ -175,10 +195,11 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
 
     // Initialize URL on first load if we're not on the home page
     // Replace state instead of push to avoid adding an extra history entry
-    if (initialState.view !== 'HOME' || initialState.id !== null) {
+    if (initialState.view !== 'NOT_FOUND' && (initialState.view !== 'HOME' || initialState.id !== null)) {
       const url = getPathForView(initialState.view, initialState.id);
       window.history.replaceState({ view: initialState.view, id: initialState.id }, '', url);
     }
+    shownPathname = window.location.pathname;
 
     return () => {
       window.removeEventListener('popstate', handlePopState);
@@ -391,7 +412,7 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
   const navigateToPath = (rawPath: string) => {
     const path = rawPath.split(/[?#]/)[0];
     const { view, id } = parsePath(path, false);
-    if (view === 'HOME' && path !== '/') {
+    if (view === 'NOT_FOUND') {
       window.location.assign(rawPath);
       return;
     }

@@ -35,3 +35,6 @@ generated/
 # Insights images are rebuilt from content/insights/<slug>/images on every build
 public/images/insights/
 public/images/people/
+
+# Web-sized image copies are rebuilt from public/images/projects on every build
+public/images/web/

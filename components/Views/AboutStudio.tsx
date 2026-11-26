@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import NavLink from '../ui/NavLink';
+import { usePageSEO } from '../../lib/usePageSEO';
+import { breadcrumb, SITE } from '../../lib/seo';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
 
 interface FAQItem {
@@ -15,7 +17,7 @@ const AboutStudio: React.FC = () => {
   const faqs: FAQItem[] = [
     {
       question: 'Is Mukherji Architects Milano the same as Bobby Mukherji Architects?',
-      answer: 'Mukherji Architects Milano operates as the European extension of Bobby Mukherji Architects. The two studios work collaboratively, sharing experience, resources, and technical capacity to deliver projects more efficiently, while the Milan studio maintains its own leadership and design direction.'
+      answer: 'They are separate brands. Mukherji Architects Milano is the European extension of Bobby Mukherji Architects, founded and led by Shaunak Mukherji. The two studios work together, sharing experience, resources, and technical capacity to deliver projects more efficiently, while the Milan studio keeps its own leadership and design direction.'
     },
     {
       question: 'What types of projects does the Milan studio take on?',
@@ -31,117 +33,30 @@ const AboutStudio: React.FC = () => {
     setOpenFAQ(openFAQ === index ? null : index);
   };
 
-  // Update page title and meta tags for SEO
-  useEffect(() => {
-    const originalTitle = document.title;
-    const originalDescription = document.querySelector('meta[name="description"]')?.getAttribute('content');
-    const originalOGTitle = document.querySelector('meta[property="og:title"]')?.getAttribute('content');
-    const originalOGDescription = document.querySelector('meta[property="og:description"]')?.getAttribute('content');
-    const originalTwitterTitle = document.querySelector('meta[name="twitter:title"]')?.getAttribute('content');
-    const originalTwitterDescription = document.querySelector('meta[name="twitter:description"]')?.getAttribute('content');
-
-    // Update title
-    document.title = 'About Mukherji Architects Milano | Milan Architecture Studio';
-
-    // Update meta description
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Mukherji Architects Milano is a Milan-based architectural studio led by Shaunak Mukherji. European extension of Bobby Mukherji Architects with 30+ years experience, 1,000+ projects, and USD 12B+ in built value.');
-    }
-
-    // Update Open Graph tags
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) {
-      ogTitle.setAttribute('content', 'About Mukherji Architects Milano | Milan Architecture Studio');
-    }
-    const ogDescription = document.querySelector('meta[property="og:description"]');
-    if (ogDescription) {
-      ogDescription.setAttribute('content', 'Mukherji Architects Milano is a Milan-based architectural studio led by Shaunak Mukherji. European extension of Bobby Mukherji Architects with 30+ years experience, 1,000+ projects, and USD 12B+ in built value.');
-    }
-
-    // Update Twitter tags
-    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
-    if (twitterTitle) {
-      twitterTitle.setAttribute('content', 'About Mukherji Architects Milano | Milan Architecture Studio');
-    }
-    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
-    if (twitterDescription) {
-      twitterDescription.setAttribute('content', 'Mukherji Architects Milano is a Milan-based architectural studio led by Shaunak Mukherji. European extension of Bobby Mukherji Architects with 30+ years experience, 1,000+ projects, and USD 12B+ in built value.');
-    }
-
-    // Add Person structured data (JSON-LD) for Shaunak Mukherji
-    const personSchema = {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Shaunak Mukherji",
-      "jobTitle": "Founder and Creative Director",
-      "worksFor": {
-        "@type": "Organization",
-        "name": "Mukherji Architects Milano",
-        "url": "https://www.mukherjiarchitects.com"
+  usePageSEO({
+    title: 'About Mukherji Architects Milano | Milan Architecture Studio',
+    description: 'Mukherji Architects Milano is a Milan-based architectural studio founded and led by Shaunak Mukherji, and the European extension of Bobby Mukherji Architects.',
+    canonicalPath: '/about-mukherji-architects-milano',
+    schemas: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'AboutPage',
+        url: `${SITE}/about-mukherji-architects-milano`,
+        name: 'About Mukherji Architects Milano',
+        mainEntity: { '@id': `${SITE}/#organization` },
       },
-      "affiliation": {
-        "@type": "Organization",
-        "name": "Bobby Mukherji Architects",
-        "url": "https://bobbymukherji.com/"
-      }
-    };
-
-    const personScript = document.createElement('script');
-    personScript.type = 'application/ld+json';
-    personScript.textContent = JSON.stringify(personSchema);
-    personScript.id = 'person-structured-data';
-    document.head.appendChild(personScript);
-
-    // Add FAQPage structured data (JSON-LD)
-    const faqSchema = {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": faqs.map(faq => ({
-        "@type": "Question",
-        "name": faq.question,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": faq.answer
-        }
-      }))
-    };
-
-    const faqScript = document.createElement('script');
-    faqScript.type = 'application/ld+json';
-    faqScript.textContent = JSON.stringify(faqSchema);
-    faqScript.id = 'faq-structured-data';
-    document.head.appendChild(faqScript);
-
-    // Cleanup: restore original values when component unmounts
-    return () => {
-      document.title = originalTitle;
-      if (metaDescription && originalDescription) {
-        metaDescription.setAttribute('content', originalDescription);
-      }
-      if (ogTitle && originalOGTitle) {
-        ogTitle.setAttribute('content', originalOGTitle);
-      }
-      if (ogDescription && originalOGDescription) {
-        ogDescription.setAttribute('content', originalOGDescription);
-      }
-      if (twitterTitle && originalTwitterTitle) {
-        twitterTitle.setAttribute('content', originalTwitterTitle);
-      }
-      if (twitterDescription && originalTwitterDescription) {
-        twitterDescription.setAttribute('content', originalTwitterDescription);
-      }
-      // Remove structured data scripts
-      const personScript = document.getElementById('person-structured-data');
-      if (personScript) {
-        personScript.remove();
-      }
-      const faqScript = document.getElementById('faq-structured-data');
-      if (faqScript) {
-        faqScript.remove();
-      }
-    };
-  }, []);
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqs.map((faq) => ({
+          '@type': 'Question',
+          name: faq.question,
+          acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+        })),
+      },
+      breadcrumb('About', '/about-mukherji-architects-milano'),
+    ],
+  });
 
   const handlePortfolioClick = () => {
     navigateBack();
@@ -209,7 +124,7 @@ const AboutStudio: React.FC = () => {
                   <NavLink href={getPathForView('BOBBY_MUKHERJI', null)} onNavigate={navigateToBobbyMukherji} className="text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-colors duration-300 cursor-pointer font-medium">
                     Bobby Mukherji
                   </NavLink>
-                  , and represents the next-generation evolution of the broader Mukherji practice.
+                  , and represents the next generation of the Mukherji family's work in architecture.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
                   The Milan office maintains a direct professional and intellectual lineage with{' '}
@@ -353,8 +268,8 @@ const AboutStudio: React.FC = () => {
                         }`}
                       />
                     </button>
-                    {openFAQ === index && (
-                      <div className="mt-2 text-zinc-400 text-base md:text-lg leading-relaxed">
+                    {(
+                      <div className="mt-2 text-zinc-400 text-base md:text-lg leading-relaxed" hidden={openFAQ !== index}>
                         {/* Only link AI in the third FAQ (index 2) which mentions AI */}
                         {index === 2 ? (
                           faq.answer.split(/(AI|artificial intelligence)/i).map((part, i) => {

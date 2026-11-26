@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { PROJECTS, SERVICES } from '../../constants';
 import { encodeImageUrl } from '../../lib/imageUrl';
 import OptimizedImage from '../ui/OptimizedImage';
-import { applySEO, breadcrumb } from '../../lib/seo';
+import { breadcrumb } from '../../lib/seo';
+import { usePageSEO } from '../../lib/usePageSEO';
 import { getPathForView } from '../../contexts/NavigationContext';
 import NavLink from '../ui/NavLink';
 
@@ -16,12 +17,12 @@ const PortfolioFeed: React.FC = () => {
 
   const categories = Array.from(new Set(PROJECTS.map((p) => p.category))).sort();
 
-  useEffect(() => applySEO({
+  usePageSEO({
     title: 'All Projects | Mukherji Architects Milano',
     description: 'Complete portfolio of Mukherji Architects Milano — commercial, hospitality, master planning, mixed-use, residential, and research projects from our studio in Milan, Italy.',
     canonicalPath: '/portfolio',
     schemas: [breadcrumb('Portfolio', '/portfolio')],
-  }), []);
+  }, []);
 
   const categoryLabel = (cat: string) =>
     SERVICES.find((s) => s.categoryFilter === cat)?.title ?? cat;
@@ -32,6 +33,8 @@ const PortfolioFeed: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-white pt-[4.75rem]">
+
+      <h1 className="sr-only">All Projects by Mukherji Architects Milano</h1>
 
       {/* ── Header ── */}
       <header className="sticky top-[4.75rem] z-40 bg-black border-b border-zinc-900">
@@ -108,6 +111,7 @@ const PortfolioFeed: React.FC = () => {
                     alt={project.title}
                     lazy={i > 3}
                     priority={i <= 1}
+                    sizes={secondImage ? '50vw' : '100vw'}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                   />
                 </div>
@@ -120,6 +124,7 @@ const PortfolioFeed: React.FC = () => {
                       alt={`${project.title} — view 2`}
                       lazy={i > 3}
                       priority={false}
+                      sizes="50vw"
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                     />
                   </div>

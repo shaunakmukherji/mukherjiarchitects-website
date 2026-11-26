@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import { ArrowLeft } from 'lucide-react';
 import ProfileImage from '../ui/ProfileImage';
 import NavLink from '../ui/NavLink';
-import { applySEO } from '../../lib/seo';
+import { usePageSEO } from '../../lib/usePageSEO';
 import { PROFILE_PAGES } from '../../generated/people';
 
 // Title, description, portrait and structured data are built in scripts/people.cjs
@@ -12,13 +12,13 @@ const profile = PROFILE_PAGES['shaunak-mukherji'];
 const CreativeDirector: React.FC = () => {
   const { navigateBack, backLabel, navigateToBobbyMukherji } = useNavigation();
 
-  useEffect(() => applySEO({
+  usePageSEO({
     title: profile.title,
     description: profile.description,
     image: profile.ogImage,
     canonicalPath: '/shaunak-mukherji',
     schemas: profile.jsonLd,
-  }), []);
+  }, []);
 
   return (
     <div className="pt-32 pb-24 min-h-screen bg-black">

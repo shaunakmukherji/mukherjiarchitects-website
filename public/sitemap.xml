@@ -2,19 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://www.mukherjiarchitects.com/</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/portfolio</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/the-studio/people</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -32,7 +29,6 @@
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/shaunak-mukherji</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -41,7 +37,6 @@
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/bobby-mukherji</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <image:image>
@@ -50,15 +45,48 @@
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/architecture-artificial-intelligence</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.mukherjiarchitects.com/about</loc>
-    <lastmod>2026-11-24</lastmod>
+    <loc>https://www.mukherjiarchitects.com/about-mukherji-architects-milano</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.mukherjiarchitects.com/best-fit/commercial-design</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.mukherjiarchitects.com/best-fit/hospitality-design</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.mukherjiarchitects.com/best-fit/institutional-design</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.mukherjiarchitects.com/best-fit/master-planning</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.mukherjiarchitects.com/best-fit/mixed-use-design</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.mukherjiarchitects.com/best-fit/research-exploration</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.mukherjiarchitects.com/best-fit/residential-design</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/insights</loc>
@@ -89,175 +117,371 @@
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/taj-guwahati</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/_hero/Taj%2C%20Guwahati/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/_hero/Taj%2C%20Guwahati/_renders/render-02.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/_hero/Taj%2C%20Guwahati/_renders/render-03.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/bnp-factory-panel-processing-unit</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Commercial%20Design/_hero/BNP%20Factory%20Panel%20Processing%20Unit/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Commercial%20Design/_hero/BNP%20Factory%20Panel%20Processing%20Unit/_renders/render-02.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Commercial%20Design/_hero/BNP%20Factory%20Panel%20Processing%20Unit/_renders/render-03.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Commercial%20Design/_hero/BNP%20Factory%20Panel%20Processing%20Unit/_renders/render-04.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Commercial%20Design/_hero/BNP%20Factory%20Panel%20Processing%20Unit/_renders/render-05.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Commercial%20Design/_hero/BNP%20Factory%20Panel%20Processing%20Unit/_renders/render-06.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/five-folds-raheja-district-mumbai</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Commercial%20Design/Five%20Folds%2C%20Raheja%20District%2C%20Mumbai/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Commercial%20Design/Five%20Folds%2C%20Raheja%20District%2C%20Mumbai/_renders/render-02.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Commercial%20Design/Five%20Folds%2C%20Raheja%20District%2C%20Mumbai/_renders/render-03.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/open-air-retail-pavilion-new-cairo-egypt</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Commercial%20Design/Open-Air%20Retail%20Pavilion%2C%20New%20Cairo%2C%20Egypt/_renders/render-01.jpeg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Commercial%20Design/Open-Air%20Retail%20Pavilion%2C%20New%20Cairo%2C%20Egypt/_renders/render-02.jpeg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/aurika-new-delhi</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/1.%20Aurika%2C%20New%20Delhi/_renders/render-01.jpeg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/1.%20Aurika%2C%20New%20Delhi/_renders/render-02.jpeg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/novotel-vrindavan</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/2.%20Novotel%2C%20Vrindavan/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/2.%20Novotel%2C%20Vrindavan/_renders/render-02.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/2.%20Novotel%2C%20Vrindavan/_renders/render-03.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/six-six-island-resort-maldives</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/3.%20Six%20%26%20Six%20Island%20Resort%2C%20Maldives/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/3.%20Six%20%26%20Six%20Island%20Resort%2C%20Maldives/_renders/render-02.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/3.%20Six%20%26%20Six%20Island%20Resort%2C%20Maldives/_renders/render-03.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/3.%20Six%20%26%20Six%20Island%20Resort%2C%20Maldives/_renders/render-04.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/3.%20Six%20%26%20Six%20Island%20Resort%2C%20Maldives/_renders/render-05.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/3.%20Six%20%26%20Six%20Island%20Resort%2C%20Maldives/_renders/render-06.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/gateway-hotel-thane</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/Gateway%20Hotel%2C%20Thane/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/Gateway%20Hotel%2C%20Thane/_renders/render-02.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Hospitality%20Design/Gateway%20Hotel%2C%20Thane/_renders/render-03.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/mangrove-estate-uaq</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Master-planning/_hero/Mangrove%20Estate%2C%20UAQ/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Master-planning/_hero/Mangrove%20Estate%2C%20UAQ/_renders/render-02.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Master-planning/_hero/Mangrove%20Estate%2C%20UAQ/_renders/render-03.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Master-planning/_hero/Mangrove%20Estate%2C%20UAQ/_renders/render-04.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Master-planning/_hero/Mangrove%20Estate%2C%20UAQ/_renders/render-05.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Master-planning/_hero/Mangrove%20Estate%2C%20UAQ/_renders/render-06.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/bnp-industrial-campus</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Master-planning/BNP%20Industrial%20Campus/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Master-planning/BNP%20Industrial%20Campus/_renders/render-02.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Master-planning/BNP%20Industrial%20Campus/_renders/render-03.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Master-planning/BNP%20Industrial%20Campus/_renders/render-04.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Master-planning/BNP%20Industrial%20Campus/_renders/render-05.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Master-planning/BNP%20Industrial%20Campus/_renders/render-06.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/sales-pavilion-kelavali</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Mixed-use%20Design/_hero/Sales%20Pavilion%2C%20Kelavali/_renders/render-01.jpeg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Mixed-use%20Design/_hero/Sales%20Pavilion%2C%20Kelavali/_renders/render-02.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/lemon-tree-premier-mixed-use-development-guwahati</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Mixed-use%20Design/Lemon%20Tree%20Premier%20Mixed-Use%20Development%2C%20Guwahati/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Mixed-use%20Design/Lemon%20Tree%20Premier%20Mixed-Use%20Development%2C%20Guwahati/_renders/render-02.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Mixed-use%20Design/Lemon%20Tree%20Premier%20Mixed-Use%20Development%2C%20Guwahati/_renders/render-03.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Mixed-use%20Design/Lemon%20Tree%20Premier%20Mixed-Use%20Development%2C%20Guwahati/_renders/render-04.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Mixed-use%20Design/Lemon%20Tree%20Premier%20Mixed-Use%20Development%2C%20Guwahati/_renders/render-05.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/technology-campus-heliport</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Mixed-use%20Design/Technology%20Campus%20Heliport/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Mixed-use%20Design/Technology%20Campus%20Heliport/_renders/render-02.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Mixed-use%20Design/Technology%20Campus%20Heliport/_renders/render-03.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/visitor-centre-kelavali</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Mixed-use%20Design/Visitor%20Centre%2C%20Kelavali/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Mixed-use%20Design/Visitor%20Centre%2C%20Kelavali/_renders/render-02.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Mixed-use%20Design/Visitor%20Centre%2C%20Kelavali/_renders/render-03.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Mixed-use%20Design/Visitor%20Centre%2C%20Kelavali/_renders/render-04.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/innovation-district-west-cambridge</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Research%20%26%20Exploration/_hero/Innovation%20District%2C%20West%20Cambridge/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Research%20%26%20Exploration/_hero/Innovation%20District%2C%20West%20Cambridge/_renders/render-02.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/bresso-airport</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Research%20%26%20Exploration/Bresso%20Airport/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Research%20%26%20Exploration/Bresso%20Airport/_renders/render-03.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/cultural-exchange-center-alula-saudi-arabia</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Research%20%26%20Exploration/Cultural%20Exchange%20Center%20%E2%80%94%20AlUla%2C%20Saudi%20Arabia/_renders/render-01.jpeg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Research%20%26%20Exploration/Cultural%20Exchange%20Center%20%E2%80%94%20AlUla%2C%20Saudi%20Arabia/_renders/render-02.jpeg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Research%20%26%20Exploration/Cultural%20Exchange%20Center%20%E2%80%94%20AlUla%2C%20Saudi%20Arabia/_renders/render-03.jpeg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Research%20%26%20Exploration/Cultural%20Exchange%20Center%20%E2%80%94%20AlUla%2C%20Saudi%20Arabia/_renders/render-04.jpeg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Research%20%26%20Exploration/Cultural%20Exchange%20Center%20%E2%80%94%20AlUla%2C%20Saudi%20Arabia/_renders/render-05.jpeg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/kelavali-villas-development-25-estates</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Residential%20Design/_hero/Kelavali%20Villas%20Development%20(25%20Estates)/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Residential%20Design/_hero/Kelavali%20Villas%20Development%20(25%20Estates)/_renders/render-02.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/hilltop-residence-kerala</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Residential%20Design/1.%20Hilltop%20Residence%2C%20Kerala/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Residential%20Design/1.%20Hilltop%20Residence%2C%20Kerala/_renders/render-02.jpeg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Residential%20Design/1.%20Hilltop%20Residence%2C%20Kerala/_renders/render-03.jpeg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/ansari-residence-tower-mumbai</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Residential%20Design/Ansari%20Residence%20Tower%2C%20Mumbai/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Residential%20Design/Ansari%20Residence%20Tower%2C%20Mumbai/_renders/render-02.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/krishna-garden-housing-mumbai</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Residential%20Design/Krishna%20Garden%20%E2%80%94%20Housing%2C%20Mumbai/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Residential%20Design/Krishna%20Garden%20%E2%80%94%20Housing%2C%20Mumbai/_renders/render-02.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/project/thakkar-villa</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Residential%20Design/Thakkar%20Villa/_renders/render-01.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Residential%20Design/Thakkar%20Villa/_renders/render-02.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.mukherjiarchitects.com/images/projects/Residential%20Design/Thakkar%20Villa/_renders/render-03.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/category/commercial-design</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/category/hospitality-design</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/category/master-planning</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/category/mixed-use-design</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/category/research-exploration</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/category/residential-design</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/the-studio/people/jui-halvadia</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -266,7 +490,6 @@
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/the-studio/people/irmak-senol</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -275,7 +498,6 @@
   </url>
   <url>
     <loc>https://www.mukherjiarchitects.com/the-studio/people/elif-karakaya</loc>
-    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>

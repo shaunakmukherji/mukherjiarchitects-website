@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import { ArrowLeft } from 'lucide-react';
 import ProfileImage from '../ui/ProfileImage';
 import NavLink from '../ui/NavLink';
-import { applySEO } from '../../lib/seo';
+import { usePageSEO } from '../../lib/usePageSEO';
 import { PROFILE_PAGES } from '../../generated/people';
 
 // Title, description, portrait and structured data are built in scripts/people.cjs
@@ -12,13 +12,13 @@ const profile = PROFILE_PAGES['bobby-mukherji'];
 const BobbyMukherji: React.FC = () => {
   const { navigateBack, backLabel, navigateToCreativeDirector } = useNavigation();
 
-  useEffect(() => applySEO({
+  usePageSEO({
     title: profile.title,
     description: profile.description,
     image: profile.ogImage,
     canonicalPath: '/bobby-mukherji',
     schemas: profile.jsonLd,
-  }), []);
+  }, []);
 
   return (
     <div className="pt-32 pb-24 min-h-screen bg-black">
@@ -47,7 +47,7 @@ const BobbyMukherji: React.FC = () => {
 
           <div className="md:col-span-7 order-1 md:order-2">
             <div className="max-w-2xl">
-              <p className="text-zinc-600 text-xs uppercase tracking-[0.2em] mb-3">Mukherji Architects Milano</p>
+              <p className="text-zinc-600 text-xs uppercase tracking-[0.2em] mb-3">Bobby Mukherji Architects</p>
               <h1 className="font-display text-5xl md:text-6xl font-bold text-white uppercase tracking-tight mb-3">
                 Bobby Mukherji
               </h1>
@@ -92,7 +92,7 @@ const BobbyMukherji: React.FC = () => {
                   , the family's real estate development company.
                 </p>
                 <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
-                  That connection gives the practice a clear competitive advantage: the agility and forward-thinking
+                  That connection gives the Milan studio a clear competitive advantage: the agility and forward-thinking
                   approach of a new-generation studio, supported by proven judgment, deeper resources, and a wider
                   professional network built over time.
                 </p>

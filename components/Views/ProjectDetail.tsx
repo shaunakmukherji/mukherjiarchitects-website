@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import { PROJECTS } from '../../constants';
 import Button from '../ui/Button';
@@ -6,7 +6,10 @@ import OptimizedImage from '../ui/OptimizedImage';
 import ProjectFacts from '../ui/ProjectFacts';
 import NavLink from '../ui/NavLink';
 import RelatedInsights from '../ui/RelatedInsights';
-import { applyNoIndex } from '../../lib/seo';
+import { usePageSEO } from '../../lib/usePageSEO';
+import { projectSEO } from '../../lib/projectSEO';
+import NotFound from './NotFound';
+import { webImage } from '../../lib/webImages';
 import { ArrowLeft, ArrowRight, X } from 'lucide-react';
 
 const ProjectDetail: React.FC = () => {
@@ -18,12 +21,43 @@ const ProjectDetail: React.FC = () => {
   const encodeImageUrl = (url: string): string =>
     url.split('/').map(segment => segment ? encodeURIComponent(segment) : '').join('/');
 
+  // Full-screen view uses the largest web copy (2000px WebP), falling back to the original
+  const lightboxSrc = (url: string) => {
+    const w = webImage(url);
+    return w ? w.variants[w.variants.length - 1].url : encodeImageUrl(url);
+  };
+
   const allImages = project
     ? [project.imageUrl, ...(project.gallery ?? [])]
     : [];
 
-  const openLightbox = (index: number) => setLightboxIndex(index);
-  const closeLightbox = () => setLightboxIndex(null);
+  const openerRef = useRef<HTMLElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const openLightbox = (index: number) => {
+    openerRef.current = document.activeElement as HTMLElement | null;
+    setLightboxIndex(index);
+  };
+  const closeLightbox = () => {
+    setLightboxIndex(null);
+    openerRef.current?.focus?.();
+  };
+  // Gallery images open the lightbox from the keyboard too (Enter or Space)
+  const openOnKey = (index: number) => ({
+    role: 'button' as const,
+    tabIndex: 0,
+    'aria-label': `Open image ${index + 1} full screen`,
+    onKeyDown: (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openLightbox(index);
+      }
+    },
+  });
+
+  // Move focus into the lightbox when it opens
+  useEffect(() => {
+    if (lightboxIndex !== null) closeButtonRef.current?.focus();
+  }, [lightboxIndex === null]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const prev = useCallback(() => {
     setLightboxIndex(i => (i === null ? null : (i - 1 + allImages.length) % allImages.length));
@@ -54,81 +88,11 @@ const ProjectDetail: React.FC = () => {
     return () => { document.body.style.overflow = ''; };
   }, [lightboxIndex]);
 
-  // Invalid slug — this is a static SPA so the server still returns 200 for any path;
-  // noindex tells Google not to treat it as real content (Google's own recommended
-  // workaround when a JS app can't return a true 404 status).
-  useEffect(() => {
-    if (project) return;
-    return applyNoIndex();
-  }, [project]);
+  // SEO. Also rendered into the static HTML at build time (see usePageSEO).
+  // An unknown slug is noindexed: the host already answers unknown URLs with a real 404, this covers the rest.
+  usePageSEO(project ? projectSEO(project) : { title: 'Project not found | Mukherji Architects Milano', description: 'This project could not be found.', noindex: true }, [project]);
 
-  // SEO
-  useEffect(() => {
-    if (!project) return;
-    const originalTitle = document.title;
-    const originalDescription = document.querySelector('meta[name="description"]')?.getAttribute('content');
-    const SITE = 'https://www.mukherjiarchitects.com';
-    const pageTitle = `${project.title} — ${project.category} | Mukherji Architects Milano`;
-    const metaDescriptionText = project.description
-      ? `${project.description.substring(0, 150)}${project.description.length > 150 ? '...' : ''}`
-      : `${project.title} — ${project.category} project by Mukherji Architects Milano${project.location ? ` in ${project.location}` : ''}.`;
-    const absoluteImage = project.imageUrl ? `${SITE}${project.imageUrl}` : null;
-    const canonicalUrl = `${SITE}/project/${selectedId}`;
-
-    const prev: Record<string, string | null> = {};
-    const setMeta = (sel: string, val: string) => {
-      const el = document.querySelector(sel);
-      if (el) { prev[sel] = el.getAttribute('content'); el.setAttribute('content', val); }
-    };
-
-    document.title = pageTitle;
-    setMeta('meta[name="description"]',          metaDescriptionText);
-    setMeta('meta[property="og:title"]',         pageTitle);
-    setMeta('meta[property="og:description"]',   metaDescriptionText);
-    setMeta('meta[name="twitter:title"]',        pageTitle);
-    setMeta('meta[name="twitter:description"]',  metaDescriptionText);
-    if (absoluteImage) {
-      setMeta('meta[property="og:image"]',  absoluteImage);
-      setMeta('meta[name="twitter:image"]', absoluteImage);
-    }
-
-    const canonical = document.createElement('link');
-    canonical.rel = 'canonical';
-    canonical.href = canonicalUrl;
-    canonical.id = 'project-canonical';
-    document.head.appendChild(canonical);
-
-    const projectSchema: Record<string, unknown> = {
-      '@context': 'https://schema.org',
-      '@type': 'CreativeWork',
-      '@id': canonicalUrl,
-      name: project.title,
-      description: metaDescriptionText,
-      creator: { '@type': 'Organization', name: 'Mukherji Architects Milano', url: SITE },
-      about: { '@type': 'Thing', name: project.category },
-      keywords: `${project.category}, architecture${project.location ? `, ${project.location}` : ''}`,
-    };
-    if (project.year) projectSchema.dateCreated = String(project.year);
-    if (project.location) projectSchema.locationCreated = { '@type': 'Place', name: project.location };
-    if (absoluteImage) projectSchema.image = absoluteImage;
-
-    const projectScript = document.createElement('script');
-    projectScript.type = 'application/ld+json';
-    projectScript.textContent = JSON.stringify(projectSchema);
-    projectScript.id = 'project-structured-data';
-    document.head.appendChild(projectScript);
-
-    return () => {
-      document.title = originalTitle;
-      Object.entries(prev).forEach(([sel, val]) => {
-        if (val !== null) document.querySelector(sel)?.setAttribute('content', val);
-      });
-      document.getElementById('project-canonical')?.remove();
-      document.getElementById('project-structured-data')?.remove();
-    };
-  }, [project, selectedId]);
-
-  if (!project) return <div>Project not found</div>;
+  if (!project) return <NotFound />;
 
   return (
     <>
@@ -152,12 +116,14 @@ const ProjectDetail: React.FC = () => {
               <div
                 className="w-full cursor-zoom-in overflow-hidden bg-zinc-900 border border-zinc-800"
                 onClick={() => openLightbox(0)}
+                {...openOnKey(0)}
               >
                 <OptimizedImage
                   src={encodeImageUrl(project.imageUrl)}
                   alt={project.title}
                   priority={true}
                   lazy={false}
+                  sizes="(min-width: 1280px) 830px, (min-width: 1024px) 66vw, 100vw"
                   className="w-full h-auto block transition-transform duration-500"
                   onError={(e) => {
                     const t = e.target as HTMLImageElement;
@@ -174,11 +140,13 @@ const ProjectDetail: React.FC = () => {
                       key={idx}
                       className="w-full cursor-zoom-in overflow-hidden bg-zinc-900 border border-zinc-800"
                       onClick={() => openLightbox(idx + 1)}
+                      {...openOnKey(idx + 1)}
                     >
                       <OptimizedImage
                         src={encodeImageUrl(img)}
                         alt={`${project.title} — ${idx + 2}`}
                         lazy={true}
+                        sizes="(min-width: 1280px) 830px, (min-width: 1024px) 66vw, 100vw"
                         className="w-full h-auto block opacity-80 hover:opacity-100 transition-opacity duration-500"
                         onError={(e) => {
                           const t = e.target as HTMLImageElement;
@@ -255,11 +223,16 @@ const ProjectDetail: React.FC = () => {
         <div
           className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
           onClick={closeLightbox}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${project.title}: image ${lightboxIndex + 1} of ${allImages.length}`}
         >
           {/* Close */}
           <button
+            ref={closeButtonRef}
             className="absolute top-5 right-5 text-zinc-400 hover:text-white transition-colors z-10"
             onClick={closeLightbox}
+            aria-label="Close"
           >
             <X size={28} />
           </button>
@@ -269,6 +242,7 @@ const ProjectDetail: React.FC = () => {
             <button
               className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors z-10 p-2"
               onClick={(e) => { e.stopPropagation(); prev(); }}
+              aria-label="Previous image"
             >
               <ArrowLeft size={32} />
             </button>
@@ -280,7 +254,7 @@ const ProjectDetail: React.FC = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <img
-              src={encodeImageUrl(allImages[lightboxIndex])}
+              src={lightboxSrc(allImages[lightboxIndex])}
               alt={`${project.title} — ${lightboxIndex + 1}`}
               className="max-w-full max-h-[90vh] w-auto h-auto object-contain select-none"
               draggable={false}
@@ -292,6 +266,7 @@ const ProjectDetail: React.FC = () => {
             <button
               className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors z-10 p-2"
               onClick={(e) => { e.stopPropagation(); next(); }}
+              aria-label="Next image"
             >
               <ArrowRight size={32} />
             </button>

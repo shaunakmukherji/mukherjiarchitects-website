@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { buildPeople } = require('./people.cjs');
+const { buildProjectImages } = require('./project-images.cjs');
 const { loadInsights, articleBodyHtml, listingBodyHtml, listingJsonLd, buildFeed, INSIGHTS_DIR } = require('./insights.cjs');
 
 // Map folder names to display names and categories
@@ -944,6 +945,10 @@ export default SERVICES;
   const servicesPath = path.join(outputDir, 'services.ts');
 
   const siteHeroUrl = getSiteHeroImageUrl();
+  // Web-sized WebP copies + share images (originals untouched) → generated/web-images.ts
+  const DEFAULT_HERO = '/images/hero/hero-cover.jpg.jpeg';
+  const webImages = buildProjectImages(projects, siteHeroUrl ?? DEFAULT_HERO);
+  fs.writeFileSync(path.join(outputDir, 'web-images.ts'), webImages.ts, 'utf-8');
   const siteHeroTs = `// Auto-generated file - do not edit manually
 // Drop a project folder inside public/images/projects/_hero/ to set the landing page hero image.
 // Run "npm run generate" to regenerate.
@@ -1094,6 +1099,8 @@ export const PEOPLE_LISTING: { title: string; description: string; jsonLd: objec
   const insights = loadInsights(SITE_URL, `${SITE_URL}/images/og-default.png`);
   const insightsLastmod = insights.length ? insights.map((a) => a.updated || a.date).sort().pop() : today;
 
+  // Canonical URLs only (no aliases such as /about). <lastmod> is only given where a real date is
+  // known (Insights articles): a build date on every page teaches Google to ignore the field.
   const staticRoutes = [
     { path: '/',                                    priority: '1.0', changefreq: 'weekly'  },
     { path: '/portfolio',                           priority: '0.9', changefreq: 'weekly'  },
@@ -1101,19 +1108,26 @@ export const PEOPLE_LISTING: { title: string; description: string; jsonLd: objec
     { path: '/shaunak-mukherji',                    priority: '0.8', changefreq: 'monthly' },
     { path: '/bobby-mukherji',                      priority: '0.7', changefreq: 'monthly' },
     { path: '/architecture-artificial-intelligence',priority: '0.7', changefreq: 'monthly' },
-    { path: '/about',                               priority: '0.7', changefreq: 'monthly' },
+    { path: '/about-mukherji-architects-milano',    priority: '0.7', changefreq: 'monthly' },
+    ...['commercial-design', 'hospitality-design', 'institutional-design', 'master-planning', 'mixed-use-design', 'research-exploration', 'residential-design']
+      .map((slug) => ({ path: `/best-fit/${slug}`, priority: '0.6', changefreq: 'monthly' })),
   ];
 
   // <image:image> entries (Google image sitemap) for the pages whose photos should be found in image search
-  const imageTags = (pagePath) => (people.sitemapImages[pagePath] || []).map((u) => `    <image:image>\n      <image:loc>${u}</image:loc>\n    </image:image>\n`).join('');
+  const imageTag = (u) => `    <image:image>\n      <image:loc>${u}</image:loc>\n    </image:image>\n`;
+  const imageTags = (pagePath) => (people.sitemapImages[pagePath] || []).map(imageTag).join('');
+  const encodeSitePath = (url) => url.split('/').map((seg) => (seg ? encodeURIComponent(seg) : '')).join('/');
+  const projectImageTags = (p) => [p.imageUrl, ...(p.gallery ?? [])].map((u) => imageTag(`${SITE_URL}${encodeSitePath(u)}`.replace(/&/g, '&amp;'))).join('');
+  const urlTag = (loc, { lastmod, changefreq, priority, images = '' }) =>
+    `  <url>\n    <loc>${loc}</loc>\n${lastmod ? `    <lastmod>${lastmod}</lastmod>\n` : ''}    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n${images}  </url>`;
 
   const urlTags = [
-    ...staticRoutes.map(r => `  <url>\n    <loc>${SITE_URL}${r.path}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${r.changefreq}</changefreq>\n    <priority>${r.priority}</priority>\n${imageTags(r.path)}  </url>`),
-    `  <url>\n    <loc>${SITE_URL}/insights</loc>\n    <lastmod>${insightsLastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`,
-    ...insights.map(a => `  <url>\n    <loc>${SITE_URL}${a.path}</loc>\n    <lastmod>${a.updated || a.date}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n${a.sitemapImages.map(u => `    <image:image>\n      <image:loc>${u}</image:loc>\n    </image:image>\n`).join('')}  </url>`),
-    ...projects.map(p => `  <url>\n    <loc>${SITE_URL}/project/${p.id}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>`),
-    ...mergedServices.map(s => `  <url>\n    <loc>${SITE_URL}/category/${slugifyName(s.categoryFilter)}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`),
-    ...teamMembers.filter(m => m.description && !m.linkTo).map(m => `  <url>\n    <loc>${SITE_URL}/the-studio/people/${m.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n${imageTags(`/the-studio/people/${m.slug}`)}  </url>`),
+    ...staticRoutes.map(r => urlTag(`${SITE_URL}${r.path}`, { ...r, images: imageTags(r.path) })),
+    urlTag(`${SITE_URL}/insights`, { lastmod: insightsLastmod, changefreq: 'weekly', priority: '0.7' }),
+    ...insights.map(a => urlTag(`${SITE_URL}${a.path}`, { lastmod: a.updated || a.date, changefreq: 'monthly', priority: '0.7', images: a.sitemapImages.map(imageTag).join('') })),
+    ...projects.map(p => urlTag(`${SITE_URL}/project/${p.id}`, { changefreq: 'monthly', priority: '0.8', images: projectImageTags(p) })),
+    ...mergedServices.map(s => urlTag(`${SITE_URL}/category/${slugifyName(s.categoryFilter)}`, { changefreq: 'weekly', priority: '0.7' })),
+    ...teamMembers.filter(m => m.description && !m.linkTo).map(m => urlTag(`${SITE_URL}/the-studio/people/${m.slug}`, { changefreq: 'monthly', priority: '0.6', images: imageTags(`/the-studio/people/${m.slug}`) })),
   ].join('\n');
 
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urlTags}\n</urlset>\n`;
@@ -1212,26 +1226,40 @@ export const INSIGHTS_LISTING_JSONLD: object[] = ${JSON.stringify(listingJsonLd(
     },
   ];
 
+  // Fallback titles/descriptions only: the build renders every page and uses the page's own SEO
+  // (lib/projectSEO.ts etc.). Kept in step with those so the two never disagree.
+  const truncateDescription = (text, max = 158) => {
+    const clean = text.replace(/\s+/g, ' ').trim();
+    if (clean.length <= max) return clean;
+    const slice = clean.slice(0, max);
+    const sentenceEnd = Math.max(slice.lastIndexOf('. '), slice.lastIndexOf('! '), slice.lastIndexOf('? '));
+    if (sentenceEnd > max * 0.5) return slice.slice(0, sentenceEnd + 1);
+    const wordEnd = slice.lastIndexOf(' ');
+    return `${slice.slice(0, wordEnd > 0 ? wordEnd : max).replace(/[,;:—–-]+$/, '')}…`;
+  };
+  const ogFor = (url) => (webImages.map[url]?.og ? `${SITE_URL}${webImages.map[url].og}` : absoluteUrl(url));
+
   const projectSeoRoutes = projects.map((p) => {
-    const pageTitle = `${p.title} — ${p.category} | Mukherji Architects Milano`;
+    const full = `${p.title} — ${p.category} | Mukherji Architects Milano`;
+    const pageTitle = full.length <= 65 ? full : `${p.title} | Mukherji Architects Milano`;
     const description = p.description
-      ? `${p.description.substring(0, 150)}${p.description.length > 150 ? '...' : ''}`
-      : `${p.title} — ${p.category} project by Mukherji Architects Milano${p.location ? ` in ${p.location}` : ''}.`;
+      ? truncateDescription(p.description)
+      : `${p.title}: ${p.category.toLowerCase()} project by Mukherji Architects Milano${p.location ? ` in ${p.location}` : ''}.`;
     return {
       path: `/project/${p.id}`,
       title: pageTitle,
       description,
-      image: absoluteUrl(p.imageUrl),
+      image: ogFor(p.imageUrl),
     };
   });
 
   const categorySeoRoutes = mergedServices.map((s) => {
-    const projectCount = projects.filter((p) => (p.categories ?? [p.category]).includes(s.categoryFilter)).length;
+    const inCategory = projects.filter((p) => (p.categories ?? [p.category]).includes(s.categoryFilter));
     return {
       path: `/category/${slugifyName(s.categoryFilter)}`,
-      title: `${s.categoryFilter} Architecture Projects | Mukherji Architects Milano`,
-      description: `Explore ${projectCount} ${s.categoryFilter.toLowerCase()} architecture projects by Mukherji Architects Milano. View our portfolio of ${s.categoryFilter.toLowerCase()} design work, including commercial, residential, and institutional projects.`,
-      image: absoluteUrl(s.imageUrl),
+      title: `${s.categoryFilter} Projects | Mukherji Architects Milano`,
+      description: truncateDescription(`${inCategory.length} ${s.categoryFilter.toLowerCase()} projects by Mukherji Architects Milano. ${s.description || ''}`),
+      image: inCategory[0] ? ogFor(inCategory[0].imageUrl) : absoluteUrl(s.imageUrl),
     };
   });
 
@@ -1297,6 +1325,38 @@ export const INSIGHTS_LISTING_JSONLD: object[] = ${JSON.stringify(listingJsonLd(
     if (process.env.CI || process.env.VERCEL) throw new Error(message);
     console.warn(`⚠️  ${message}`);
   }
+  // ── llms.txt — a plain-text guide to the site for AI assistants (llmstxt.org) ──
+  const line = (title, p, desc) => `- [${title}](${SITE_URL}${p})${desc ? `: ${desc}` : ''}`;
+  const llms = [
+    '# Mukherji Architects Milano',
+    '',
+    '> Architecture studio in Milan, Italy, founded in 2023 and led by Shaunak Mukherji (Founder & Creative Director).',
+    '> It works on hospitality, commercial, mixed-use, residential and master planning projects in Europe, India and the Middle East.',
+    '',
+    'Mukherji Architects Milano is the European extension of Bobby Mukherji Architects, a separate practice founded by',
+    'Bobby Mukherji. The two studios work together; the Milan studio has its own leadership and design direction.',
+    'The studio uses computational design and AI tools to test more design options and reduce coordination errors.',
+    '',
+    'Address: Via Lambro, 14, 20129 Milano MI, Italy. Email: admin@mukherjiarchitects.com. Phone: +39 334 305 9860.',
+    '',
+    '## Studio',
+    line('About the studio', '/about-mukherji-architects-milano'),
+    line('Shaunak Mukherji, Founder & Creative Director', '/shaunak-mukherji'),
+    line('People', '/the-studio/people'),
+    line('Architecture and Artificial Intelligence', '/architecture-artificial-intelligence', 'how the studio uses AI in design'),
+    '',
+    '## Projects',
+    ...projects.map((p) => line(`${p.title}`, `/project/${p.id}`, [p.category, p.location, p.year, p.status].filter(Boolean).join(', '))),
+    '',
+    '## Project categories',
+    ...mergedServices.map((s) => line(`${s.categoryFilter} projects`, `/category/${slugifyName(s.categoryFilter)}`)),
+    '',
+    '## Insights',
+    ...insights.map((a) => line(a.title, a.path, a.description)),
+    '',
+  ].join('\n');
+  fs.writeFileSync(path.join(__dirname, '..', 'public', 'llms.txt'), llms, 'utf-8');
+
   const seoManifestPath = path.join(outputDir, 'seo-manifest.json');
   fs.writeFileSync(seoManifestPath, JSON.stringify(seoManifest, null, 2), 'utf-8');
 
@@ -1328,15 +1388,38 @@ export const INSIGHTS_LISTING_JSONLD: object[] = ${JSON.stringify(listingJsonLd(
     })),
   ];
 
+  // Old aliases → their canonical page
+  redirects.push(
+    { source: '/about', destination: '/about-mukherji-architects-milano', permanent: true },
+    { source: '/creative-director', destination: '/shaunak-mukherji', permanent: true },
+  );
+
   const vercelConfigPath = path.join(__dirname, '..', 'vercel.json');
+  const IMMUTABLE = [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }];
   const vercelConfig = {
+    // Every page is a real file in dist (scripts/prerender-seo.cjs): /project/x is served from project/x.html.
+    // cleanUrls sends /project/x.html → /project/x and trailingSlash sends /project/x/ → /project/x, so each
+    // page has exactly one address. There is no catch-all rewrite: an unknown URL gets dist/404.html with a
+    // real 404 status instead of a copy of the home page.
+    cleanUrls: true,
+    trailingSlash: false,
     redirects,
-    // Insights and people images have a content hash in their file names, so they can be cached forever
     headers: [
-      { source: '/images/insights/(.*)', headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }] },
-      { source: '/images/people/(.*)', headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }] },
+      // Content-hashed file names (Vite assets, web image copies, Insights and people images): cache forever
+      { source: '/assets/(.*)', headers: IMMUTABLE },
+      { source: '/images/web/(.*)', headers: IMMUTABLE },
+      { source: '/images/insights/(.*)', headers: IMMUTABLE },
+      { source: '/images/people/(.*)', headers: IMMUTABLE },
+      // Original images keep their names when replaced: cache a day, then check for a newer copy
+      { source: '/images/(projects|hero|about)/(.*)', headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' }] },
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+        ],
+      },
     ],
-    rewrites: [{ source: '/(.*)', destination: '/index.html' }],
   };
   fs.writeFileSync(vercelConfigPath, JSON.stringify(vercelConfig, null, 2) + '\n', 'utf-8');
 

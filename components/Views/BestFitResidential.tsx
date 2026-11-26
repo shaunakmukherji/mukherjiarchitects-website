@@ -1,5 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
+import { usePageSEO } from '../../lib/usePageSEO';
+import { breadcrumb, truncateDescription } from '../../lib/seo';
 import NavLink from '../ui/NavLink';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 
@@ -7,98 +9,36 @@ const BestFitResidential: React.FC = () => {
   const { navigateBack, backLabel, navigateToContact, navigateToCategory } = useNavigation();
 
   // Update page title and meta tags for SEO
-  useEffect(() => {
-    const originalTitle = document.title;
-    const originalDescription = document.querySelector('meta[name="description"]')?.getAttribute('content');
-    const originalOGTitle = document.querySelector('meta[property="og:title"]')?.getAttribute('content');
-    const originalOGDescription = document.querySelector('meta[property="og:description"]')?.getAttribute('content');
-    const originalTwitterTitle = document.querySelector('meta[name="twitter:title"]')?.getAttribute('content');
-    const originalTwitterDescription = document.querySelector('meta[name="twitter:description"]')?.getAttribute('content');
-
-    // Update title
-    document.title = 'Best-Fit Residential Architects | Mukherji Architects Milano';
-
-    // Update meta description
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Mukherji Architects Milano is best-fit for residential clients who want clarity, control, and long-term value—not just "a look." We design homes where complexity is real: large programs, high performance expectations, and demanding execution.');
-    }
-
-    // Update Open Graph tags
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) {
-      ogTitle.setAttribute('content', 'Best-Fit Residential Architects | Mukherji Architects Milano');
-    }
-    const ogDescription = document.querySelector('meta[property="og:description"]');
-    if (ogDescription) {
-      ogDescription.setAttribute('content', 'Mukherji Architects Milano is best-fit for residential clients who want clarity, control, and long-term value—not just "a look." We design homes where complexity is real: large programs, high performance expectations, and demanding execution.');
-    }
-
-    // Update Twitter tags
-    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
-    if (twitterTitle) {
-      twitterTitle.setAttribute('content', 'Best-Fit Residential Architects | Mukherji Architects Milano');
-    }
-    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
-    if (twitterDescription) {
-      twitterDescription.setAttribute('content', 'Mukherji Architects Milano is best-fit for residential clients who want clarity, control, and long-term value—not just "a look." We design homes where complexity is real: large programs, high performance expectations, and demanding execution.');
-    }
-
-    // Add FAQPage structured data (JSON-LD)
-    const faqSchema = {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Do you work globally?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes—process and collaboration are built for international projects."
+  usePageSEO({
+    title: 'Best-Fit Residential Architects | Mukherji Architects Milano',
+    description: truncateDescription('Mukherji Architects Milano is best-fit for residential clients who want clarity, control, and long-term value—not just "a look." We design homes where complexity is real: large programs, high performance expectations, and demanding execution.'),
+    canonicalPath: '/best-fit/residential-design',
+    schemas: [
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Do you work globally?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes—process and collaboration are built for international projects."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do you protect value?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Buildability, precision, and early decision discipline."
+            }
           }
-        },
-        {
-          "@type": "Question",
-          "name": "How do you protect value?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Buildability, precision, and early decision discipline."
-          }
-        }
-      ]
-    };
-
-    const faqScript = document.createElement('script');
-    faqScript.type = 'application/ld+json';
-    faqScript.textContent = JSON.stringify(faqSchema);
-    faqScript.id = 'faq-structured-data';
-    document.head.appendChild(faqScript);
-
-    // Cleanup: restore original values when component unmounts
-    return () => {
-      document.title = originalTitle;
-      if (metaDescription && originalDescription) {
-        metaDescription.setAttribute('content', originalDescription);
-      }
-      if (ogTitle && originalOGTitle) {
-        ogTitle.setAttribute('content', originalOGTitle);
-      }
-      if (ogDescription && originalOGDescription) {
-        ogDescription.setAttribute('content', originalOGDescription);
-      }
-      if (twitterTitle && originalTwitterTitle) {
-        twitterTitle.setAttribute('content', originalTwitterTitle);
-      }
-      if (twitterDescription && originalTwitterDescription) {
-        twitterDescription.setAttribute('content', originalTwitterDescription);
-      }
-      // Remove structured data script
-      const faqScript = document.getElementById('faq-structured-data');
-      if (faqScript) {
-        faqScript.remove();
-      }
-    };
-  }, []);
+        ]
+      },
+      breadcrumb('Best-Fit Residential Design', '/best-fit/residential-design'),
+    ],
+  });
 
   return (
     <div className="pt-32 pb-24 min-h-screen bg-black">

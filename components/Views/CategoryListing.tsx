@@ -6,7 +6,9 @@ import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import OptimizedImage from '../ui/OptimizedImage';
 import NavLink from '../ui/NavLink';
 import { getPathForView } from '../../contexts/NavigationContext';
-import { applyNoIndex } from '../../lib/seo';
+import { ViewState } from '../../types';
+import { breadcrumb, ogImageFor, SITE, truncateDescription } from '../../lib/seo';
+import { usePageSEO } from '../../lib/usePageSEO';
 
 const CategoryListing: React.FC = () => {
   const { 
@@ -28,78 +30,54 @@ const CategoryListing: React.FC = () => {
     .sort(compareProjectsByCategoryOrder);
   const categoryDescription = SERVICES.find((s) => s.categoryFilter === selectedId)?.description ?? '';
   const isValidCategory = SERVICES.some((s) => s.categoryFilter === selectedId);
+  // Each category's "who should hire us" page, as a real link so crawlers can follow it
+  const BEST_FIT: Record<string, { view: ViewState; go: () => void }> = {
+    'Commercial Design': { view: 'BEST_FIT_COMMERCIAL', go: navigateToBestFitCommercial },
+    'Hospitality Design': { view: 'BEST_FIT_HOSPITALITY', go: navigateToBestFitHospitality },
+    'Institutional Design': { view: 'BEST_FIT_INSTITUTIONAL', go: navigateToBestFitInstitutional },
+    'Master Planning': { view: 'BEST_FIT_MASTER_PLANNING', go: navigateToBestFitMasterPlanning },
+    'Mixed-use Design': { view: 'BEST_FIT_MIXED_USE', go: navigateToBestFitMixedUse },
+    'Research & Exploration': { view: 'BEST_FIT_RESEARCH', go: navigateToBestFitResearch },
+    'Residential Design': { view: 'BEST_FIT_RESIDENTIAL', go: navigateToBestFitResidential },
+  };
 
-  // Invalid category slug — noindex it (see applyNoIndex for why, same as ProjectDetail).
-  useEffect(() => {
-    if (isValidCategory) return;
-    return applyNoIndex();
-  }, [isValidCategory]);
-
-  // Update page title and meta tags for SEO
-  useEffect(() => {
-    if (!selectedId) return;
-
-    const originalTitle = document.title;
-    const originalDescription = document.querySelector('meta[name="description"]')?.getAttribute('content');
-    const originalOGTitle = document.querySelector('meta[property="og:title"]')?.getAttribute('content');
-    const originalOGDescription = document.querySelector('meta[property="og:description"]')?.getAttribute('content');
-    const originalTwitterTitle = document.querySelector('meta[name="twitter:title"]')?.getAttribute('content');
-    const originalTwitterDescription = document.querySelector('meta[name="twitter:description"]')?.getAttribute('content');
-
-    // Create descriptive title
-    const pageTitle = `${selectedId} Architecture Projects | Mukherji Architects Milano`;
-    document.title = pageTitle;
-
-    // Create descriptive meta description
-    const projectCount = filteredProjects.length;
-    const metaDescriptionText = `Explore ${projectCount} ${selectedId.toLowerCase()} architecture projects by Mukherji Architects Milano. View our portfolio of ${selectedId.toLowerCase()} design work, including commercial, residential, and institutional projects.`;
-
-    // Update meta description
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', metaDescriptionText);
-    }
-
-    // Update Open Graph tags
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) {
-      ogTitle.setAttribute('content', pageTitle);
-    }
-    const ogDescription = document.querySelector('meta[property="og:description"]');
-    if (ogDescription) {
-      ogDescription.setAttribute('content', metaDescriptionText);
-    }
-
-    // Update Twitter tags
-    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
-    if (twitterTitle) {
-      twitterTitle.setAttribute('content', pageTitle);
-    }
-    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
-    if (twitterDescription) {
-      twitterDescription.setAttribute('content', metaDescriptionText);
-    }
-
-    // Cleanup: restore original values when component unmounts
-    return () => {
-      document.title = originalTitle;
-      if (metaDescription && originalDescription) {
-        metaDescription.setAttribute('content', originalDescription);
-      }
-      if (ogTitle && originalOGTitle) {
-        ogTitle.setAttribute('content', originalOGTitle);
-      }
-      if (ogDescription && originalOGDescription) {
-        ogDescription.setAttribute('content', originalOGDescription);
-      }
-      if (twitterTitle && originalTwitterTitle) {
-        twitterTitle.setAttribute('content', originalTwitterTitle);
-      }
-      if (twitterDescription && originalTwitterDescription) {
-        twitterDescription.setAttribute('content', originalTwitterDescription);
-      }
-    };
-  }, [selectedId, filteredProjects.length]);
+  const categoryPath = getPathForView('CATEGORY_LISTING', selectedId ?? '');
+  // Invalid category slug: noindex (see applyNoIndex). Valid ones get title, canonical and the project list as structured data.
+  usePageSEO(
+    selectedId
+      ? {
+          title: `${selectedId} Projects | Mukherji Architects Milano`,
+          description: truncateDescription(
+            `${filteredProjects.length} ${selectedId.toLowerCase()} projects by Mukherji Architects Milano. ${categoryDescription}`
+          ),
+          image: filteredProjects[0] ? ogImageFor(filteredProjects[0].imageUrl) : undefined,
+          canonicalPath: isValidCategory ? categoryPath : undefined,
+          noindex: !isValidCategory,
+          schemas: isValidCategory
+            ? [
+                {
+                  '@context': 'https://schema.org',
+                  '@type': 'CollectionPage',
+                  name: `${selectedId} Projects`,
+                  url: `${SITE}${categoryPath}`,
+                  isPartOf: { '@id': `${SITE}/#website` },
+                  mainEntity: {
+                    '@type': 'ItemList',
+                    itemListElement: filteredProjects.map((p, i) => ({
+                      '@type': 'ListItem',
+                      position: i + 1,
+                      name: p.title,
+                      url: `${SITE}${getPathForView('PROJECT_DETAIL', p.id)}`,
+                    })),
+                  },
+                },
+                breadcrumb(`${selectedId} Projects`, categoryPath),
+              ]
+            : [],
+        }
+      : null,
+    [selectedId, filteredProjects.length, isValidCategory]
+  );
 
   // Track which projects are in the viewport center for scroll highlight effect
   const imageContainersRef = useRef<(HTMLDivElement | HTMLAnchorElement | null)[]>([]);
@@ -220,26 +198,15 @@ const CategoryListing: React.FC = () => {
             {selectedId && (
                 <div className="text-zinc-500">
                     <span className="mr-2">Best-Fit:</span>
-                    <button
-                        onClick={() => {
-                            const categoryMap: Record<string, () => void> = {
-                                'Commercial Design': navigateToBestFitCommercial,
-                                'Hospitality Design': navigateToBestFitHospitality,
-                                'Institutional Design': navigateToBestFitInstitutional,
-                                'Master Planning': navigateToBestFitMasterPlanning,
-                                'Mixed-use Design': navigateToBestFitMixedUse,
-                                'Research & Exploration': navigateToBestFitResearch,
-                                'Residential Design': navigateToBestFitResidential
-                            };
-                            const navigate = categoryMap[selectedId];
-                            if (navigate) {
-                                navigate();
-                            }
-                        }}
+                    {BEST_FIT[selectedId] ? (
+                      <NavLink
+                        href={getPathForView(BEST_FIT[selectedId].view, null)}
+                        onNavigate={BEST_FIT[selectedId].go}
                         className="text-zinc-400 hover:text-white transition-colors underline"
-                    >
+                      >
                         Who should hire us for {selectedId}?
-                    </button>
+                      </NavLink>
+                    ) : null}
                 </div>
             )}
         </div>
@@ -260,6 +227,7 @@ const CategoryListing: React.FC = () => {
               alt={filteredProjects[0].title}
               priority={true}
               lazy={false}
+              sizes="(min-width: 1280px) 1232px, 100vw"
               className={
                 'w-full h-full object-cover transition-transform duration-700 opacity-100 ' +
                 (inViewStates[0] ? 'scale-105 ' : 'scale-100 ') +
@@ -307,6 +275,7 @@ const CategoryListing: React.FC = () => {
                             src={encodeImageUrl(project.imageUrl)} 
                             alt={project.title}
                             lazy={true}
+                            sizes="(min-width: 1280px) 600px, (min-width: 768px) 50vw, 100vw"
                             className={
                               'w-full h-full object-cover transition-transform duration-700 opacity-100 ' +
                               (inViewStates[projectIndex] ? 'scale-105 ' : 'scale-100 ') +

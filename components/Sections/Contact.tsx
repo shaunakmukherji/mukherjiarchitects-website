@@ -29,7 +29,12 @@ const Contact: React.FC = () => {
                 >
                     Via Lambro, 14, 20129 Milano MI
                 </a>
-                <p>+39 3343059860</p>
+                <a
+                    href="tel:+393343059860"
+                    className="block text-zinc-500 hover:text-white hover:underline transition-colors"
+                >
+                    +39 3343059860
+                </a>
                 <a 
                     href="mailto:admin@mukherjiarchitects.com"
                     className="block text-white hover:underline transition-colors"

@@ -112,19 +112,6 @@ const Portfolio: React.FC = () => {
     };
   }, [updateInfiniteScrollUi]);
 
-  useEffect(() => {
-    const el = horizontalScrollRef.current;
-    if (!el) return;
-
-    const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
-      e.preventDefault();
-      el.scrollLeft += e.deltaY;
-    };
-
-    el.addEventListener('wheel', onWheel, { passive: false });
-    return () => el.removeEventListener('wheel', onWheel);
-  }, []);
 
   useEffect(() => {
     const scrollContainer = horizontalScrollRef.current;
@@ -173,8 +160,12 @@ const Portfolio: React.FC = () => {
     };
   }, []);
 
+  // The row shows three copies of the list so it can loop; it starts on the middle one
+  const visibleLoop = infiniteEnabled ? 1 : 0;
+
   const renderProjectCard = (project: (typeof PROJECTS)[0], loopIndex: number, indexInLoop: number) => {
     const globalIndex = PROJECTS.findIndex((p) => p.id === project.id);
+    const isCopy = loopIndex !== visibleLoop;
     return (
       <NavLink
         key={`${loopIndex}-${project.id}`}
@@ -184,12 +175,14 @@ const Portfolio: React.FC = () => {
         onNavigate={() => navigateToProject(project.id)}
         className="group aspect-square cursor-pointer relative overflow-hidden bg-pure-grey-light border border-pure-grey-medium flex-shrink-0 w-[min(85vw,22rem)] sm:w-[min(80vw,24rem)] md:w-[min(48vw,20rem)] lg:w-[min(40vw,22rem)] xl:w-[min(34vw,24rem)] block"
         data-portfolio-index={globalIndex}
+        {...(isCopy ? { tabIndex: -1, 'aria-hidden': true } : {})}
       >
         <OptimizedImage
           src={encodeImageUrl(project.imageUrl)}
           alt={project.title}
-          lazy={globalIndex > 2}
-          priority={globalIndex <= 2}
+          lazy={isCopy || globalIndex > 2}
+          priority={!isCopy && globalIndex <= 2}
+          sizes="(min-width: 1280px) 24rem, (min-width: 1024px) 22rem, (min-width: 768px) 20rem, (min-width: 640px) 24rem, 85vw"
           className={
             'w-full h-full object-cover transition-transform duration-700 opacity-100 ' +
             (inViewStates[globalIndex] ? 'scale-105 ' : 'scale-100 ') +
@@ -258,7 +251,7 @@ const Portfolio: React.FC = () => {
               WebkitOverflowScrolling: 'touch',
             }}
             tabIndex={0}
-            aria-label="Signature projects — use the wheel, drag, or arrows to move horizontally"
+            aria-label="Selected projects: swipe, drag or use the arrows to move horizontally"
           >
             {loopsToRender.map((loopIndex) =>
               PROJECTS.map((project, indexInLoop) => (

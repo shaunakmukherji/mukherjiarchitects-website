@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Button from '../ui/Button';
 import { HERO_IMAGE_URL } from '../../constants';
+import { fallbackVariant, srcSetFor, webImage } from '../../lib/webImages';
+
+// Web-sized copies of the hero (the original stays as the fallback)
+const heroWeb = webImage(HERO_IMAGE_URL);
 import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 
 const Hero: React.FC = () => {
@@ -49,11 +53,14 @@ const Hero: React.FC = () => {
       <div className="absolute inset-0 w-full h-full z-0 pointer-events-none select-none">
          <div className="relative w-full h-full overflow-hidden">
             <img 
-                src={HERO_IMAGE_URL} 
-                alt="Architecture Cover" 
+                src={heroWeb ? fallbackVariant(heroWeb).url : HERO_IMAGE_URL} 
+                srcSet={heroWeb ? srcSetFor(heroWeb) : undefined}
+                sizes={heroWeb ? '100vw' : undefined}
+                alt="Black-and-white night view of a long ribbed pavilion reflected in still water"
                 className="w-full h-full object-cover scale-105 transition-opacity duration-500 ease-out"
                 style={{ opacity: imageOpacity }}
                 loading="eager"
+                fetchPriority="high"
                 decoding="async"
                 onError={(e) => {
                   console.error('Hero image failed to load:', HERO_IMAGE_URL);

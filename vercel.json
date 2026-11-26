@@ -1,4 +1,6 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "redirects": [
     {
       "source": "/project/five-star-hotel-new-delhi",
@@ -49,9 +51,37 @@
       "source": "/category/Residential%20Design",
       "destination": "/category/residential-design",
       "permanent": true
+    },
+    {
+      "source": "/about",
+      "destination": "/about-mukherji-architects-milano",
+      "permanent": true
+    },
+    {
+      "source": "/creative-director",
+      "destination": "/shaunak-mukherji",
+      "permanent": true
     }
   ],
   "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/images/web/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
     {
       "source": "/images/insights/(.*)",
       "headers": [
@@ -69,12 +99,28 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
-    }
-  ],
-  "rewrites": [
+    },
+    {
+      "source": "/images/(projects|hero|about)/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
     }
   ]
 }

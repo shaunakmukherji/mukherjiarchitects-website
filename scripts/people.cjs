@@ -59,8 +59,11 @@ const BESPOKE = [
     role: 'Principal',
     jobTitle: 'Principal',
     roleLine: 'Principal, Bobby Mukherji Architects',
-    title: 'Bobby Mukherji — Principal | Mukherji Architects Milano',
-    description: 'Bobby Mukherji is founder of Bobby Mukherji Architects and the institutional backbone of Mukherji Architects Milano — 30+ years of experience across hospitality, commercial, and mixed-use projects worldwide.',
+    // Bobby is not part of Mukherji Architects Milano: his title, description and breadcrumb must never
+    // read as a role at the Milan studio.
+    title: 'Bobby Mukherji — Principal, Bobby Mukherji Architects',
+    description: 'Bobby Mukherji is founder and Principal of Bobby Mukherji Architects, with 30+ years in hospitality, commercial and mixed-use architecture. Father of Shaunak Mukherji, founder of Mukherji Architects Milano.',
+    notInPeople: true, // breadcrumb skips "People": he is not a member of the Milan studio
     portrait: '/images/about/bobby-mukherji.png',
     alt: 'Bobby Mukherji, Principal of Bobby Mukherji Architects',
     sameAs: ['https://in.linkedin.com/in/bobby-mukherji-690557228'], // no team folder, so his profile links live here
@@ -101,17 +104,17 @@ function buildPeople({ siteUrl, teamMembers }) {
   const members = teamMembers.map((m) => (m.headshotUrl ? { ...m, image: toImage(res[`member:${m.slug}`], memberAlt(m)) } : m));
 
   // ── Structured data ─────────────────────────────────────────────────────────
-  const crumbs = (name, url) => ({
+  const crumbs = (name, url, inPeople = true) => ({
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: SITE_NAME, item: `${siteUrl}/` },
-      { '@type': 'ListItem', position: 2, name: 'People', item: `${siteUrl}/the-studio/people` },
-      { '@type': 'ListItem', position: 3, name, item: url },
+      ...(inPeople ? [{ '@type': 'ListItem', position: 2, name: 'People', item: `${siteUrl}/the-studio/people` }] : []),
+      { '@type': 'ListItem', position: inPeople ? 3 : 2, name, item: url },
     ],
   });
 
-  const profileJsonLd = ({ pagePath, title, name, jobTitle, description, r, alt, person = {}, sameAs = [], alumniOf }) => {
+  const profileJsonLd = ({ pagePath, title, name, jobTitle, description, r, alt, person = {}, sameAs = [], alumniOf, inPeople = true }) => {
     const url = abs(pagePath);
     const square = r.r1x1;
     return [
@@ -134,7 +137,7 @@ function buildPeople({ siteUrl, teamMembers }) {
           ...(sameAs.length ? { sameAs } : {}),
         },
       },
-      crumbs(name, url),
+      crumbs(name, url, inPeople),
     ];
   };
 
@@ -182,7 +185,7 @@ ${paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join('\n')}
   for (const b of BESPOKE) {
     const r = res[`page:${b.slug}`];
     const image = toImage(r, b.alt);
-    const jsonLd = profileJsonLd({ pagePath: b.path, title: b.title, name: b.name, jobTitle: b.jobTitle, description: b.description, r, alt: b.alt, person: b.person({ ma: maOrg }), sameAs: [...(b.sameAs || []), ...(b.teamSlug ? sameAsFor(b.teamSlug) : [])] });
+    const jsonLd = profileJsonLd({ pagePath: b.path, title: b.title, name: b.name, jobTitle: b.jobTitle, description: b.description, r, alt: b.alt, person: b.person({ ma: maOrg }), sameAs: [...(b.sameAs || []), ...(b.teamSlug ? sameAsFor(b.teamSlug) : [])], inPeople: !b.notInPeople });
     pages[b.slug] = { title: b.title, description: b.description, image, ogImage: abs(r.r1x1.url), jsonLd };
     routes.push(route({ pagePath: b.path, title: b.title, description: b.description, name: b.name, roleLine: b.roleLine, r, alt: b.alt, image, paragraphs: [b.description], jsonLd }));
     sitemapImages[b.path] = [abs(r.variants[r.variants.length - 1].url)];

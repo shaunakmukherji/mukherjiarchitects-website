@@ -5,7 +5,7 @@ import { TEAM_IMAGES, TEAM_VIDEO_URL, TEAM_MEMBERS } from '../../generated/teamI
 import OptimizedImage from '../ui/OptimizedImage';
 import ProfileImage from '../ui/ProfileImage';
 import NavLink from '../ui/NavLink';
-import { applySEO } from '../../lib/seo';
+import { usePageSEO } from '../../lib/usePageSEO';
 import { PEOPLE_LISTING } from '../../generated/people';
 
 // Same grid class for every row of the gallery so columns stay pixel-perfect aligned
@@ -25,13 +25,13 @@ const Team: React.FC = () => {
   };
 
   // Title, description and structured data are built in scripts/people.cjs
-  useEffect(() => applySEO({
+  usePageSEO({
     title: PEOPLE_LISTING.title,
     description: PEOPLE_LISTING.description,
     image: '/images/og-default.png',
     canonicalPath: '/the-studio/people',
     schemas: PEOPLE_LISTING.jsonLd,
-  }), []);
+  }, []);
 
   useEffect(() => {
     videoRef.current?.play().catch(() => {});

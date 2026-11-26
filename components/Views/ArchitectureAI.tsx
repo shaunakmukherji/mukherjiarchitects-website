@@ -1,17 +1,18 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { ArrowLeft } from 'lucide-react';
-import { applySEO, breadcrumb } from '../../lib/seo';
+import { breadcrumb } from '../../lib/seo';
+import { usePageSEO } from '../../lib/usePageSEO';
 
 const ArchitectureAI: React.FC = () => {
   const { navigateBack, backLabel } = useNavigation();
 
-  useEffect(() => applySEO({
+  usePageSEO({
     title: 'Architecture and Artificial Intelligence | Mukherji Architects Milano',
     description: 'How Mukherji Architects Milano uses AI in architectural work — the case for quality of thinking over the tool itself, written by Shaunak Mukherji from Milan.',
     canonicalPath: '/architecture-artificial-intelligence',
     schemas: [breadcrumb('Architecture and Artificial Intelligence', '/architecture-artificial-intelligence')],
-  }), []);
+  }, []);
 
   return (
     <div className="pt-32 pb-24 min-h-screen bg-black">

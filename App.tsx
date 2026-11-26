@@ -30,6 +30,9 @@ import Team from './components/Views/Team';
 import TeamMemberDetail from './components/Views/TeamMemberDetail';
 import Insights from './components/Views/Insights';
 import InsightDetail from './components/Views/InsightDetail';
+import NotFound from './components/Views/NotFound';
+import { usePageSEO } from './lib/usePageSEO';
+import { HOME_SEO } from './lib/homeSEO';
 
 // Floating "Work" shortcut — hidden when already in portfolio views
 const FloatingWorkButton: React.FC = () => {
@@ -59,40 +62,12 @@ const MainContent = () => {
     document.querySelectorAll('[data-prerender]').forEach((el) => el.remove());
   }, []);
 
-  // Restore home page meta tags when on home view
-  useEffect(() => {
-    if (currentView === 'HOME') {
-      // Restore original home page title and meta description
-      document.title = 'Mukherji Architects Milano';
-      
-      const homeDescription = 'Mukherji Architects Milano - High-performance architecture studio in Milan, Italy. Specializing in residential, commercial, institutional, and mixed-use design. AI-driven architectural solutions for intelligent buildings.';
-      
-      const metaDescription = document.querySelector('meta[name="description"]');
-      if (metaDescription) {
-        metaDescription.setAttribute('content', homeDescription);
-      }
-      
-      const ogTitle = document.querySelector('meta[property="og:title"]');
-      if (ogTitle) {
-        ogTitle.setAttribute('content', 'Mukherji Architects Milano');
-      }
-      
-      const ogDescription = document.querySelector('meta[property="og:description"]');
-      if (ogDescription) {
-        ogDescription.setAttribute('content', 'Mukherji Architects Milano - High-performance architecture studio in Milan, Italy. Specializing in residential, commercial, institutional, and mixed-use design.');
-      }
-      
-      const twitterTitle = document.querySelector('meta[name="twitter:title"]');
-      if (twitterTitle) {
-        twitterTitle.setAttribute('content', 'Mukherji Architects Milano');
-      }
-      
-      const twitterDescription = document.querySelector('meta[name="twitter:description"]');
-      if (twitterDescription) {
-        twitterDescription.setAttribute('content', 'Mukherji Architects Milano - High-performance architecture studio in Milan, Italy. Specializing in residential, commercial, institutional, and mixed-use design.');
-      }
-    }
-  }, [currentView]);
+  // Home page SEO (also written into the static HTML at build time)
+  usePageSEO(currentView === 'HOME' ? HOME_SEO : null, [currentView]);
+
+  if (currentView === 'NOT_FOUND') {
+    return <NotFound />;
+  }
 
   if (currentView === 'PROJECT_DETAIL') {
     return <ProjectDetail />;
@@ -181,7 +156,7 @@ const MainContent = () => {
   );
 };
 
-function App() {
+function App({ initialPath }: { initialPath?: string }) {
   
   // Smooth scroll behavior for anchor links
   useEffect(() => {
@@ -192,7 +167,7 @@ function App() {
   }, []);
 
   return (
-    <NavigationProvider>
+    <NavigationProvider initialPath={initialPath}>
       <div className="relative min-h-screen bg-black text-white selection:bg-white selection:text-black font-sans antialiased">
         <CustomCursor />
         {/* Dynamic Background */}

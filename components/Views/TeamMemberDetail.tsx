@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { TEAM_MEMBERS } from '../../generated/teamImages';
 import { PROFILE_PAGES } from '../../generated/people';
 import { ArrowLeft } from 'lucide-react';
 import ProfileImage from '../ui/ProfileImage';
-import { applySEO, applyNoIndex } from '../../lib/seo';
+import { usePageSEO } from '../../lib/usePageSEO';
 
 const TeamMemberDetail: React.FC = () => {
   const { selectedId, navigateBack, backLabel } = useNavigation();
@@ -12,22 +12,15 @@ const TeamMemberDetail: React.FC = () => {
   // Title, description, portrait and structured data are built in scripts/people.cjs
   const profile = member ? PROFILE_PAGES[member.slug] : undefined;
 
-  // Invalid slug — noindex it (see applyNoIndex for why, same as ProjectDetail).
-  useEffect(() => {
-    if (member) return;
-    return applyNoIndex();
-  }, [member]);
-
-  useEffect(() => {
-    if (!member || !profile) return;
-    return applySEO({
-      title: profile.title,
-      description: profile.description,
-      image: profile.ogImage,
-      canonicalPath: `/the-studio/people/${member.slug}`,
-      schemas: profile.jsonLd,
-    });
-  }, [member, profile]);
+  // An unknown slug is noindexed (the host answers unknown URLs with a real 404; this covers the rest)
+  usePageSEO(
+    member && profile
+      ? { title: profile.title, description: profile.description, image: profile.ogImage, canonicalPath: `/the-studio/people/${member.slug}`, schemas: profile.jsonLd }
+      : member
+        ? null
+        : { title: 'Page not found | Mukherji Architects Milano', description: 'This page could not be found.', noindex: true },
+    [member, profile]
+  );
 
   if (!member) {
     return (

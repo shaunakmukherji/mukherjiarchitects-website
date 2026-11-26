@@ -119,6 +119,7 @@ const Services: React.FC = () => {
                          <OptimizedImage 
                             src={encodeImageUrl(getMainProjectImage(service.categoryFilter))} 
                             alt={service.title} 
+                            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                             className={
                               'w-full h-full object-cover transition-transform duration-1000 ease-out opacity-100 ' +
                               (cardInView[index] ? 'scale-105 ' : 'scale-100 ') +

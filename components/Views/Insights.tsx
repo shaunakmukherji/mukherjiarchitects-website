@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import { INSIGHTS, INSIGHTS_LISTING_JSONLD } from '../../generated/insights';
 import { Insight } from '../../types';
 import NavLink from '../ui/NavLink';
-import { applySEO } from '../../lib/seo';
+import { usePageSEO } from '../../lib/usePageSEO';
 import { formatDate } from '../../lib/formatDate';
 
 // Image-led card. `featured` is the large full-width treatment used for the newest article.
@@ -79,13 +79,13 @@ const ArticleCard: React.FC<{ article: Insight; featured?: boolean; priority?: b
 };
 
 const Insights: React.FC = () => {
-  useEffect(() => applySEO({
+  usePageSEO({
     title: 'Insights | Mukherji Architects Milano',
     description: 'Articles on architecture and design from Mukherji Architects Milano, with sources and links to the projects they draw on.',
     image: '/images/og-default.png',
     canonicalPath: '/insights',
     schemas: INSIGHTS_LISTING_JSONLD,
-  }), []);
+  }, []);
 
   const [featured, ...rest] = INSIGHTS;
 

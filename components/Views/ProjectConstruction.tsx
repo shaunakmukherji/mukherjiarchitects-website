@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useNavigation } from '../../contexts/NavigationContext';
+import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
 import { PROJECTS } from '../../constants';
+import { usePageSEO } from '../../lib/usePageSEO';
+import { absoluteUrl, breadcrumb2, ogImageFor, truncateDescription } from '../../lib/seo';
 import { encodeImageUrl } from '../../lib/imageUrl';
 import OptimizedImage from '../ui/OptimizedImage';
 import { ArrowLeft, ArrowRight, X } from 'lucide-react';
@@ -20,14 +22,23 @@ const ProjectConstruction: React.FC = () => {
     setLightboxIndex((i) => (i === null ? null : (i + 1) % images.length));
   }, [images.length]);
 
-  useEffect(() => {
-    if (!project) return;
-    const originalTitle = document.title;
-    document.title = `${project.title} — Construction Progress | Mukherji Architects Milano`;
-    return () => {
-      document.title = originalTitle;
-    };
-  }, [project]);
+  const hasMedia = !!project && media.length > 0;
+  usePageSEO(
+    hasMedia
+      ? {
+          title: `${project.title}: Construction Progress | Mukherji Architects Milano`,
+          description: truncateDescription(
+            project.constructionNote || `Construction progress photos of ${project.title}${project.location ? `, ${project.location}` : ''}, designed by Mukherji Architects Milano.`
+          ),
+          image: images[0] ? absoluteUrl(images[0].url) : ogImageFor(project.imageUrl),
+          canonicalPath: getPathForView('PROJECT_CONSTRUCTION', project.id),
+          schemas: [
+            breadcrumb2(project.title, getPathForView('PROJECT_DETAIL', project.id), 'Construction progress', getPathForView('PROJECT_CONSTRUCTION', project.id)),
+          ],
+        }
+      : { title: 'Page not found | Mukherji Architects Milano', description: 'This page could not be found.', noindex: true },
+    [project]
+  );
 
   useEffect(() => {
     if (lightboxIndex === null) return;

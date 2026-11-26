@@ -1,5 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigation, getPathForView } from '../../contexts/NavigationContext';
+import { usePageSEO } from '../../lib/usePageSEO';
+import { breadcrumb, truncateDescription } from '../../lib/seo';
 import NavLink from '../ui/NavLink';
 import RelatedInsights from '../ui/RelatedInsights';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
@@ -7,69 +9,36 @@ import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 const BestFitHospitality: React.FC = () => {
   const { navigateBack, backLabel, navigateToContact, navigateToCategory } = useNavigation();
 
-  useEffect(() => {
-    const originalTitle = document.title;
-    const originalDescription = document.querySelector('meta[name="description"]')?.getAttribute('content');
-    const originalOGTitle = document.querySelector('meta[property="og:title"]')?.getAttribute('content');
-    const originalOGDescription = document.querySelector('meta[property="og:description"]')?.getAttribute('content');
-    const originalTwitterTitle = document.querySelector('meta[name="twitter:title"]')?.getAttribute('content');
-    const originalTwitterDescription = document.querySelector('meta[name="twitter:description"]')?.getAttribute('content');
-
-    document.title = 'Best-Fit Hospitality Architects | Mukherji Architects Milano';
-
-    const metaDesc = 'Through decades of hospitality experience via Bobby Mukherji Architects, Mukherji Architects Milano delivers hotel and resort architecture that aligns with brand standards, operator requirements, and financial performance. Best-fit for developers and operators who need both creative quality and deep sector knowledge.';
-
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) metaDescription.setAttribute('content', metaDesc);
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) ogTitle.setAttribute('content', 'Best-Fit Hospitality Architects | Mukherji Architects Milano');
-    const ogDescription = document.querySelector('meta[property="og:description"]');
-    if (ogDescription) ogDescription.setAttribute('content', metaDesc);
-    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
-    if (twitterTitle) twitterTitle.setAttribute('content', 'Best-Fit Hospitality Architects | Mukherji Architects Milano');
-    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
-    if (twitterDescription) twitterDescription.setAttribute('content', metaDesc);
-
-    const faqSchema = {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Do you have experience with international hotel brands?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Through Bobby Mukherji Architects, the practice has delivered hospitality projects across multiple international brand standards and operator frameworks over 30+ years."
+  usePageSEO({
+    title: 'Best-Fit Hospitality Architects | Mukherji Architects Milano',
+    description: truncateDescription('Through decades of hospitality experience via Bobby Mukherji Architects, Mukherji Architects Milano delivers hotel and resort architecture that aligns with brand standards, operator requirements, and financial performance. Best-fit for developers and operators who need both creative quality and deep sector knowledge.'),
+    canonicalPath: '/best-fit/hospitality-design',
+    schemas: [
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Do you have experience with international hotel brands?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Through its collaboration with Bobby Mukherji Architects, the studio draws on 30+ years of hospitality projects delivered across multiple international brand standards and operator frameworks."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can you work directly with operators and brand consultants?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes — aligning with operators, brand standards consultants, and management companies is a core part of our hospitality process."
+            }
           }
-        },
-        {
-          "@type": "Question",
-          "name": "Can you work directly with operators and brand consultants?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes — aligning with operators, brand standards consultants, and management companies is a core part of our hospitality process."
-          }
-        }
-      ]
-    };
-
-    const faqScript = document.createElement('script');
-    faqScript.type = 'application/ld+json';
-    faqScript.textContent = JSON.stringify(faqSchema);
-    faqScript.id = 'faq-structured-data';
-    document.head.appendChild(faqScript);
-
-    return () => {
-      document.title = originalTitle;
-      if (metaDescription && originalDescription) metaDescription.setAttribute('content', originalDescription);
-      if (ogTitle && originalOGTitle) ogTitle.setAttribute('content', originalOGTitle);
-      if (ogDescription && originalOGDescription) ogDescription.setAttribute('content', originalOGDescription);
-      if (twitterTitle && originalTwitterTitle) twitterTitle.setAttribute('content', originalTwitterTitle);
-      if (twitterDescription && originalTwitterDescription) twitterDescription.setAttribute('content', originalTwitterDescription);
-      const script = document.getElementById('faq-structured-data');
-      if (script) script.remove();
-    };
-  }, []);
+        ]
+      },
+      breadcrumb('Best-Fit Hospitality Design', '/best-fit/hospitality-design'),
+    ],
+  });
 
   return (
     <div className="pt-32 pb-24 min-h-screen bg-black">
@@ -166,7 +135,7 @@ const BestFitHospitality: React.FC = () => {
             <div className="space-y-6">
               <div>
                 <h4 className="text-white text-lg font-semibold mb-2">Do you have experience with international hotel brands?</h4>
-                <p className="text-zinc-400 text-base leading-relaxed">Yes. Through Bobby Mukherji Architects, the practice has delivered hospitality projects across multiple international brand standards and operator frameworks over 30+ years.</p>
+                <p className="text-zinc-400 text-base leading-relaxed">Yes. Through its collaboration with Bobby Mukherji Architects, the studio draws on 30+ years of hospitality projects delivered across multiple international brand standards and operator frameworks.</p>
               </div>
               <div>
                 <h4 className="text-white text-lg font-semibold mb-2">Can you work directly with operators and brand consultants?</h4>
